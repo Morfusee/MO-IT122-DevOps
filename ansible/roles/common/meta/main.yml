@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: Morfuse
+  description: A role to handle package installation and basic user setup.
+  license: MIT
+  min_ansible_version: "2.9"

@@ -1,0 +1,8 @@
+- name: Restart fail2ban
+  become: yes
+  service: 
+    name: fail2ban
+    state: restarted
+
+- name: Change shell to bash
+  command: chsh -s /bin/bash "{{ created_username }}"

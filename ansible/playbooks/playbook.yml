@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: ../roles/common
+    - role: ../roles/security
+    - role: ../roles/ufw
+    - role: ../roles/fail2ban
