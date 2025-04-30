@@ -12,7 +12,7 @@ BrainBytes is an AI-powered tutoring platform designed to provide accessible aca
 ## Project Goals
 - Implement a containerized application with proper networking
 - Create an automated CI/CD pipeline using GitHub Actions
-- Deploy the application to Oracle Cloud Free Tier
+- Deploy the application to a Virtual Private Server (VPS)
 - Set up monitoring and observability tools
 
 ## Technology Stack
@@ -21,4 +21,5 @@ BrainBytes is an AI-powered tutoring platform designed to provide accessible aca
 - Database: MongoDB Atlas
 - Containerization: Docker
 - CI/CD: GitHub Actions
+- VPS Provider: OVHCloud
 - Monitoring: TBD
