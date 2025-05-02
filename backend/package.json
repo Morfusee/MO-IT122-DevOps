@@ -54,6 +54,7 @@
     "@adonisjs/core": "^6.17.2",
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.6.0",
+    "@foadonis/openapi": "^0.3.5",
     "@vinejs/vine": "^3.0.0",
     "reflect-metadata": "^0.2.2"
   },
