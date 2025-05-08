@@ -1,0 +1,26 @@
+services:
+  traefik:
+    image: traefik:v2.2
+    command:
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  adonisjs:
+    build:
+      # The root context is set one level above this compose file (../)
+      # This ensures Docker has access to the entire project, including shared config files,
+      # env files, or monorepo dependencies that live outside the backend folder.
+      context: ../
+      dockerfile: docker/backend/Dockerfile
+    labels:
+    - "traefik.http.routers.adonis.entrypoints=web"
+    - "traefik.http.routers.adonis.rule=Host(`adonis.localhost`)"
+    env_file:
+      - ../backend/.env
+    restart: always
+    depends_on:
+      - traefik
