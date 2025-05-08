@@ -6,11 +6,13 @@ This `docker` folder is designed for encapsulating and managing both the fronten
 
 ## Folder Structure
 
+```
 docker/
 │
-├── compose.dev.yml # Docker Compose file for local development/testing
-├── frontend/ # Contains Dockerfile and assets for the frontend
-└── backend/ # Contains Dockerfile and assets for the backend
+├── compose.dev.yml   # Docker Compose file for local development/testing
+├── frontend/   # Contains Dockerfile and assets for the frontend
+└── backend/   # Contains Dockerfile and assets for the backend
+```
 
 ---
 
