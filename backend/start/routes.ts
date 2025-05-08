@@ -7,6 +7,7 @@
 |
 */
 
+import UsersController from '#controllers/users_controller'
 import router from '@adonisjs/core/services/router'
 import openapi from '@foadonis/openapi/services/main'
 
@@ -15,6 +16,9 @@ router.get('/', async () => {
     hello: 'world',
   }
 })
+
+router.resource('users', UsersController)
+
 
 /**
  * FIX: No UI for /api route
