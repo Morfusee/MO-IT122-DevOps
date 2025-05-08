@@ -10,6 +10,8 @@
 import UsersController from '#controllers/users_controller'
 import router from '@adonisjs/core/services/router'
 import openapi from '@foadonis/openapi/services/main'
+import { middleware } from './kernel.js'
+import AuthController from '#controllers/auth_controller'
 
 router.get('/', async () => {
   return {
@@ -19,6 +21,17 @@ router.get('/', async () => {
 
 router.resource('users', UsersController)
 
+router.group(() => {
+  router.post('/register', [AuthController, 'register'])
+  router.post('/login', [AuthController, 'login'])
+  router.post('/logout', [AuthController, 'logout'])
+})
+
+router
+  .group(() => {
+    router.get('/me', [AuthController, 'me'])
+  })
+  .use(middleware.auth())
 
 /**
  * FIX: No UI for /api route

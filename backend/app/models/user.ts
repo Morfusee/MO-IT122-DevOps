@@ -1,22 +1,37 @@
-import { ApiProperty } from "@foadonis/openapi/decorators";
-import mongoose from "mongoose";
+import hash from '@adonisjs/core/services/hash'
+import mongoose from 'mongoose'
 
-
-export class User {
-  @ApiProperty({ required: false })
-  declare id: string
-
-  @ApiProperty({required: true})
-  declare email: string
-}
-
-const UserSchema = new mongoose.Schema<User>({
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    unique: true
+const UserSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    passwordHash: {
+      type: String,
+      required: true,
+    },
+    firstName: String,
+    lastName: String,
+  },
+  {
+    timestamps: true,
+    methods: {
+      async verifyPassword(passwordString: string) {
+        return await hash.verify(this.passwordHash, passwordString)
+      },
+    },
   }
+)
+
+UserSchema.pre('save', async function (next) {
+  if (this.isModified('passwordHash')) {
+    this.passwordHash = await hash.make(this.passwordHash)
+  }
+
+  next()
 })
 
 UserSchema.set('toJSON', {
@@ -24,11 +39,12 @@ UserSchema.set('toJSON', {
   transform: (_doc, ret) => {
     ret.id = ret._id.toString()
     delete ret._id
+    delete ret.passwordHash
+
     return ret
-  }
+  },
 })
 
-const UserModel = mongoose.model("User", UserSchema)
-
+const UserModel = mongoose.model('User', UserSchema)
 
 export default UserModel
