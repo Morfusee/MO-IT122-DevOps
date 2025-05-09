@@ -158,5 +158,5 @@ export type GetMeResponses = {
 export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
 
 export type ClientOptions = {
-    baseUrl: `${string}://${string}` | (string & {});
+    baseUrl: 'http://localhost:3333' | (string & {});
 };
