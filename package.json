@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\"",
-    "install:all": "pnpm --filter frontend install && pnpm --filter backend install"
+    "install:all": "pnpm --filter frontend install && pnpm --filter backend install",
+    "api-gen": "pnpm --filter frontend openapi-ts"
   },
   "keywords": [],
   "author": "",

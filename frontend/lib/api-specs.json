@@ -28,6 +28,32 @@
         "security": []
       }
     },
+    "/prompt": {
+      "post": {
+        "tags": ["GeminiSamples"],
+        "responses": {
+          "200": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeminiResponseSample"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GeminiPromptSample" }
+            }
+          }
+        },
+        "parameters": [],
+        "security": []
+      }
+    },
     "/register": {
       "post": {
         "tags": ["Auth"],
@@ -140,6 +166,16 @@
           "updatedAt": { "type": "string" }
         },
         "required": ["email", "firstName", "lastName", "createdAt", "updatedAt"]
+      },
+      "GeminiPromptSample": {
+        "type": "object",
+        "properties": { "prompt": { "type": "string" } },
+        "required": ["prompt"]
+      },
+      "GeminiResponseSample": {
+        "type": "object",
+        "properties": { "content": { "type": "string" } },
+        "required": ["content"]
       },
       "AuthForm": {
         "type": "object",

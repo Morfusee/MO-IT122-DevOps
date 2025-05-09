@@ -9,6 +9,14 @@ export type User = {
     updatedAt: string;
 };
 
+export type GeminiPromptSample = {
+    prompt: string;
+};
+
+export type GeminiResponseSample = {
+    content: string;
+};
+
 export type AuthForm = {
     email: string;
     password: string;
@@ -50,6 +58,22 @@ export type PostUsersData = {
     query?: never;
     url: '/users';
 };
+
+export type PostPromptData = {
+    body?: GeminiPromptSample;
+    path?: never;
+    query?: never;
+    url: '/prompt';
+};
+
+export type PostPromptResponses = {
+    /**
+     * Registration successful
+     */
+    200: GeminiResponseSample;
+};
+
+export type PostPromptResponse = PostPromptResponses[keyof PostPromptResponses];
 
 export type PostRegisterData = {
     body?: AuthForm;
