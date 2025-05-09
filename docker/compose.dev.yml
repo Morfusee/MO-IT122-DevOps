@@ -12,15 +12,16 @@ services:
   adonisjs:
     build:
       # The root context is set one level above this compose file (../)
-      # This ensures Docker has access to the entire project, including shared config files,
-      # env files, or monorepo dependencies that live outside the backend folder.
+      # This ensures the referenced Dockerfile has access to the entire project,
+      # including shared config files, env files, or monorepo dependencies that
+      # live outside the backend folder.
       context: ../
       dockerfile: docker/backend/Dockerfile
     labels:
-    - "traefik.http.routers.adonis.entrypoints=web"
-    - "traefik.http.routers.adonis.rule=Host(`adonis.localhost`)"
+      - "traefik.http.routers.adonis.entrypoints=web"
+      - "traefik.http.routers.adonis.rule=Host(`adonis.localhost`)"
     env_file:
-      - ../backend/.env
+      - ../.env
     restart: always
     depends_on:
       - traefik
