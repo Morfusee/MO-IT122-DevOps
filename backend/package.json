@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "controller": "node ace make:controller",
     "validator": "node ace make:validator",
-    "middleware": "node ace make:middleware"
+    "middleware": "node ace make:middleware",
+    "test-case": "node ace make:test"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
