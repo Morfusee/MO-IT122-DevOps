@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   // experimental: {
   //   optimizePackageImports: ["@mantine/core", "@mantine/hooks", "zod"],
   // },
+  output: "standalone",
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
   },
