@@ -1,11 +1,10 @@
-import { Card, Container } from "@mantine/core";
+import { Container } from "@mantine/core";
+import LoginForm from "./login-form";
 
-export default function Login() {
+export default async function Login() {
   return (
     <Container size="md" className="h-screen grid place-content-center">
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        Doggy
-      </Card>
+      <LoginForm />
     </Container>
   );
 }

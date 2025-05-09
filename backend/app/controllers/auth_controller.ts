@@ -60,9 +60,10 @@ export default class AuthController {
 
     const accessToken = jwt.sign({ userId: user.id }, appKey.release(), { expiresIn: '15m' })
 
-    response.cookie('accessToken', accessToken, {
+    response.plainCookie('accessToken', accessToken, {
       httpOnly: true,
       maxAge: 60 * 15,
+      encode: false,
     })
 
     return {

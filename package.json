@@ -14,5 +14,8 @@
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "zod": "^3.24.4"
   }
 }
