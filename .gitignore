@@ -1,0 +1,24 @@
+# Local
+logs
+.DS_Store
+*.local
+*.log*
+npm-debug.log*
+
+# Dist
+/node_modules
+node_modules
+dist/
+.vinxi
+.output
+.vercel
+.netlify
+.wrangler
+.env
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.template
+!.vscode/tasks.json.template
+.idea
