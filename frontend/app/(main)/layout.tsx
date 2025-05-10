@@ -6,7 +6,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen grid grid-cols-[70px_1fr]">
+    <div className="h-screen grid grid-cols-[64px_1fr]">
       <Sidebar />
       <main className="flex-1">{children}</main>
     </div>

@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 
 export default class AuthMiddleware {
   async handle({ request, response }: HttpContext, next: NextFn) {
-    const token = request.plainCookie('accessToken')
+    const token = request.plainCookie('accessToken', { encoded: false })
 
     if (!token) {
       return response.unauthorized({ message: 'Token not found' })
