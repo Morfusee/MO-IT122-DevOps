@@ -1,0 +1,40 @@
+services:
+  traefik:
+    image: traefik:v2.2
+    command:
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    env_file:
+      - ../../.env
+    volumes:
+      - ./mongodb-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  adonisjs:
+    build:
+      # The root context is set two levels above this compose file (../)
+      # This ensures the referenced Dockerfile has access to the entire project,
+      # including shared config files, env files, or monorepo dependencies that
+      # live outside the backend folder.
+      context: ../../
+      dockerfile: docker/backend/Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adonis.entrypoints=web"
+      - "traefik.http.routers.adonis.rule=Host(`adonis.localhost`)"
+    environment:
+      IS_DOCKERIZED: true
+    env_file:
+      - ../../.env
+    restart: always
+    depends_on:
+      - traefik
+      - mongo
