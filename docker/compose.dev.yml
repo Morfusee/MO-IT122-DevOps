@@ -11,6 +11,15 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  mongo:
+    image: mongo:latest
+    restart: always
+    env_file:
+      - ../.env
+    volumes:
+      - ./database/mongodb-data:/data/db
+      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
   adonisjs:
     build:
       # The root context is set one level above this compose file (../)
@@ -20,13 +29,17 @@ services:
       context: ../
       dockerfile: docker/backend/Dockerfile
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.adonis.entrypoints=web"
       - "traefik.http.routers.adonis.rule=Host(`adonis.localhost`)"
+    environment:
+      IS_DOCKERIZED: true
     env_file:
       - ../.env
     restart: always
     depends_on:
       - traefik
+      - mongo
 
   nextjs:
     build:
@@ -37,6 +50,7 @@ services:
       context: ../
       dockerfile: docker/frontend/Dockerfile
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.next.entrypoints=web"
       - "traefik.http.routers.next.rule=Host(`nextjs.localhost`)"
     env_file:
