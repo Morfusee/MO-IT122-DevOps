@@ -17,6 +17,8 @@ export default await Env.create(new URL('../../', import.meta.url), {
   APP_KEY: Env.schema.string(),
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']),
-  MONGO_ATLAS_URI: Env.schema.string(),
   GEMINI_KEY: Env.schema.string(),
+  IS_DOCKERIZED: Env.schema.boolean(),
+  MONGO_ATLAS_URI: Env.schema.string(),
+  MONGO_DOCKER_URI: Env.schema.string(),
 })
