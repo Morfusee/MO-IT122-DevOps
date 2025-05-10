@@ -5,7 +5,7 @@ import { Button, Card, Stack, TextInput, Title } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { redirect } from "next/navigation";
 
-import "../../lib/client-init";
+import "@/lib/client-init";
 
 function LoginForm() {
   const form = useForm({
