@@ -6,7 +6,6 @@ import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { openapi as openapiAssert } from '@japa/openapi-assertions'
 
-
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
  */
@@ -18,10 +17,10 @@ import { openapi as openapiAssert } from '@japa/openapi-assertions'
 export const plugins: Config['plugins'] = [
   assert(),
   openapiAssert({
-    schemas: [app.makePath()]
+    schemas: [app.makePath()],
   }),
-  apiClient(), 
-  pluginAdonisJS(app)
+  apiClient(),
+  pluginAdonisJS(app),
 ]
 
 /**

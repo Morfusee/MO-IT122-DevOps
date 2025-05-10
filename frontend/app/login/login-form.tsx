@@ -1,11 +1,11 @@
 "use client";
 import { postLogin } from "@/lib/client";
 import { loginSchema } from "@/schema/auth";
-import { Button, Card, Stack, Text, TextInput } from "@mantine/core";
+import { Button, Card, Stack, TextInput, Title } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { redirect } from "next/navigation";
 
-import "../../lib/client-init";
+import "@/lib/client-init";
 
 function LoginForm() {
   const form = useForm({
@@ -30,7 +30,7 @@ function LoginForm() {
     <Card className="w-xs" shadow="md" padding="lg" radius="md" withBorder>
       <form onSubmit={form.onSubmit(login)}>
         <Stack gap="md" align="center">
-          <Text>Login</Text>
+          <Title order={2}>Login</Title>
           <TextInput
             className="w-full"
             label="Email"
@@ -44,7 +44,7 @@ function LoginForm() {
             key={form.key("password")}
             {...form.getInputProps("password")}
           />
-          <Button fullWidth type="submit">
+          <Button fullWidth type="submit" loading={form.submitting}>
             Login
           </Button>
         </Stack>

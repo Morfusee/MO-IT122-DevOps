@@ -1,6 +1,8 @@
-import { Button, Container, Divider, Stack, Text } from "@mantine/core";
+import { Button, Container, Divider, Stack, Title } from "@mantine/core";
+import Link from "next/link";
+import ChatList from "./chat-list";
 
-function Layout({
+async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -8,22 +10,27 @@ function Layout({
   return (
     <Container
       size="xl"
-      className="h-full py-8 grid grid-cols-[220px_20px_1fr] gap-8"
+      className="h-screen py-8 grid grid-cols-[220px_47px_1fr] justify-items-center"
     >
       <ChatHistory />
       <Divider orientation="vertical" />
-      <Stack>{children}</Stack>
+      <>{children}</>
     </Container>
   );
 }
 
 function ChatHistory() {
   return (
-    <Stack align="center">
-      <Text size="lg" fw={700}>
-        AI Tutor
-      </Text>
-      <Button fullWidth>Start a Chat</Button>
+    <Stack align="center" gap={2} className="w-full">
+      <Stack align="center" className="w-full mb-4">
+        <Title order={4} fw={700}>
+          AI Tutor
+        </Title>
+        <Button component={Link} href="/chat" fullWidth>
+          Start a Chat
+        </Button>
+      </Stack>
+      <ChatList />
     </Stack>
   );
 }
