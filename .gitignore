@@ -22,3 +22,6 @@ dist/
 !.vscode/settings.json.template
 !.vscode/tasks.json.template
 .idea
+
+# Miscs
+**/mongodb-data
