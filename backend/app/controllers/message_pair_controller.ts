@@ -23,7 +23,7 @@ export default class MessagePairController {
     type: MessagePair,
   })
   @inject()
-  async index({ request, response }: HttpContext) {
+  async store({ request, response }: HttpContext) {
     const { attachmentUrls, templateId } = request.body()
 
     // TODO: Uncomment when chat is implemented
