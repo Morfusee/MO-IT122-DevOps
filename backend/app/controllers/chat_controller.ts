@@ -1,8 +1,10 @@
-import ChatModel from '#models/chat'
+import ChatModel, { Topic } from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
 import { Chat } from '../schemas/chat.js'
+import PromptService from '#services/prompt_service'
+import { LLM } from '#services/llm_service'
 
 export default class ChatController {
   @ApiOperation({
@@ -100,10 +102,49 @@ export default class ChatController {
     return { message: 'Chat deleted successfully' }
   }
 
-  // For testing purposes
-  store({ request }: HttpContext) {
-    const id = request.auth.user?.userId
-    const chat = new ChatModel({ userId: id, name: 'test', topic: 'english' }).save()
+  async store({ request, response }: HttpContext) {
+    // Get userId from request.auth
+    const userId = request.auth.user?.userId
+
+    // Get user prompt from request.body()
+    const { prompt } = request.body()
+
+    if (!userId || !prompt) {
+      return response.badRequest({ error: 'Missing userId or prompt' })
+    }
+
+    // Use PromptService to generate chat name
+    const promptService = PromptService.build(LLM.GEMINI)
+
+    // Prompt to generate chat name and topic
+    const nameAndTopicPrompt = `You are an AI that generates a chat title and topic based on the user's message.
+    User message:
+    "${prompt}"
+
+    Respond with only two lines without -:
+    - First line: The chat title (short and catchy).
+    - Second line: The topic (one of: math, science, english, filipino).
+    Do not include anything else. Just the title and the topic.`
+
+    const ai = await promptService.generateResponse(nameAndTopicPrompt)
+
+    let name = 'Untitled Chat'
+    let topic: Topic = Topic.English
+
+    try {
+      const [titleLine, topicLine] = ai.response.text!.split('\n').map((line) => line.trim())
+
+      if (titleLine) {
+        name = titleLine
+      }
+      if (topicLine && ['math', 'science', 'english', 'filipino'].includes(topicLine)) {
+        topic = topicLine as Topic
+      }
+    } catch (err) {
+      console.warn('Failed to parse AI response:', err)
+    }
+
+    const chat = new ChatModel({ userId: userId, name: name, topic: topic }).save()
     return chat
   }
 }
