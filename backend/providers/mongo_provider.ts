@@ -9,7 +9,8 @@ export default class MongoProvider {
    * The container bindings have booted
    */
   async boot() {
-    const DB_URI = env.get('MONGO_ATLAS_URI')
+    const isDockerRunning = env.get('IS_DOCKERIZED')
+    const DB_URI = isDockerRunning ? env.get('MONGO_DOCKER_URI') : env.get('MONGO_ATLAS_URI')
 
     await mongoose.connect(DB_URI)
 
