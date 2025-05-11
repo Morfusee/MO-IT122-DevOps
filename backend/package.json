@@ -11,7 +11,11 @@
     "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "controller": "node ace make:controller",
+    "validator": "node ace make:validator",
+    "middleware": "node ace make:middleware",
+    "test-case": "node ace make:test"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -38,9 +42,11 @@
     "@adonisjs/tsconfig": "^1.4.0",
     "@japa/api-client": "^3.0.3",
     "@japa/assert": "^4.0.1",
+    "@japa/openapi-assertions": "^0.1.1",
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
     "@swc/core": "1.10.7",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.2",
     "eslint": "^9.20.1",
     "hot-hook": "^0.4.0",
@@ -55,7 +61,11 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.6.0",
     "@foadonis/openapi": "^0.3.5",
+    "@google/genai": "^0.13.0",
     "@vinejs/vine": "^3.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1",
     "reflect-metadata": "^0.2.2"
   },
   "hotHook": {
@@ -64,5 +74,6 @@
       "./app/middleware/*.ts"
     ]
   },
-  "prettier": "@adonisjs/prettier-config"
+  "prettier": "@adonisjs/prettier-config",
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

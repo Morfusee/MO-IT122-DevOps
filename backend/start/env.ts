@@ -11,10 +11,14 @@
 
 import { Env } from '@adonisjs/core/env'
 
-export default await Env.create(new URL('../', import.meta.url), {
+export default await Env.create(new URL('../../', import.meta.url), {
   NODE_ENV: Env.schema.enum(['development', 'production', 'test'] as const),
   PORT: Env.schema.number(),
   APP_KEY: Env.schema.string(),
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']),
+  GEMINI_KEY: Env.schema.string(),
+  IS_DOCKERIZED: Env.schema.boolean(),
+  MONGO_ATLAS_URI: Env.schema.string(),
+  MONGO_DOCKER_URI: Env.schema.string(),
 })
