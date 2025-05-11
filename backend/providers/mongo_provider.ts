@@ -12,5 +12,16 @@ export default class MongoProvider {
     const DB_URI = env.get('MONGO_ATLAS_URI')
 
     await mongoose.connect(DB_URI)
+
+    // * Clear mongoose models before each test run to avoid conflicts
+    if (env.get('NODE_ENV') === 'test' || env.get('NODE_ENV') === 'development') {
+      clearMongooseModels()
+    }
   }
+}
+
+function clearMongooseModels() {
+  Object.keys(mongoose.models).forEach((model) => {
+    delete mongoose.models[model]
+  })
 }
