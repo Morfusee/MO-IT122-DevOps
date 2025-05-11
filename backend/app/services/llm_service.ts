@@ -2,18 +2,38 @@ import env from '#start/env'
 import { inject } from '@adonisjs/core'
 import { GoogleGenAI, createUserContent, createPartFromUri } from '@google/genai'
 
+/**
+ * Enum representing the different language models available.
+ */
 export enum LLM {
   GEMINI,
 }
 
+/**
+ * The LLMService class is responsible for interacting with different language models.
+ */
 @inject()
 export default class LLMService {
-  static LLM: any
+  /**
+   * Constructor for the LLMService.
+   * @param {LLM} llm - The language model to use.
+   */
+  constructor(private llm: LLM) {}
+
+  /**
+   * Returns a client instance for interacting with the Gemini language model.
+   * @returns {GoogleGenAI} A new instance of the GoogleGenAI client.
+   */
   gemini() {
     return new GoogleGenAI({ apiKey: env.get('GEMINI_KEY') })
   }
 
-  constructor(private llm: LLM) {}
+  /**
+   * Returns a client instance for the current language model.
+   * Throws an error if the language model is not supported.
+   * @returns {any} A new instance of the AI language client.
+   * @throws Will throw an error if the LLM is not supported.
+   */
   client() {
     switch (this.llm) {
       case LLM.GEMINI:
@@ -33,9 +53,9 @@ export default class LLMService {
     switch (this.llm) {
       case LLM.GEMINI:
         const attachments = await Promise.all(
-          attachmentUrls.map((file) =>
+          attachmentUrls.map((image) =>
             this.client().files.upload({
-              file: file,
+              file: image,
             })
           )
         )
