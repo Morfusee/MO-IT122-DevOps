@@ -101,7 +101,23 @@ export default class ChatController {
 
     return { message: 'Chat deleted successfully' }
   }
-
+  @ApiOperation({
+    summary: 'Create a new chat based on user prompt',
+    description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully created a new chat based on the user prompt',
+    type: Chat,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing userId or prompt in request',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error or AI generation failure',
+  })
   async store({ request, response }: HttpContext) {
     // Get userId from request.auth
     const userId = request.auth.user?.userId
