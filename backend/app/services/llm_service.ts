@@ -23,13 +23,19 @@ export default class LLMService {
     }
   }
 
+  /**
+   * Invoke the LLM with a given prompt and optional attachment URLs. Returns an object with a "response" property containing the output of the LLM.
+   * @param {string} prompt The prompt to give to the LLM.
+   * @param {string[]} attachmentUrls URLs of files to use as attachments to the prompt.
+   * @returns {Promise<{ response: string }>} A promise that resolves with an object containing the LLM's response.
+   */
   async invoke(prompt: string, attachmentUrls: string[]) {
     switch (this.llm) {
       case LLM.GEMINI:
         const attachments = await Promise.all(
-          attachmentUrls.map((image) =>
+          attachmentUrls.map((file) =>
             this.client().files.upload({
-              file: image,
+              file: file,
             })
           )
         )
