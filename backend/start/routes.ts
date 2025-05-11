@@ -1,3 +1,4 @@
+/* eslint-disable @adonisjs/prefer-lazy-controller-import */
 /*
 |--------------------------------------------------------------------------
 | Routes file
@@ -14,6 +15,7 @@ import { middleware } from './kernel.js'
 const MessagePairController = () => import('#controllers/message_pair_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const GeminiSamplesController = () => import('#controllers/gemini_samples_controller')
+import ChatController from '#controllers/chat_controller'
 
 router.get('/', async () => {
   return {
@@ -37,6 +39,16 @@ router.group(() => {
 router
   .group(() => {
     router.get('/me', [AuthController, 'me'])
+  })
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/chat', [ChatController, 'index'])
+    router.get('/chat/:chatId', [ChatController, 'show'])
+    router.patch('/chat/:chatId', [ChatController, 'update'])
+    router.delete('/chat/:chatId', [ChatController, 'destroy'])
+    router.post('/chat', [ChatController, 'store'])
   })
   .use(middleware.auth())
 
