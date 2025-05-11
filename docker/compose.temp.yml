@@ -1,0 +1,57 @@
+services:
+  traefik:
+    image: traefik:v3
+    command:
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+      - "--api.insecure=true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    env_file:
+      - ../.env
+    volumes:
+      - ./database/mongodb-data:/data/db
+      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  adonisjs:
+    build:
+      context: ../
+      dockerfile: docker/backend/Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adonis.rule=Host(`app.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.adonis.entrypoints=web"
+      - "traefik.http.routers.adonis.middlewares=strip-api-prefix"
+      - "traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes=/api"
+    environment:
+      IS_DOCKERIZED: true
+    env_file:
+      - ../.env
+    restart: always
+    depends_on:
+      - traefik
+      - mongo
+
+  nextjs:
+    build:
+      context: ../
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        API_BASE_URL: http://app.localhost/api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.next.rule=Host(`app.localhost`)"
+      - "traefik.http.routers.next.entrypoints=web"
+    env_file:
+      - ../.env
+    restart: always
+    depends_on:
+      - traefik
+      - adonisjs

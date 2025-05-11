@@ -1,16 +1,4 @@
 services:
-  traefik:
-    image: traefik:v3
-    command:
-      - "--providers.docker"
-      - "--entrypoints.web.address=:80"
-      - "--api.insecure=true"
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
   mongo:
     image: mongo:latest
     restart: always
@@ -19,45 +7,41 @@ services:
     volumes:
       - ./database/mongodb-data:/data/db
       - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - db-network
 
   adonisjs:
     build:
-      # The root context is set one level above this compose file (../)
-      # This ensures the referenced Dockerfile has access to the entire project,
-      # including shared config files, env files, or monorepo dependencies that
-      # live outside the backend folder.
       context: ../
       dockerfile: docker/backend/Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adonis.entrypoints=web"
-      - "traefik.http.routers.adonis.rule=Host(`adonis.localhost`)"
+    ports:
+      - "3001:3333"
     environment:
       IS_DOCKERIZED: true
     env_file:
       - ../.env
     restart: always
     depends_on:
-      - traefik
       - mongo
+    networks:
+      - db-network
 
   nextjs:
     build:
-      # The root context is set one level above this compose file (../)
-      # This ensures the referenced Dockerfile has access to the entire project,
-      # including shared config files, env files, or monorepo dependencies that
-      # live outside the backend folder.
       context: ../
       dockerfile: docker/frontend/Dockerfile
       args:
-        API_BASE_URL: http://adonis.localhost
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.next.entrypoints=web"
-      - "traefik.http.routers.next.rule=Host(`nextjs.localhost`)"
+        API_BASE_URL: http://localhost:3001
+    ports:
+      - "3002:3333"
     env_file:
       - ../.env
     restart: always
     depends_on:
-      - traefik
       - adonisjs
+    networks:
+      - db-network
+
+networks:
+  db-network:
+    driver: bridge
