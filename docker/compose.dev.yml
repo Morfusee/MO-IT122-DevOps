@@ -49,6 +49,8 @@ services:
       # live outside the backend folder.
       context: ../
       dockerfile: docker/frontend/Dockerfile
+      args:
+        API_BASE_URL: http://adonis.localhost
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.next.entrypoints=web"
@@ -58,3 +60,4 @@ services:
     restart: always
     depends_on:
       - traefik
+      - adonisjs
