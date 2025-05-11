@@ -44,11 +44,11 @@ router
 
 router
   .group(() => {
-    router.get('/chats', [ChatController, 'index'])
-    router.get('/chats/:chatId', [ChatController, 'show'])
-    router.patch('/chats/:chatId', [ChatController, 'update'])
-    router.delete('/chats/:chatId', [ChatController, 'destroy'])
-    router.post('/chats', [ChatController, 'store'])
+    router.get('/chat', [ChatController, 'index'])
+    router.get('/chat/:chatId', [ChatController, 'show'])
+    router.patch('/chat/:chatId', [ChatController, 'update'])
+    router.delete('/chat/:chatId', [ChatController, 'destroy'])
+    router.post('/chat', [ChatController, 'store'])
   })
   .use(middleware.auth())
 
