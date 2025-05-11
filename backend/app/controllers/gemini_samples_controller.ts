@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-import LLMService from '#services/llm_service'
+import LLMService, { LLM } from '#services/llm_service'
 import { inject } from '@adonisjs/core'
 import { promptValidator } from '#validators/llm'
 import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
@@ -15,7 +15,8 @@ export default class GeminiSamplesController {
     type: GeminiResponseSample,
   })
   @inject()
-  async index({ request, response }: HttpContext, api: LLMService) {
+  async index({ request, response }: HttpContext) {
+    const api = new LLMService(LLM.GEMINI)
     const { prompt } = await request.validateUsing(promptValidator)
 
     const geminiResponse = await api.gemini().models.generateContent({
