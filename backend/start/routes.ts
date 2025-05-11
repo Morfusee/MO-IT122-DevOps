@@ -23,8 +23,8 @@ router.get('/', async () => {
 
 router.resource('users', UsersController)
 
-// Posts a new message to a chat
-router.post('/chat/:chatId', [MessagePairController, 'store']).as('message.store')
+// Posts a new message pair to a chat
+router.resource('chats', MessagePairController).params({ chats: 'chat' })
 
 router.post('/prompt', [GeminiSamplesController, 'index'])
 

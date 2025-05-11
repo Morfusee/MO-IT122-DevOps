@@ -11,7 +11,7 @@ import { MessagePrompt, MessagePair } from '../schemas/message_pair.js'
 export default class MessagePairController {
   @ApiOperation({ summary: 'Create a message pair in the chat' })
   @ApiParam({
-    name: 'chatId',
+    name: 'chat',
     type: 'number',
     required: true,
     description: 'The ID of the chat to attach this message to',
