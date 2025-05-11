@@ -7,12 +7,13 @@
 |
 */
 
-import UsersController from '#controllers/users_controller'
+const UsersController = () => import('#controllers/users_controller')
 import router from '@adonisjs/core/services/router'
 import openapi from '@foadonis/openapi/services/main'
 import { middleware } from './kernel.js'
-import AuthController from '#controllers/auth_controller'
-import GeminiSamplesController from '#controllers/gemini_samples_controller'
+const MessagePairController = () => import('#controllers/message_pair_controller')
+const AuthController = () => import('#controllers/auth_controller')
+const GeminiSamplesController = () => import('#controllers/gemini_samples_controller')
 
 router.get('/', async () => {
   return {
@@ -21,6 +22,8 @@ router.get('/', async () => {
 })
 
 router.resource('users', UsersController)
+
+router.post('/chat/:chatId', [MessagePairController, 'index']).as('chat.index')
 
 router.post('/prompt', [GeminiSamplesController, 'index'])
 
