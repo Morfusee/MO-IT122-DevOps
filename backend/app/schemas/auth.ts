@@ -6,4 +6,10 @@ export class AuthForm {
 
   @ApiProperty()
   declare password: string
+
+  @ApiProperty()
+  declare firstName: string
+
+  @ApiProperty()
+  declare lastName: string
 }

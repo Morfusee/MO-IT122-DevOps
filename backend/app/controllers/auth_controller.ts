@@ -23,13 +23,14 @@ export default class AuthController {
   })
   async register({ request, response }: HttpContext) {
     const { email, password } = await request.validateUsing(authValidator)
+    const { firstName, lastName } = request.only(['firstName', 'lastName'])
 
     const existing = await UserModel.findOne({ email })
     if (existing) {
       response.conflict({ message: 'User already exists' })
     }
 
-    await UserModel.create({ email, passwordHash: password })
+    await UserModel.create({ email, passwordHash: password, firstName, lastName })
 
     return response.ok({ message: 'Successfully registered the user' })
   }
