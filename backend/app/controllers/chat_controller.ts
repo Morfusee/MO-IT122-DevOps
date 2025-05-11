@@ -3,8 +3,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
 import { Chat } from '../schemas/chat.js'
-import PromptService from '#services/prompt_service'
-import { LLM } from '#services/llm_service'
+import { GoogleGenAI, Type } from '@google/genai'
+import env from '#start/env'
 
 export default class ChatController {
   @ApiOperation({
@@ -107,44 +107,46 @@ export default class ChatController {
     const userId = request.auth.user?.userId
 
     // Get user prompt from request.body()
-    const { prompt } = request.body()
+    const { prompt: userPrompt } = request.body()
 
-    if (!userId || !prompt) {
+    if (!userId || !userPrompt) {
       return response.badRequest({ error: 'Missing userId or prompt' })
     }
 
-    // Use PromptService to generate chat name
-    const promptService = PromptService.build(LLM.GEMINI)
-
     // Prompt to generate chat name and topic
-    const nameAndTopicPrompt = `You are an AI that generates a chat title and topic based on the user's message.
+    const prompt = `You are an AI that generates a chat title and topic based on the user's message.
     User message:
-    "${prompt}"
+    "${userPrompt}"
 
-    Respond with only two lines without -:
-    - First line: The chat title (short and catchy).
-    - Second line: The topic (one of: math, science, english, filipino).
-    Do not include anything else. Just the title and the topic.`
+    Respond with the chat title (short and catchy) and the topic (one of: math, science, english, filipino).`
 
-    const ai = await promptService.generateResponse(nameAndTopicPrompt)
+    const GEMINI_KEY = env.get('GEMINI_KEY')
+    const ai = new GoogleGenAI({ apiKey: GEMINI_KEY })
 
-    let name = 'Untitled Chat'
-    let topic: Topic = Topic.English
+    const promptResponse = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            topic: { type: Type.STRING, enum: Object.values(Topic) },
+          },
+          propertyOrdering: ['name', 'topic'],
+        },
+      },
+    })
 
-    try {
-      const [titleLine, topicLine] = ai.response.text!.split('\n').map((line) => line.trim())
+    const parsedData = JSON.parse(promptResponse.text!)
 
-      if (titleLine) {
-        name = titleLine
-      }
-      if (topicLine && ['math', 'science', 'english', 'filipino'].includes(topicLine)) {
-        topic = topicLine as Topic
-      }
-    } catch (err) {
-      console.warn('Failed to parse AI response:', err)
-    }
+    const chat = ChatModel.create({
+      userId: userId,
+      name: parsedData.name,
+      topic: parsedData.topic,
+    })
 
-    const chat = new ChatModel({ userId: userId, name: name, topic: topic }).save()
     return chat
   }
 }
