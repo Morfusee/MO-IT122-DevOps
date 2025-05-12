@@ -1,6 +1,7 @@
-import TemplateModel from '#models/template'
+import { Template } from '#models/message_pair'
 import LLMService, { LLM } from '#services/llm_service'
 import { inject } from '@adonisjs/core'
+import Logger from '@adonisjs/core/services/logger'
 
 @inject()
 /**
@@ -20,20 +21,44 @@ export default class PromptService {
    * @param {string} userInput The user's input.
    * @param {string[] | undefined} attachmentUrls The URLs of any attachments
    *     that are provided.
-   * @param {string | undefined} templateId The ID of the template that the
+   * @param {string | undefined} template The template that the
    *     prompt should be based on.
-   * @returns {Promise<{ response: string }>} A promise that resolves with an
-   *     object containing the generated response.
    */
-  async generateResponse(userInput: string, attachmentUrls?: string[], templateId?: string) {
-    const template = templateId ? await TemplateModel.findById(templateId).select('prompt') : null
+  async generateResponse(
+    userInput: string,
+    template: Template,
+    attachmentUrls?: string[]
+  ): Promise<PromptResponse> {
+    if (!userInput) {
+      throw new Error('User input is required')
+    }
 
-    const prompt = `${template?.prompt || ''}\n\n${userInput}`
+    if (!this.llmService) {
+      throw new Error('LLM service is required')
+    }
 
-    const response = await this.llmService.invoke(prompt, attachmentUrls ? [] : [])
+    try {
+      const response = await this.llmService.invoke(userInput, template, attachmentUrls ? [] : [])
 
-    return {
-      response: response.response || 'Failed to generate response',
+      if (!response || !response.response || response.response === '') {
+        throw new Error('Failed to generate response')
+      }
+
+      const parsedData =
+        template === Template.GENERATE_IMAGE
+          ? JSON.parse(JSON.stringify({ response: response.response }))
+          : response.response
+
+      return {
+        response: parsedData as JSON,
+        image: response.image,
+      }
+    } catch (error) {
+      Logger.error(error)
+      return {
+        response: JSON.parse('{"error": "Failed to generate response"}') as JSON,
+        image: '',
+      }
     }
   }
 
@@ -45,4 +70,9 @@ export default class PromptService {
   static build(llm: LLM) {
     return new PromptService(new LLMService(llm))
   }
+}
+
+export interface PromptResponse {
+  response: JSON
+  image: string
 }
