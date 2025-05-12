@@ -15,6 +15,7 @@
     "controller": "node ace make:controller",
     "validator": "node ace make:validator",
     "middleware": "node ace make:middleware",
+    "routes": "node ace list:routes",
     "test-case": "node ace make:test"
   },
   "imports": {
