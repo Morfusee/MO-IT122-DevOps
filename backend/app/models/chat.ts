@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
 
-enum Topic {
+export enum Topic {
   Math = 'math',
-  Sciene = 'science',
+  Science = 'science',
   English = 'english',
   Filipino = 'filipino',
 }

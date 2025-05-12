@@ -1,8 +1,10 @@
-import ChatModel from '#models/chat'
+import ChatModel, { Topic } from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
 import { Chat } from '../schemas/chat.js'
+import { GoogleGenAI, Type } from '@google/genai'
+import env from '#start/env'
 
 export default class ChatController {
   @ApiOperation({
@@ -99,11 +101,68 @@ export default class ChatController {
 
     return { message: 'Chat deleted successfully' }
   }
+  @ApiOperation({
+    summary: 'Create a new chat based on user prompt',
+    description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully created a new chat based on the user prompt',
+    type: Chat,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing userId or prompt in request',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error or AI generation failure',
+  })
+  async store({ request, response }: HttpContext) {
+    // Get userId from request.auth
+    const userId = request.auth.user?.userId
 
-  // For testing purposes
-  store({ request }: HttpContext) {
-    const id = request.auth.user?.userId
-    const chat = new ChatModel({ userId: id, name: 'test', topic: 'english' }).save()
+    // Get user prompt from request.body()
+    const { prompt: userPrompt } = request.body()
+
+    if (!userId || !userPrompt) {
+      return response.badRequest({ error: 'Missing userId or prompt' })
+    }
+
+    // Prompt to generate chat name and topic
+    const prompt = `You are an AI that generates a chat title and topic based on the user's message.
+    User message:
+    "${userPrompt}"
+
+    Respond with the chat title (short and catchy) and the topic (one of: math, science, english, filipino).`
+
+    const GEMINI_KEY = env.get('GEMINI_KEY')
+    const ai = new GoogleGenAI({ apiKey: GEMINI_KEY })
+
+    const promptResponse = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            topic: { type: Type.STRING, enum: Object.values(Topic) },
+          },
+          propertyOrdering: ['name', 'topic'],
+        },
+      },
+    })
+
+    const parsedData = JSON.parse(promptResponse.text!)
+
+    const chat = ChatModel.create({
+      userId: userId,
+      name: parsedData.name,
+      topic: parsedData.topic,
+    })
+
     return chat
   }
 }
