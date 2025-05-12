@@ -1,3 +1,4 @@
+/* eslint-disable @adonisjs/prefer-lazy-controller-import */
 /*
 |--------------------------------------------------------------------------
 | Routes file
@@ -7,12 +8,14 @@
 |
 */
 
-import UsersController from '#controllers/users_controller'
+const UsersController = () => import('#controllers/users_controller')
 import router from '@adonisjs/core/services/router'
 import openapi from '@foadonis/openapi/services/main'
 import { middleware } from './kernel.js'
-import AuthController from '#controllers/auth_controller'
-import GeminiSamplesController from '#controllers/gemini_samples_controller'
+const MessagePairController = () => import('#controllers/message_pair_controller')
+const AuthController = () => import('#controllers/auth_controller')
+const GeminiSamplesController = () => import('#controllers/gemini_samples_controller')
+import ChatController from '#controllers/chat_controller'
 
 router.get('/', async () => {
   return {
@@ -21,6 +24,9 @@ router.get('/', async () => {
 })
 
 router.resource('users', UsersController)
+
+// Posts a new message pair to a chat
+router.resource('chats', MessagePairController).params({ chats: 'chat' })
 
 router.post('/prompt', [GeminiSamplesController, 'index'])
 
@@ -33,6 +39,16 @@ router.group(() => {
 router
   .group(() => {
     router.get('/me', [AuthController, 'me'])
+  })
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/chat', [ChatController, 'index'])
+    router.get('/chat/:chatId', [ChatController, 'show'])
+    router.patch('/chat/:chatId', [ChatController, 'update'])
+    router.delete('/chat/:chatId', [ChatController, 'destroy'])
+    router.post('/chat', [ChatController, 'store'])
   })
   .use(middleware.auth())
 
