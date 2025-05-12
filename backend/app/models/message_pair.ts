@@ -16,25 +16,20 @@ const MessagePairSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    response: [
-      {
-        text: {
-          type: String,
-          required: false,
-          trim: true,
-        },
-        image: {
-          type: String,
-          required: false,
-          trim: true,
-        },
-      },
-    ],
-    template: {
-      type: Template,
+    json_response: {
+      type: JSON,
       required: false,
-      ref: 'Template',
-      default: Template.DEFAULT,
+      trim: true,
+    },
+    image: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    template: {
+      type: String,
+      enum: Object.values(Template),
+      required: false,
     },
     chat: {
       type: mongoose.Schema.Types.ObjectId,
