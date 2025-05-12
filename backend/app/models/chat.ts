@@ -1,10 +1,10 @@
 import mongoose from 'mongoose'
 
 export enum Topic {
-  Math = 'math',
-  Science = 'science',
-  English = 'english',
-  Filipino = 'filipino',
+  MATH = 'math',
+  SCIENCE = 'science',
+  ENGLISH = 'english',
+  FILIPINO = 'filipino',
 }
 
 const ChatSchema = new mongoose.Schema(
