@@ -1,6 +1,6 @@
 import { Topic } from '#models/chat'
+import { Template } from '#models/message_pair'
 import { GenerateContentConfig, Modality, Type } from '@google/genai'
-import { Template } from './template.js'
 
 export default class GeminiConfigs {
   private default: GenerateContentConfig = {
@@ -20,13 +20,10 @@ export default class GeminiConfigs {
       'You are a tutorial assistant. Generate a title (short and catchy) for the following text. And choose the right topic.',
     responseMimeType: 'application/json',
     responseSchema: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          title: { type: Type.STRING },
-          topic: { type: Type.STRING, enum: Object.values(Topic) },
-        },
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        topic: { type: Type.STRING, enum: Object.values(Topic) },
       },
     },
   }
