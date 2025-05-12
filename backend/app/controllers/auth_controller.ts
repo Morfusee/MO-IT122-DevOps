@@ -64,6 +64,9 @@ export default class AuthController {
       httpOnly: true,
       maxAge: 60 * 15,
       encode: false,
+      // sameSite: 'none',
+      // secure: true,
+      // domain: 'mcube.uk'
     })
 
     return {

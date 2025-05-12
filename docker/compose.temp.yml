@@ -1,16 +1,4 @@
 services:
-  traefik:
-    image: traefik:v3
-    command:
-      - "--providers.docker"
-      - "--entrypoints.web.address=:80"
-      - "--api.insecure=true"
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
   mongo:
     image: mongo:latest
     restart: always
@@ -19,39 +7,60 @@ services:
     volumes:
       - ./database/mongodb-data:/data/db
       - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - db-network
 
   adonisjs:
     build:
       context: ../
       dockerfile: docker/backend/Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adonis.rule=Host(`app.localhost`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.adonis.entrypoints=web"
-      - "traefik.http.routers.adonis.middlewares=strip-api-prefix"
-      - "traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes=/api"
+    ports:
+      - "3001:3333"
     environment:
       IS_DOCKERIZED: true
     env_file:
       - ../.env
     restart: always
     depends_on:
-      - traefik
       - mongo
+    networks:
+      - db-network
 
   nextjs:
     build:
       context: ../
       dockerfile: docker/frontend/Dockerfile
       args:
-        API_BASE_URL: http://app.localhost/api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.next.rule=Host(`app.localhost`)"
-      - "traefik.http.routers.next.entrypoints=web"
+        API_BASE_URL: https://adonisjs.mcube.uk
+        API_BASE_URL_SERVER: https://adonisjs.mcube.uk
+    ports:
+      - "3002:3333"
     env_file:
       - ../.env
     restart: always
     depends_on:
-      - traefik
       - adonisjs
+    networks:
+      - db-network
+
+  cloudflared_adonis:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN_ADONIS}
+    networks: # This should be set to enable http://server:3000 as a URL
+      - db-network
+
+  cloudflared_next:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN_NEXT}
+    networks: # This should be set to enable http://server:3000 as a URL
+      - db-network
+
+networks:
+  db-network:
+    driver: bridge
