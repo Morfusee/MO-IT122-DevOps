@@ -6,6 +6,7 @@ import { Chat, ChatRequest } from '../schemas/chat.js'
 import PromptService from '#services/prompt_service'
 import { LLM } from '#services/llm_service'
 import { Template } from '#models/message_pair'
+import Logger from '@adonisjs/core/services/logger'
 
 export default class ChatController {
   @ApiOperation({
@@ -138,32 +139,49 @@ export default class ChatController {
       Template.GENERATE_TITLE
     )
 
-    const parsedData = JSON.parse(ai.response!)
+    const data = ai.response as unknown as GeneratedTitle
 
-    if (
-      !parsedData?.title ||
-      !parsedData?.topic ||
-      !Object.values(Topic).includes(parsedData.topic as Topic)
-    ) {
+    if (!data || !data.title || !data.topic) {
       return response.badRequest({
-        error: 'AI response missing or invalid title/topic',
+        error: 'AI response missing and/or invalid title or topic',
       })
-    }
-
-    if (!parsedData) {
-      return response.internalServerError({ error: 'Internal server error' })
     }
 
     const chat = await ChatModel.create({
       userId: userId,
-      title: parsedData.title,
-      topic: parsedData.topic,
+      ...data,
     })
+
+    if (!chat) {
+      return response.internalServerError({ error: 'Failed to create chat' })
+    }
 
     return response.created({
       id: chat.id,
-      title: chat.title,
-      topic: chat.topic,
+      ...data,
     })
   }
+}
+
+// function parseGeneratedTitle(obj: any): GeneratedTitle {
+//   Logger.info('GeneratedTitle object', obj)
+//   Logger.info('GeneratedTitle object type', typeof obj)
+//   Logger.info('GeneratedTitle object shape', Object.keys(obj))
+//   Logger.info('GeneratedTitle object title', obj.title)
+//   Logger.info('GeneratedTitle object title type', typeof obj.title)
+//   Logger.info('GeneratedTitle object topic', obj.topic)
+//   Logger.info('GeneratedTitle object topic type', typeof obj.topic)
+
+//   if (typeof obj.title === 'string' && typeof obj.topic === 'string') {
+//     return {
+//       title: obj.title,
+//       topic: obj.topic,
+//     }
+//   }
+//   throw new Error('Invalid GeneratedTitle object')
+// }
+
+interface GeneratedTitle {
+  title: string
+  topic: string
 }

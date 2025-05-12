@@ -47,7 +47,7 @@ export default class PromptService {
       const parsedData =
         template === Template.GENERATE_IMAGE
           ? JSON.parse(JSON.stringify({ response: response.response }))
-          : response.response
+          : JSON.parse(response.response)
 
       return {
         response: parsedData as JSON,
