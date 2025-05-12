@@ -163,24 +163,6 @@ export default class ChatController {
   }
 }
 
-// function parseGeneratedTitle(obj: any): GeneratedTitle {
-//   Logger.info('GeneratedTitle object', obj)
-//   Logger.info('GeneratedTitle object type', typeof obj)
-//   Logger.info('GeneratedTitle object shape', Object.keys(obj))
-//   Logger.info('GeneratedTitle object title', obj.title)
-//   Logger.info('GeneratedTitle object title type', typeof obj.title)
-//   Logger.info('GeneratedTitle object topic', obj.topic)
-//   Logger.info('GeneratedTitle object topic type', typeof obj.topic)
-
-//   if (typeof obj.title === 'string' && typeof obj.topic === 'string') {
-//     return {
-//       title: obj.title,
-//       topic: obj.topic,
-//     }
-//   }
-//   throw new Error('Invalid GeneratedTitle object')
-// }
-
 interface GeneratedTitle {
   title: string
   topic: string
