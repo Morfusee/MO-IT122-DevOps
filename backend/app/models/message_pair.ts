@@ -1,5 +1,14 @@
 import mongoose from 'mongoose'
 
+export enum Template {
+  DEFAULT,
+  SUMMARIZE,
+  GENERATE_TITLE,
+  GENERATE_IMAGE,
+  EXPLAIN_LIKE_IM_5,
+  MULTIPLE_CHOICE_QUESTION,
+}
+
 const MessagePairSchema = new mongoose.Schema(
   {
     prompt: {
@@ -22,9 +31,10 @@ const MessagePairSchema = new mongoose.Schema(
       },
     ],
     template: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Template,
       required: false,
       ref: 'Template',
+      default: Template.DEFAULT,
     },
     chat: {
       type: mongoose.Schema.Types.ObjectId,
