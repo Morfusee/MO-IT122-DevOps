@@ -1,10 +1,11 @@
 import ChatModel, { Topic } from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
-import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
-import { Chat } from '../schemas/chat.js'
-import { GoogleGenAI, Type } from '@google/genai'
-import env from '#start/env'
+import { Chat, ChatRequest } from '../schemas/chat.js'
+import PromptService from '#services/prompt_service'
+import { LLM } from '#services/llm_service'
+import { Template } from '#models/message_pair'
 
 export default class ChatController {
   @ApiOperation({
@@ -41,6 +42,8 @@ export default class ChatController {
     if (!chatId || !Types.ObjectId.isValid(chatId)) return response.badRequest('Invalid chatId')
 
     const chat = await ChatModel.findById(chatId)
+
+    if (!chat) return response.notFound('Chat not found')
 
     return chat
   }
@@ -105,8 +108,9 @@ export default class ChatController {
     summary: 'Create a new chat based on user prompt',
     description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
   })
+  @ApiBody({ type: ChatRequest })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Successfully created a new chat based on the user prompt',
     type: Chat,
   })
@@ -126,43 +130,40 @@ export default class ChatController {
     const { prompt: userPrompt } = request.body()
 
     if (!userId || !userPrompt) {
-      return response.badRequest({ error: 'Missing userId or prompt' })
+      return response.badRequest({ error: 'Missing prompt' })
     }
 
-    // Prompt to generate chat name and topic
-    const prompt = `You are an AI that generates a chat title and topic based on the user's message.
-    User message:
-    "${userPrompt}"
+    const ai = await PromptService.build(LLM.GEMINI).generateResponse(
+      userPrompt,
+      Template.GENERATE_TITLE
+    )
 
-    Respond with the chat title (short and catchy) and the topic (one of: math, science, english, filipino).`
+    const parsedData = JSON.parse(ai.response!)
 
-    const GEMINI_KEY = env.get('GEMINI_KEY')
-    const ai = new GoogleGenAI({ apiKey: GEMINI_KEY })
+    if (
+      !parsedData?.title ||
+      !parsedData?.topic ||
+      !Object.values(Topic).includes(parsedData.topic as Topic)
+    ) {
+      return response.badRequest({
+        error: 'AI response missing or invalid title/topic',
+      })
+    }
 
-    const promptResponse = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            name: { type: Type.STRING },
-            topic: { type: Type.STRING, enum: Object.values(Topic) },
-          },
-          propertyOrdering: ['name', 'topic'],
-        },
-      },
-    })
+    if (!parsedData) {
+      return response.internalServerError({ error: 'Internal server error' })
+    }
 
-    const parsedData = JSON.parse(promptResponse.text!)
-
-    const chat = ChatModel.create({
+    const chat = await ChatModel.create({
       userId: userId,
-      name: parsedData.name,
+      title: parsedData.title,
       topic: parsedData.topic,
     })
 
-    return chat
+    return response.created({
+      id: chat.id,
+      title: chat.title,
+      topic: chat.topic,
+    })
   }
 }

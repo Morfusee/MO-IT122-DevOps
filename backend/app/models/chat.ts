@@ -10,7 +10,7 @@ export enum Topic {
 const ChatSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    name: {
+    title: {
       type: String,
       required: true,
     },
