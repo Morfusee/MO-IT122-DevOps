@@ -25,6 +25,16 @@ const ChatSchema = new mongoose.Schema(
   }
 )
 
+ChatSchema.set('toJSON', {
+  versionKey: false,
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString()
+    delete ret._id
+
+    return ret
+  },
+})
+
 const ChatModel = mongoose.model('Chat', ChatSchema)
 
 export default ChatModel

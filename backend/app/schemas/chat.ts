@@ -1,4 +1,5 @@
 import { ApiProperty } from '@foadonis/openapi/decorators'
+import { MessagePair } from './message_pair.js'
 
 export class Chat {
   @ApiProperty({ required: false })
@@ -8,7 +9,7 @@ export class Chat {
   declare userId: string
 
   @ApiProperty()
-  declare name: String
+  declare name: string
 
   @ApiProperty()
   declare topic: string
@@ -18,4 +19,17 @@ export class Chat {
 
   @ApiProperty()
   declare updatedAt: string
+}
+
+export class NewChatPrompt {
+  @ApiProperty()
+  declare prompt: string
+}
+
+export class NewChat {
+  @ApiProperty()
+  declare chat: Chat
+
+  @ApiProperty()
+  declare messagePair: MessagePair
 }

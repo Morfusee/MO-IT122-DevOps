@@ -32,7 +32,7 @@ export class MessagePair {
   @ApiProperty()
   declare prompt: string
 
-  @ApiProperty({ type: () => Response })
+  @ApiProperty({ type: [Response] })
   declare response: Response
 
   @ApiProperty({ required: false })

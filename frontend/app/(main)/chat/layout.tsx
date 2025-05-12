@@ -1,6 +1,10 @@
 import { Button, Container, Divider, Stack, Title } from "@mantine/core";
 import Link from "next/link";
 import ChatList from "./chat-list";
+import { getChats } from "@/lib/client";
+import { cookies } from "next/headers";
+
+import "@/lib/client-init";
 
 async function Layout({
   children,
@@ -19,7 +23,12 @@ async function Layout({
   );
 }
 
-function ChatHistory() {
+async function ChatHistory() {
+  const chatList = await getChats({
+    credentials: "include",
+    headers: { Cookie: (await cookies()).toString() },
+  });
+
   return (
     <Stack align="center" gap={2} className="w-full">
       <Stack align="center" className="w-full mb-4">
@@ -30,7 +39,11 @@ function ChatHistory() {
           Start a Chat
         </Button>
       </Stack>
-      <ChatList />
+      {chatList.response.ok && chatList.data ? (
+        <ChatList list={chatList.data} />
+      ) : (
+        <div>Error getting the chat list</div>
+      )}
     </Stack>
   );
 }

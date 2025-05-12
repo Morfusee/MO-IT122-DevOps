@@ -1,4 +1,5 @@
 "use client";
+import { Chat } from "@/lib/client";
 import {
   ActionIcon,
   Button,
@@ -15,33 +16,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const sampleData = [
-  {
-    id: "1",
-    title: "What is the largest mamal",
-    topic: "Biology",
-  },
-  {
-    id: "2",
-    title: "The pavlovian theory",
-    topic: "Biology",
-  },
-  {
-    id: "3",
-    title: "Why Hitler is a Nazi",
-    topic: "History",
-  },
-];
+interface ChatListProps {
+  list: Chat[];
+}
 
-function ChatList() {
+function ChatList(props: ChatListProps) {
   const pathname = usePathname();
   const activePath = pathname.split("/").filter(Boolean)[1];
 
-  return sampleData.map((item) => (
+  return props.list.map((item) => (
     <ChatCard
       key={item.id}
       to={`/chat/${item.id}`}
-      title={item.title}
+      title={item.name}
       topic={item.topic}
       active={item.id == activePath}
     />
@@ -86,7 +73,7 @@ function ChatCard(props: ChatCardProps) {
           <Text fw={500} truncate="end" className="w-full">
             {props.title}
           </Text>
-          <Text c="dimmed" size="sm">
+          <Text c="dimmed" size="sm" className="capitalize">
             {props.topic}
           </Text>
         </Stack>

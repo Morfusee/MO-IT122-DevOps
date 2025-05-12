@@ -28,7 +28,7 @@ const MessagePairSchema = new mongoose.Schema(
     },
     chat: {
       type: mongoose.Schema.Types.ObjectId,
-      required: false, //TODO: change to true when chat is implemented
+      required: true,
       ref: 'Chat',
     },
   },
@@ -36,6 +36,16 @@ const MessagePairSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
+MessagePairSchema.set('toJSON', {
+  versionKey: false,
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString()
+    delete ret._id
+
+    return ret
+  },
+})
 
 const MessagePairModel = mongoose.model('MessagePair', MessagePairSchema)
 

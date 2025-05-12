@@ -63,6 +63,8 @@ export default class AuthController {
 
     response.plainCookie('accessToken', accessToken, {
       httpOnly: true,
+      secure: true,
+      sameSite: 'none',
       maxAge: 60 * 15,
       encode: false,
     })
@@ -92,7 +94,6 @@ export default class AuthController {
     type: User,
   })
   async me({ request, response }: HttpContext) {
-    console.log(request.auth)
     if (!request.auth.user) return response.unauthorized({ message: 'Invalid auth' })
 
     const user = UserModel.findById(request.auth.user.userId)
