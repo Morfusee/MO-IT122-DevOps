@@ -101,6 +101,7 @@ export default class ChatController {
 
     return { message: 'Chat deleted successfully' }
   }
+
   @ApiOperation({
     summary: 'Create a new chat based on user prompt',
     description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
@@ -129,15 +130,11 @@ export default class ChatController {
       return response.badRequest({ error: 'Missing userId or prompt' })
     }
 
-    // Prompt to generate chat name and topic
-    const prompt = `You are an AI that generates a chat title and topic based on the user's message.
-    User message:
-    "${userPrompt}"
-
-    Respond with the chat title (short and catchy) and the topic (one of: math, science, english, filipino).`
-
     const GEMINI_KEY = env.get('GEMINI_KEY')
     const ai = new GoogleGenAI({ apiKey: GEMINI_KEY })
+
+    // Prompt to generate chat name and topic
+    const prompt = `Generate a short and catchy chat title and topic based on the user's message. User message: "${userPrompt}"`
 
     const promptResponse = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
