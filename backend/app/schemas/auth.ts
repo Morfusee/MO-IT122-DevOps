@@ -6,6 +6,14 @@ export class AuthForm {
 
   @ApiProperty()
   declare password: string
+}
+
+export class RegisterForm {
+  @ApiProperty()
+  declare email: string
+
+  @ApiProperty()
+  declare password: string
 
   @ApiProperty()
   declare firstName: string
