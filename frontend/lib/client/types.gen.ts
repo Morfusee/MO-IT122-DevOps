@@ -22,6 +22,14 @@ export type AuthForm = {
     password: string;
 };
 
+export type RegistrationForm = {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    institution?: string;
+};
+
 export type Success = {
     message: string;
 };
@@ -76,7 +84,7 @@ export type PostPromptResponses = {
 export type PostPromptResponse = PostPromptResponses[keyof PostPromptResponses];
 
 export type PostRegisterData = {
-    body?: AuthForm;
+    body?: RegistrationForm;
     path?: never;
     query?: never;
     url: '/register';
