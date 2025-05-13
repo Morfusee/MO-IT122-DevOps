@@ -1,8 +1,7 @@
-import nextConfig from "@/next.config";
 import { client } from "./client/client.gen";
 
 client.setConfig({
-  baseUrl: nextConfig.env?.API_BASE_URL,
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL,
 });
 
 export { client };

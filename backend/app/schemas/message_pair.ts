@@ -30,6 +30,6 @@ export class MessagePair {
   @ApiProperty({ required: false })
   declare template: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   declare chatId: string
 }

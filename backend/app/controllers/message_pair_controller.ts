@@ -1,18 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-import { LLM } from '#services/llm_service'
 import { inject } from '@adonisjs/core'
-import { promptValidator } from '#validators/llm'
+import { idValidator, promptValidator } from '#validators/llm'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import MessagePairModel, { Template } from '#models/message_pair'
-import PromptService from '#services/prompt_service'
+import PromptService, { ConversationHistory } from '#services/prompt_service'
 import { MessagePrompt, MessagePair } from '../schemas/message_pair.js'
 import { Error } from '../schemas/response.js'
-import fs from 'node:fs'
-import path, { dirname } from 'node:path'
 import ChatModel from '#models/chat'
-import { fileURLToPath } from 'node:url'
-import Logger from '@adonisjs/core/services/logger'
+import EnumUtil from '../util/enum_util.js'
+import FileUploads from '../util/file_uploads.js'
 
 export default class MessagePairController {
   // ---------- CREATE MESSAGE PAIR IN CHAT (STORE) ----------
@@ -35,7 +32,7 @@ export default class MessagePairController {
     type: Error,
   })
   @inject()
-  async store({ params, request, response }: HttpContext) {
+  async store({ params, request, response }: HttpContext, promptService: PromptService) {
     const { attachmentUrls, template } = request.body()
     const { prompt } = await request.validateUsing(promptValidator)
 
@@ -43,59 +40,42 @@ export default class MessagePairController {
     if (!chat) chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    // TODO: Uncomment when templates are implemented
-    // const template = templateId ? await TemplateModel.findById(templateId).select('prompt') : null
+    const templateType: Template = EnumUtil.getTemplateFromString(template)
 
-    const templateType =
-      template && template in Template
-        ? Template[template as keyof typeof Template]
-        : Template.DEFAULT
+    const messages = await MessagePairModel.find({ chat: params.chat_id })
+      .sort({ createdAt: 1 })
+      .lean()
 
-    // TODO: Add switching to other LLM
-    const promptService = PromptService.build(LLM.GEMINI)
+    const history: ConversationHistory[] = messages.map((msg) => {
+      return {
+        prompt: msg.prompt,
+        response: JSON.stringify(msg.json_response),
+      }
+    })
 
-    const ai = await promptService.generateResponse(prompt, templateType, attachmentUrls)
+    const ai = await promptService.build().generateResponse({
+      userInput: prompt,
+      attachmentUrls: attachmentUrls,
+      template: templateType,
+      history: history,
+    })
+
     if (!ai) return response.badRequest({ message: 'Failed to generate response' })
 
     // Decode base64 image and save to file (if exists)
-    const base64Image = ai.image
-    let imagePath: string | null = null
-    if (base64Image && typeof base64Image === 'string') {
-      const fileName = `${Date.now()}-ai-image.png`
-      const filePath = path.join(
-        dirname(fileURLToPath(import.meta.url)),
-        '..',
-        '..',
-        'public',
-        'images',
-        fileName
-      )
-
-      try {
-        fs.writeFileSync(filePath, Buffer.from(base64Image, 'base64'))
-        imagePath = `.../public/images/${fileName}` // TODO: Make this dynamic
-      } catch (error) {
-        Logger.error('Failed to write image to file', error)
-      }
-    }
+    const imagePath = await FileUploads.uploadImage(ai.image, 'base64')
 
     const messagePair = await MessagePairModel.create({
       prompt,
       json_response: ai.response,
-      image: imagePath,
+      image: imagePath || '',
       template: templateType,
       chat: chat,
     })
 
     if (!messagePair) return response.badRequest({ message: 'Failed to create message pair' })
 
-    response.created({
-      id: messagePair.id,
-      prompt,
-      ...ai.response,
-      image: imagePath,
-      template: Template.GENERATE_IMAGE,
-    })
+    response.created(messagePair)
   }
 
   // ---------------- RETRIEVE MESSAGE PAIRS IN CHAT (INDEX) ----------------
@@ -106,10 +86,11 @@ export default class MessagePairController {
     description: 'The ID of the chat to retrieve message pairs from',
     type: String,
   })
+  @ApiBody({ type: MessagePrompt })
   @ApiResponse({
     status: 200,
     description: 'Message Pairs retrieved successfully',
-    type: MessagePair,
+    type: [MessagePair],
   })
   @ApiResponse({
     status: 404,
@@ -117,12 +98,13 @@ export default class MessagePairController {
     type: Error,
   })
   @inject()
-  async index({ params, request, response }: HttpContext) {
-    let chat = await ChatModel.findById(request.param('chat_id'))
-    if (!chat) chat = await ChatModel.findById(params.chat_id)
+  async index({ request, response }: HttpContext) {
+    const { params } = await request.validateUsing(idValidator)
+
+    const chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: -1 })
+    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: 1 })
 
     if (!messagePairs) return response.notFound({ message: 'Message pairs not found' })
 
