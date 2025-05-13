@@ -3,7 +3,7 @@ import { Stack, Title } from "@mantine/core";
 import { cookies } from "next/headers";
 import NewChatInput from "./new-chat-input";
 
-import "@/lib/client-init";
+import "@/lib/server-init";
 
 async function Page() {
   const userDetails = await getMe({
