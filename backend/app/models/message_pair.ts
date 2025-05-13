@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 
 export enum Template {
-  DEFAULT,
-  SUMMARIZE,
-  GENERATE_TITLE,
-  GENERATE_IMAGE,
-  EXPLAIN_LIKE_IM_5,
-  MULTIPLE_CHOICE_QUESTION,
+  DEFAULT = 'default',
+  SUMMARIZE = 'summarize',
+  GENERATE_TITLE = 'generate_title',
+  GENERATE_IMAGE = 'generate_image',
+  EXPLAIN_LIKE_IM_5 = 'explain_like_im_5',
+  MULTIPLE_CHOICE_QUESTION = 'multiple_choice_question',
 }
 
 const MessagePairSchema = new mongoose.Schema(

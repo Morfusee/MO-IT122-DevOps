@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  '@foadonis/openapi':
-    hash: bdcee5b68ab428d2a6e66e3ade5be5a03ffd024dc4b7e84bc1dde9bb240eed3d
-    path: patches/@foadonis__openapi.patch
-
 importers:
 
   .:
@@ -27,7 +22,7 @@ importers:
         version: 21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)
       '@foadonis/openapi':
         specifier: ^0.3.5
-        version: 0.3.5(patch_hash=bdcee5b68ab428d2a6e66e3ade5be5a03ffd024dc4b7e84bc1dde9bb240eed3d)(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@adonisjs/lucid@21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)(reflect-metadata@0.2.2)
+        version: 0.3.5(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@adonisjs/lucid@21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)(reflect-metadata@0.2.2)
       '@google/genai':
         specifier: ^0.13.0
         version: 0.13.0
@@ -3629,7 +3624,7 @@ snapshots:
 
   '@faker-js/faker@9.7.0': {}
 
-  '@foadonis/openapi@0.3.5(patch_hash=bdcee5b68ab428d2a6e66e3ade5be5a03ffd024dc4b7e84bc1dde9bb240eed3d)(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@adonisjs/lucid@21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)(reflect-metadata@0.2.2)':
+  '@foadonis/openapi@0.3.5(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@adonisjs/lucid@21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)(reflect-metadata@0.2.2)':
     dependencies:
       '@adonisjs/core': 6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1)
       '@adonisjs/lucid': 21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.17.2(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)

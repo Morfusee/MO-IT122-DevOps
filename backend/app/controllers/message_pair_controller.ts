@@ -4,16 +4,12 @@ import { inject } from '@adonisjs/core'
 import { idValidator, promptValidator } from '#validators/llm'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import MessagePairModel, { Template } from '#models/message_pair'
-import PromptService from '#services/prompt_service'
+import PromptService, { ConversationHistory } from '#services/prompt_service'
 import { MessagePrompt, MessagePair } from '../schemas/message_pair.js'
 import { Error } from '../schemas/response.js'
-import path, { dirname } from 'node:path'
 import ChatModel from '#models/chat'
-import { fileURLToPath } from 'node:url'
-import Logger from '@adonisjs/core/services/logger'
-import { AI_TUTOR_INSTRUCTION } from '#services/prompts'
-import { Content } from '@google/genai'
-import * as fs from 'node:fs'
+import EnumUtil from '../util/enum_util.js'
+import FileUploads from '../util/file_uploads.js'
 
 export default class MessagePairController {
   // ---------- CREATE MESSAGE PAIR IN CHAT (STORE) ----------
@@ -44,77 +40,42 @@ export default class MessagePairController {
     if (!chat) chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    // TODO: Uncomment when templates are implemented
-    // const template = templateId ? await TemplateModel.findById(templateId).select('prompt') : null
-
-    const templateType =
-      template && template in Template
-        ? Template[template as keyof typeof Template]
-        : Template.DEFAULT
+    const templateType: Template = EnumUtil.getTemplateFromString(template)
 
     const messages = await MessagePairModel.find({ chat: params.chat_id })
       .sort({ createdAt: 1 })
       .lean()
 
-    const ai = await promptService.generateResponse(prompt, templateType, attachmentUrls)
+    const history: ConversationHistory[] = messages.map((msg) => {
+      return {
+        prompt: msg.prompt,
+        response: JSON.stringify(msg.json_response),
+      }
+    })
+
+    const ai = await promptService.build().generateResponse({
+      userInput: prompt,
+      attachmentUrls: attachmentUrls,
+      template: templateType,
+      history: history,
+    })
+
     if (!ai) return response.badRequest({ message: 'Failed to generate response' })
 
     // Decode base64 image and save to file (if exists)
-    const base64Image = ai.image
-    let imagePath: string | null = null
-    if (base64Image && typeof base64Image === 'string') {
-      const fileName = `${Date.now()}-ai-image.png`
-      const filePath = path.join(
-        dirname(fileURLToPath(import.meta.url)),
-        '..',
-        '..',
-        'public',
-        'images',
-        fileName
-      )
-
-      try {
-        fs.writeFileSync(filePath, Buffer.from(base64Image, 'base64'))
-        imagePath = `.../public/images/${fileName}` // TODO: Make this dynamic
-      } catch (error) {
-        Logger.error('Failed to write image to file', error)
-      }
-    }
-    const history: Content[] = messages.flatMap((msg) => [
-      {
-        role: 'user',
-        parts: [{ text: msg.prompt }],
-      },
-      {
-        role: 'model',
-        parts: [{ text: msg.response[0]?.text || '' }],
-      },
-    ])
-
-    const ai = await promptService.build().generateConversation({
-      userInput: prompt,
-      template: templateType,
-      history: history,
-      instruction: AI_TUTOR_INSTRUCTION,
-    })
+    const imagePath = await FileUploads.uploadImage(ai.image, 'base64')
 
     const messagePair = await MessagePairModel.create({
       prompt,
       json_response: ai.response,
-      image: imagePath,
+      image: imagePath || '',
       template: templateType,
       chat: chat,
     })
 
     if (!messagePair) return response.badRequest({ message: 'Failed to create message pair' })
 
-    response.created({
-      id: messagePair.id,
-      prompt,
-      ...ai.response,
-      image: imagePath,
-      template: Template.GENERATE_IMAGE,
-    })
+    response.created(messagePair)
   }
 
   // ---------------- RETRIEVE MESSAGE PAIRS IN CHAT (INDEX) ----------------

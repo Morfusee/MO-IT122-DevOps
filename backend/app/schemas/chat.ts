@@ -18,16 +18,6 @@ export class Chat {
   declare topic: string
 }
 
-export class ChatRequest {
-  @ApiProperty()
-  declare prompt: string
-}
-
-export class NewChatPrompt {
-  @ApiProperty()
-  declare prompt: string
-}
-
 export class NewChat {
   @ApiProperty()
   declare chat: Chat

@@ -1,12 +1,16 @@
 import ChatModel from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
-import { ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
-import { Chat } from '../schemas/chat.js'
+import { Chat, NewChat } from '../schemas/chat.js'
 import PromptService from '#services/prompt_service'
-import { Template } from '#models/message_pair'
-import { LLM } from '#services/llm_service'
+import MessagePairModel, { Template } from '#models/message_pair'
 import { inject } from '@adonisjs/core'
+import { MessagePrompt } from '../schemas/message_pair.js'
+import { LLM } from '../util/llm_handler.js'
+import FileUploads from '../util/file_uploads.js'
+import EnumUtil from '../util/enum_util.js'
+import Logger from '@adonisjs/core/services/logger'
 
 export default class ChatController {
   @ApiOperation({
@@ -111,12 +115,10 @@ export default class ChatController {
     summary: 'Create a new chat based on user prompt',
     description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
   })
-  @ApiBody({ type: NewChatPrompt })
-  @ApiBody({ type: ChatRequest })
+  @ApiBody({ type: MessagePrompt })
   @ApiResponse({
     status: 201,
     description: 'Successfully created a new chat based on the user prompt',
-    type: Chat,
     type: NewChat,
   })
   @ApiResponse({
@@ -129,6 +131,9 @@ export default class ChatController {
   })
   @inject()
   async store({ request, response }: HttpContext, promptService: PromptService) {
+    const { attachmentUrls, template } = request.body()
+    const templateType: Template = EnumUtil.getTemplateFromString(template)
+
     // Get userId from request.auth
     const userId = request.auth.user?.userId
 
@@ -136,45 +141,70 @@ export default class ChatController {
     const { prompt: userPrompt } = request.body()
 
     if (!userId || !userPrompt) {
+      Logger.error('Missing userId or prompt')
       return response.badRequest({ error: 'Missing userId or prompt' })
     }
 
-    const ai = await PromptService.build(LLM.GEMINI).generateResponse(
-      userPrompt,
-      Template.GENERATE_TITLE
-    )
+    const titleGenerator = await promptService.build(LLM.GEMINI).generateResponse({
+      userInput: userPrompt,
+      template: Template.GENERATE_TITLE,
+    })
 
-    const data = ai.response
+    Logger.info('AI response: ' + JSON.stringify(titleGenerator.response))
 
-    if (!data || !data.title || !data.topic) {
-      return response.badRequest({
-        error: 'AI response missing and/or invalid title or topic',
-      })
+    const raw = titleGenerator.response
+
+    const chatMetaData: (JSON & ChatMetaData) | null = isChatMetaData(raw) ? raw : null
+
+    if (!chatMetaData) {
+      Logger.error('Failed to generate chat metadata')
+      return response.internalServerError({ error: 'Failed to generate chat metadata' })
     }
 
     const chat = await ChatModel.create({
       userId: userId,
-      ...data,
+      ...chatMetaData,
     })
 
     if (!chat) {
+      Logger.error('Failed to create chat')
       return response.internalServerError({ error: 'Failed to create chat' })
     }
 
     const message = await promptService.build().generateResponse({
       userInput: userPrompt,
-      instruction: AI_TUTOR_INSTRUCTION,
+      attachmentUrls: attachmentUrls,
+      template: templateType,
     })
 
+    const imagePath = FileUploads.uploadImage(message.image, 'base64')
+
     const messagePair = await MessagePairModel.create({
-      chat: chat.id,
       prompt: userPrompt,
-      response: [{ text: message.response }],
+      json_response: message.response,
+      image: imagePath || '',
+      template: templateType,
+      chat: chat,
     })
 
     return response.created({
-      id: chat.id,
+      chat,
       messagePair,
     })
   }
+}
+
+// Type guard for ChatMetaData
+function isChatMetaData(obj: any): obj is ChatMetaData {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.title === 'string' &&
+    typeof obj.topic === 'string'
+  )
+}
+
+interface ChatMetaData {
+  title: string
+  topic: string
 }

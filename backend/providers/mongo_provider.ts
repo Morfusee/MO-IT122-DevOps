@@ -32,7 +32,7 @@ export default class MongoProvider {
   async shutdown() {
     if (this.app.getEnvironment() === 'test') {
       if (this.memoryDB) {
-        this.memoryDB.stop()
+        await this.memoryDB.stop()
 
         console.log('Stopping mongo-memory instance')
       }

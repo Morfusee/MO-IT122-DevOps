@@ -1,9 +1,9 @@
 import { Topic } from '#models/chat'
-import { Template } from '#models/message_pair'
 import { GenerateContentConfig, Modality, Type } from '@google/genai'
+import TemplateConfig from './template_config.js'
 
-export default class GeminiConfigs {
-  private default: GenerateContentConfig = {
+export default class GeminiConfigs extends TemplateConfig {
+  default: GenerateContentConfig = {
     responseMimeType: 'application/json',
     responseSchema: {
       type: Type.OBJECT,
@@ -13,7 +13,7 @@ export default class GeminiConfigs {
     },
   }
 
-  private generate_title: GenerateContentConfig = {
+  generate_title: GenerateContentConfig = {
     maxOutputTokens: 256,
     temperature: 0.5,
     systemInstruction:
@@ -28,11 +28,11 @@ export default class GeminiConfigs {
     },
   }
 
-  private generate_image: GenerateContentConfig = {
+  generate_image: GenerateContentConfig = {
     responseModalities: [Modality.TEXT, Modality.IMAGE],
   }
 
-  private summarize: GenerateContentConfig = {
+  summarize: GenerateContentConfig = {
     maxOutputTokens: 256,
     temperature: 0.5,
     systemInstruction: 'You are a tutorial assistant. Summarize the following text.',
@@ -45,7 +45,7 @@ export default class GeminiConfigs {
     },
   }
 
-  private explain_like_im_5: GenerateContentConfig = {
+  explain_like_im_5: GenerateContentConfig = {
     maxOutputTokens: 256,
     temperature: 0.5,
     systemInstruction:
@@ -59,7 +59,7 @@ export default class GeminiConfigs {
     },
   }
 
-  private multiple_choice_question: GenerateContentConfig = {
+  multiple_choice_question: GenerateContentConfig = {
     maxOutputTokens: 256,
     temperature: 0.5,
     systemInstruction:
@@ -80,24 +80,5 @@ export default class GeminiConfigs {
 
   static build() {
     return new GeminiConfigs()
-  }
-
-  public get(type: Template): GenerateContentConfig {
-    switch (type) {
-      case Template.DEFAULT:
-        return this.default
-      case Template.SUMMARIZE:
-        return this.summarize
-      case Template.GENERATE_TITLE:
-        return this.generate_title
-      case Template.GENERATE_IMAGE:
-        return this.generate_image
-      case Template.EXPLAIN_LIKE_IM_5:
-        return this.explain_like_im_5
-      case Template.MULTIPLE_CHOICE_QUESTION:
-        return this.multiple_choice_question
-      default:
-        return this.default
-    }
   }
 }

@@ -11,9 +11,7 @@ export default class UsersController {
     type: [User],
   })
   async index() {
-    const users = await UserModel.find()
-
-    return users
+    return UserModel.find()
   }
 
   @ApiOperation({ summary: 'Create a new User' })
