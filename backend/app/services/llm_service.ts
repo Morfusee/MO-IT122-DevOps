@@ -1,66 +1,50 @@
 import env from '#start/env'
-import { inject } from '@adonisjs/core'
-import { GoogleGenAI, createUserContent, createPartFromUri } from '@google/genai'
 import GeminiConfigs from '../util/gemini_configs.js'
 import Logger from '@adonisjs/core/services/logger'
+import { GoogleGenAI, createUserContent, createPartFromUri, Content } from '@google/genai'
 import { Template } from '#models/message_pair'
 
-/**
- * Enum representing the different language models available.
- */
-export enum LLM {
-  GEMINI,
+export interface TextGenParams {
+  prompt: string
+  attachmentUrls: string[]
+  template: Template
 }
 
-/**
- * The LLMService class is responsible for interacting with different language models.
- */
-@inject()
-export default class LLMService {
-  /**
-   * Constructor for the LLMService.
-   * @param {LLM} llm - The language model to use.
-   */
-  constructor(private llm: LLM) {}
+export interface ConvoGenParams {
+  prompt: string
+  template: string
+  history: Content[]
+}
 
-  /**
-   * Returns a client instance for interacting with the Gemini language model.
-   * @returns {GoogleGenAI} A new instance of the GoogleGenAI client.
-   */
-  gemini() {
-    return new GoogleGenAI({ apiKey: env.get('GEMINI_KEY') })
-  }
+export interface GenAI {
+  textGen(params: TextGenParams): Promise<{ response: string | undefined }>
+  convoGen(params: ConvoGenParams): Promise<{ response: string | undefined }>
+}
 
-  /**
-   * Returns a client instance for the current language model.
-   * Throws an error if the language model is not supported.
-   * @returns {any} A new instance of the AI language client.
-   * @throws Will throw an error if the LLM is not supported.
-   */
-  client() {
-    switch (this.llm) {
-      case LLM.GEMINI:
-        return new GoogleGenAI({ apiKey: env.get('GEMINI_KEY') })
-      default:
-        throw new Error('LLM not supported')
-    }
+const API_KEY = env.get('GEMINI_KEY')
+const MODEL = 'gemini-2.0-flash'
+
+class GeminiLLM implements GenAI {
+  static create() {
+    return new GeminiLLM()
   }
 
   /**
    * Invoke the LLM with a given prompt and optional attachment URLs. Returns an object with a "response" property containing the output of the LLM.
    * @param {string} prompt The prompt to give to the LLM.
-   * @param {string[]} attachmentUrls URLs of files to use as attachments to the prompt.
+   * @param attachmentUrls
+   * @param template
    * @returns {Promise<{ response: string }>} A promise that resolves with an object containing the LLM's response.
    */
-  async invoke(prompt: string, template: Template, attachmentUrls: string[]): Promise<LLMResponse> {
-    switch (this.llm) {
-      case LLM.GEMINI:
-        // Create attachments from the given URLs.
+  async textGen({ prompt, attachmentUrls, template }: TextGenParams): Promise<LLMResponse> {
+    const client = new GoogleGenAI({ apiKey: API_KEY })
+
+    // Create attachments from the given URLs.
         const attachments = await Promise.all(
           attachmentUrls.map(
             // For each URL, upload the file to the Gemini service.
             (image) =>
-              this.client().files.upload({
+              client.files.upload({
                 file: image,
               })
           )
@@ -115,7 +99,26 @@ export default class LLMService {
         return {
           response: response.text?.trim() || '',
           image: imageBase64 || '',
-        }
+    }
+  }
+
+  async convoGen({ prompt, instruction, history }: ConvoGenParams) {
+    const client = new GoogleGenAI({ apiKey: API_KEY })
+
+    const chat = client.chats.create({
+      model: MODEL,
+      history: history,
+      config: {
+        systemInstruction: instruction,
+      },
+    })
+
+    const response = await chat.sendMessage({
+      message: prompt,
+    })
+
+    return {
+      response: response.text,
     }
   }
 }
@@ -123,4 +126,11 @@ export default class LLMService {
 interface LLMResponse {
   response: string
   image: string
+}
+
+/**
+ * Enum representing the different language models available.
+ */
+export const LLM = {
+  GEMINI: GeminiLLM.create(),
 }

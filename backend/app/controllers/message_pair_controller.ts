@@ -1,18 +1,19 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-import { LLM } from '#services/llm_service'
 import { inject } from '@adonisjs/core'
-import { promptValidator } from '#validators/llm'
+import { idValidator, promptValidator } from '#validators/llm'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import MessagePairModel, { Template } from '#models/message_pair'
 import PromptService from '#services/prompt_service'
 import { MessagePrompt, MessagePair } from '../schemas/message_pair.js'
 import { Error } from '../schemas/response.js'
-import fs from 'node:fs'
 import path, { dirname } from 'node:path'
 import ChatModel from '#models/chat'
 import { fileURLToPath } from 'node:url'
 import Logger from '@adonisjs/core/services/logger'
+import { AI_TUTOR_INSTRUCTION } from '#services/prompts'
+import { Content } from '@google/genai'
+import * as fs from 'node:fs'
 
 export default class MessagePairController {
   // ---------- CREATE MESSAGE PAIR IN CHAT (STORE) ----------
@@ -35,7 +36,7 @@ export default class MessagePairController {
     type: Error,
   })
   @inject()
-  async store({ params, request, response }: HttpContext) {
+  async store({ params, request, response }: HttpContext, promptService: PromptService) {
     const { attachmentUrls, template } = request.body()
     const { prompt } = await request.validateUsing(promptValidator)
 
@@ -51,8 +52,9 @@ export default class MessagePairController {
         ? Template[template as keyof typeof Template]
         : Template.DEFAULT
 
-    // TODO: Add switching to other LLM
-    const promptService = PromptService.build(LLM.GEMINI)
+    const messages = await MessagePairModel.find({ chat: params.chat_id })
+      .sort({ createdAt: 1 })
+      .lean()
 
     const ai = await promptService.generateResponse(prompt, templateType, attachmentUrls)
     if (!ai) return response.badRequest({ message: 'Failed to generate response' })
@@ -78,6 +80,23 @@ export default class MessagePairController {
         Logger.error('Failed to write image to file', error)
       }
     }
+    const history: Content[] = messages.flatMap((msg) => [
+      {
+        role: 'user',
+        parts: [{ text: msg.prompt }],
+      },
+      {
+        role: 'model',
+        parts: [{ text: msg.response[0]?.text || '' }],
+      },
+    ])
+
+    const ai = await promptService.build().generateConversation({
+      userInput: prompt,
+      template: templateType,
+      history: history,
+      instruction: AI_TUTOR_INSTRUCTION,
+    })
 
     const messagePair = await MessagePairModel.create({
       prompt,
@@ -106,10 +125,11 @@ export default class MessagePairController {
     description: 'The ID of the chat to retrieve message pairs from',
     type: String,
   })
+  @ApiBody({ type: MessagePrompt })
   @ApiResponse({
     status: 200,
     description: 'Message Pairs retrieved successfully',
-    type: MessagePair,
+    type: [MessagePair],
   })
   @ApiResponse({
     status: 404,
@@ -117,12 +137,13 @@ export default class MessagePairController {
     type: Error,
   })
   @inject()
-  async index({ params, request, response }: HttpContext) {
-    let chat = await ChatModel.findById(request.param('chat_id'))
-    if (!chat) chat = await ChatModel.findById(params.chat_id)
+  async index({ request, response }: HttpContext) {
+    const { params } = await request.validateUsing(idValidator)
+
+    const chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: -1 })
+    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: 1 })
 
     if (!messagePairs) return response.notFound({ message: 'Message pairs not found' })
 

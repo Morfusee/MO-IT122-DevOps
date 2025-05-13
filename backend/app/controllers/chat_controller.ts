@@ -1,12 +1,12 @@
-import ChatModel, { Topic } from '#models/chat'
+import ChatModel from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
-import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
-import { Chat, ChatRequest } from '../schemas/chat.js'
+import { Chat } from '../schemas/chat.js'
 import PromptService from '#services/prompt_service'
-import { LLM } from '#services/llm_service'
 import { Template } from '#models/message_pair'
-import Logger from '@adonisjs/core/services/logger'
+import { LLM } from '#services/llm_service'
+import { inject } from '@adonisjs/core'
 
 export default class ChatController {
   @ApiOperation({
@@ -22,9 +22,7 @@ export default class ChatController {
   async index({ request }: HttpContext) {
     const id = request.auth.user?.userId
 
-    const chats = await ChatModel.find({ userId: id }).sort({ updatedAt: -1 })
-
-    return chats
+    return ChatModel.find({ userId: id }).sort({ updatedAt: -1 })
   }
 
   @ApiOperation({
@@ -32,13 +30,14 @@ export default class ChatController {
     description:
       'Retrieves a single chat based on the provided chatId, if it belongs to the authenticated user and the ID is valid.',
   })
+  @ApiParam({ name: 'id' })
   @ApiResponse({
     status: 200,
     description: 'Successfully retrieved the requested chat details.',
-    type: [Chat],
+    type: Chat,
   })
   async show({ params, response }: HttpContext) {
-    const chatId = params.chatId
+    const chatId = params.id
 
     if (!chatId || !Types.ObjectId.isValid(chatId)) return response.badRequest('Invalid chatId')
 
@@ -54,6 +53,7 @@ export default class ChatController {
     description:
       'Updates only the name of an existing chat using the provided chatId. Only the `name` field will be modified.',
   })
+  @ApiParam({ name: 'id' })
   @ApiResponse({
     status: 200,
     description: 'Successfully updated the chat name',
@@ -88,6 +88,7 @@ export default class ChatController {
     description:
       'Deletes a specific chat identified by the provided chatId. This action is irreversible.',
   })
+  @ApiParam({ name: 'id' })
   @ApiResponse({
     status: 200,
     description: 'Successfully deleted the chat',
@@ -105,15 +106,18 @@ export default class ChatController {
 
     return { message: 'Chat deleted successfully' }
   }
+
   @ApiOperation({
     summary: 'Create a new chat based on user prompt',
     description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
   })
+  @ApiBody({ type: NewChatPrompt })
   @ApiBody({ type: ChatRequest })
   @ApiResponse({
     status: 201,
     description: 'Successfully created a new chat based on the user prompt',
     type: Chat,
+    type: NewChat,
   })
   @ApiResponse({
     status: 400,
@@ -123,7 +127,8 @@ export default class ChatController {
     status: 500,
     description: 'Internal server error or AI generation failure',
   })
-  async store({ request, response }: HttpContext) {
+  @inject()
+  async store({ request, response }: HttpContext, promptService: PromptService) {
     // Get userId from request.auth
     const userId = request.auth.user?.userId
 
@@ -131,7 +136,7 @@ export default class ChatController {
     const { prompt: userPrompt } = request.body()
 
     if (!userId || !userPrompt) {
-      return response.badRequest({ error: 'Missing prompt' })
+      return response.badRequest({ error: 'Missing userId or prompt' })
     }
 
     const ai = await PromptService.build(LLM.GEMINI).generateResponse(
@@ -139,7 +144,7 @@ export default class ChatController {
       Template.GENERATE_TITLE
     )
 
-    const data = ai.response as unknown as GeneratedTitle
+    const data = ai.response
 
     if (!data || !data.title || !data.topic) {
       return response.badRequest({
@@ -156,14 +161,20 @@ export default class ChatController {
       return response.internalServerError({ error: 'Failed to create chat' })
     }
 
+    const message = await promptService.build().generateResponse({
+      userInput: userPrompt,
+      instruction: AI_TUTOR_INSTRUCTION,
+    })
+
+    const messagePair = await MessagePairModel.create({
+      chat: chat.id,
+      prompt: userPrompt,
+      response: [{ text: message.response }],
+    })
+
     return response.created({
       id: chat.id,
-      ...data,
+      messagePair,
     })
   }
-}
-
-interface GeneratedTitle {
-  title: string
-  topic: string
 }

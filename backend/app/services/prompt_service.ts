@@ -1,20 +1,65 @@
 import { Template } from '#models/message_pair'
 import LLMService, { LLM } from '#services/llm_service'
+import TemplateModel from '#models/template'
 import { inject } from '@adonisjs/core'
 import Logger from '@adonisjs/core/services/logger'
+import { GenAI, LLM } from './llm_service.js'
+import { Content } from '@google/genai'
 
 @inject()
-/**
- * Service for generating responses to user input based on a prompt and any
- * attachments that are provided.
- */
 export default class PromptService {
-  /**
-   * Constructor that takes the LLM service to use.
-   * @param {LLMService} llmService The LLM service to use.
-   */
-  constructor(private llmService: LLMService) {}
+  constructor() {}
 
+  build(llm?: GenAI) {
+    return new PromptResponseGenerator(llm || LLM.GEMINI)
+  }
+}
+
+interface GenerateResponseParams {
+  userInput: string
+  attachmentUrls?: string[]
+  templateId?: string
+  instruction?: string
+}
+
+interface GenerateConversationParams {
+  userInput: string
+  history: Content[]
+  templateId?: string
+  instruction?: string
+}
+
+class PromptResponseGenerator {
+  constructor(private llm: GenAI) {
+    this.llm = llm
+  }
+
+  async generateResponse({
+    userInput,
+    attachmentUrls,
+    templateId,
+    instruction,
+  }: GenerateResponseParams) {
+    const template = templateId ? await TemplateModel.findById(templateId).select('prompt') : null
+
+    const prompt = `${template?.prompt || ''}\n\n${userInput}`
+
+    const response = await this.llm.textGen({
+      prompt: prompt,
+      attachmentUrls: attachmentUrls ? [] : [],
+      instruction: instruction || '',
+    })
+
+    return { response: response.response || 'Failed to generate response' }
+  }
+
+  async generateConversation({
+    userInput,
+    history,
+    templateId,
+    instruction,
+  }: GenerateConversationParams) {
+    const template = templateId ? await TemplateModel.findById(templateId).select('prompt') : null
   /**
    * Generates a response to the user's input based on the provided prompt and
    * any attachments that are provided.
@@ -40,6 +85,11 @@ export default class PromptService {
     try {
       const response = await this.llmService.invoke(userInput, template, attachmentUrls ? [] : [])
 
+    const response = await this.llm.convoGen({
+      prompt: prompt,
+      history: history,
+      instruction: instruction || '',
+    })
       if (!response || !response.response || response.response === '') {
         throw new Error('Failed to generate response')
       }
@@ -49,6 +99,7 @@ export default class PromptService {
           ? JSON.parse(JSON.stringify({ response: response.response }))
           : JSON.parse(response.response)
 
+    return { response: response.response || 'Failed to generate response' }
       return {
         response: parsedData as JSON,
         image: response.image,
