@@ -244,57 +244,57 @@ export type PostChatsResponses = {
 
 export type PostChatsResponse = PostChatsResponses[keyof PostChatsResponses];
 
-export type DeleteChatsIdData = {
+export type DeleteChatsByIdData = {
     body?: never;
     path?: {
         id?: string;
     };
     query?: never;
-    url: '/chats/:id';
+    url: '/chats/{id}';
 };
 
-export type DeleteChatsIdErrors = {
+export type DeleteChatsByIdErrors = {
     /**
      * Chat not found
      */
     404: unknown;
 };
 
-export type DeleteChatsIdResponses = {
+export type DeleteChatsByIdResponses = {
     /**
      * Successfully deleted the chat
      */
     200: unknown;
 };
 
-export type GetChatsIdData = {
+export type GetChatsByIdData = {
     body?: never;
     path?: {
         id?: string;
     };
     query?: never;
-    url: '/chats/:id';
+    url: '/chats/{id}';
 };
 
-export type GetChatsIdResponses = {
+export type GetChatsByIdResponses = {
     /**
      * Successfully retrieved the requested chat details.
      */
     200: Chat;
 };
 
-export type GetChatsIdResponse = GetChatsIdResponses[keyof GetChatsIdResponses];
+export type GetChatsByIdResponse = GetChatsByIdResponses[keyof GetChatsByIdResponses];
 
-export type PatchChatsIdData = {
+export type PatchChatsByIdData = {
     body?: never;
     path?: {
         id?: string;
     };
     query?: never;
-    url: '/chats/:id';
+    url: '/chats/{id}';
 };
 
-export type PatchChatsIdErrors = {
+export type PatchChatsByIdErrors = {
     /**
      * Name field is required or invalid chatId
      */
@@ -305,25 +305,25 @@ export type PatchChatsIdErrors = {
     404: unknown;
 };
 
-export type PatchChatsIdResponses = {
+export type PatchChatsByIdResponses = {
     /**
      * Successfully updated the chat name
      */
     200: Chat;
 };
 
-export type PatchChatsIdResponse = PatchChatsIdResponses[keyof PatchChatsIdResponses];
+export type PatchChatsByIdResponse = PatchChatsByIdResponses[keyof PatchChatsByIdResponses];
 
-export type PutChatsIdData = {
+export type PutChatsByIdData = {
     body?: never;
     path?: {
         id?: string;
     };
     query?: never;
-    url: '/chats/:id';
+    url: '/chats/{id}';
 };
 
-export type PutChatsIdErrors = {
+export type PutChatsByIdErrors = {
     /**
      * Name field is required or invalid chatId
      */
@@ -334,16 +334,16 @@ export type PutChatsIdErrors = {
     404: unknown;
 };
 
-export type PutChatsIdResponses = {
+export type PutChatsByIdResponses = {
     /**
      * Successfully updated the chat name
      */
     200: Chat;
 };
 
-export type PutChatsIdResponse = PutChatsIdResponses[keyof PutChatsIdResponses];
+export type PutChatsByIdResponse = PutChatsByIdResponses[keyof PutChatsByIdResponses];
 
-export type GetChatsChatIdMessagesData = {
+export type GetChatsByChatIdMessagesData = {
     body?: MessagePrompt;
     path: {
         /**
@@ -352,19 +352,19 @@ export type GetChatsChatIdMessagesData = {
         chat_id: string;
     };
     query?: never;
-    url: '/chats/:chat_id/messages';
+    url: '/chats/{chat_id}/messages';
 };
 
-export type GetChatsChatIdMessagesResponses = {
+export type GetChatsByChatIdMessagesResponses = {
     /**
      * Message Pair retrieved successfully
      */
     200: Array<MessagePair>;
 };
 
-export type GetChatsChatIdMessagesResponse = GetChatsChatIdMessagesResponses[keyof GetChatsChatIdMessagesResponses];
+export type GetChatsByChatIdMessagesResponse = GetChatsByChatIdMessagesResponses[keyof GetChatsByChatIdMessagesResponses];
 
-export type PostChatsChatIdMessagesData = {
+export type PostChatsByChatIdMessagesData = {
     body?: MessagePrompt;
     path: {
         /**
@@ -373,17 +373,17 @@ export type PostChatsChatIdMessagesData = {
         chat_id: string;
     };
     query?: never;
-    url: '/chats/:chat_id/messages';
+    url: '/chats/{chat_id}/messages';
 };
 
-export type PostChatsChatIdMessagesResponses = {
+export type PostChatsByChatIdMessagesResponses = {
     /**
      * Message Pair created successfully
      */
     200: MessagePair;
 };
 
-export type PostChatsChatIdMessagesResponse = PostChatsChatIdMessagesResponses[keyof PostChatsChatIdMessagesResponses];
+export type PostChatsByChatIdMessagesResponse = PostChatsByChatIdMessagesResponses[keyof PostChatsByChatIdMessagesResponses];
 
 export type ClientOptions = {
     baseUrl: 'http://localhost:3333' | (string & {});

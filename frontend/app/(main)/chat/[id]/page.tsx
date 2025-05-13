@@ -2,7 +2,7 @@ import { Stack, Title } from "@mantine/core";
 import MessageList from "./message-list";
 import MessageInput from "./message-input";
 import { cookies } from "next/headers";
-import { getChatsId } from "@/lib/client";
+import { getChatsById } from "@/lib/client";
 
 import "@/lib/client-init";
 
@@ -11,7 +11,7 @@ type Params = Promise<{ id: string }>;
 async function ChatLog({ params }: { params: Params }) {
   const { id } = await params;
 
-  const chatDetail = await getChatsId({
+  const chatDetail = await getChatsById({
     path: {
       id: id,
     },

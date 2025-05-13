@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  getChatsChatIdMessages,
+  getChatsByChatIdMessages,
   MessagePair,
-  postChatsChatIdMessages,
+  postChatsByChatIdMessages,
 } from "../client";
 import { getQueryClient } from "@/components/get-query-client";
 
@@ -14,7 +14,7 @@ export const useMessageQuery = (id: string) => {
   const query = useQuery({
     queryKey: chatLogKey,
     queryFn: async () => {
-      const data = await getChatsChatIdMessages({
+      const data = await getChatsByChatIdMessages({
         path: {
           chat_id: id,
         },
@@ -28,7 +28,7 @@ export const useMessageQuery = (id: string) => {
 
   const mutation = useMutation({
     mutationFn: async (prompt: string) => {
-      const data = await postChatsChatIdMessages({
+      const data = await postChatsByChatIdMessages({
         path: {
           chat_id: id,
         },
