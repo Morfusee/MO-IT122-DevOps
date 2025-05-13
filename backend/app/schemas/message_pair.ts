@@ -8,21 +8,7 @@ export class MessagePrompt {
   declare attachmentUrls: string[]
 
   @ApiProperty({ required: false })
-  declare templateId: string
-}
-
-export class Response {
-  @ApiProperty({
-    required: false,
-    example: 'Failed to generate response',
-  })
-  declare text: string
-
-  @ApiProperty({
-    required: false,
-    example: '',
-  })
-  declare image: string
+  declare template: string
 }
 
 export class MessagePair {
@@ -32,11 +18,17 @@ export class MessagePair {
   @ApiProperty()
   declare prompt: string
 
-  @ApiProperty({ type: () => Response })
-  declare response: Response
+  @ApiProperty()
+  declare response: JSON
+
+  @ApiProperty()
+  declare image: string
+
+  @ApiProperty()
+  declare image_description: string
 
   @ApiProperty({ required: false })
-  declare templateId: string
+  declare template: string
 
   @ApiProperty({ required: false })
   declare chatId: string

@@ -26,7 +26,7 @@ router.get('/', async () => {
 router.resource('users', UsersController)
 
 // Posts a new message pair to a chat
-router.resource('chats', MessagePairController).params({ chats: 'chat' })
+router.resource('chats.messages', MessagePairController).use('*', middleware.auth())
 
 router.post('/prompt', [GeminiSamplesController, 'index'])
 
@@ -44,11 +44,11 @@ router
 
 router
   .group(() => {
-    router.get('/chat', [ChatController, 'index'])
-    router.get('/chat/:chatId', [ChatController, 'show'])
-    router.patch('/chat/:chatId', [ChatController, 'update'])
-    router.delete('/chat/:chatId', [ChatController, 'destroy'])
-    router.post('/chat', [ChatController, 'store'])
+    router.get('/chats', [ChatController, 'index'])
+    router.get('/chats/:chatId', [ChatController, 'show'])
+    router.patch('/chats/:chatId', [ChatController, 'update'])
+    router.delete('/chats/:chatId', [ChatController, 'destroy'])
+    router.post('/chats', [ChatController, 'store'])
   })
   .use(middleware.auth())
 
