@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const protectedRoutes = ["/", "/chat", "/quiz", "/reviewer"];
-const publicRoutes = ["/login", "/signup"];
-const protectedRoutes = ["/", "/chat"];
 const publicRoutes = ["/login", "/register"];
 
 export default async function middleware(req: NextRequest) {
