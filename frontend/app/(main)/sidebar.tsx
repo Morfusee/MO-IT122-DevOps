@@ -5,7 +5,7 @@ import AccountMenu from "./account-menu";
 import { getMe } from "@/lib/client";
 import { cookies } from "next/headers";
 
-import "@/lib/client-init";
+import "@/lib/server-init";
 
 async function Sidebar() {
   const userDetails = await getMe({

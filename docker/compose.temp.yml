@@ -31,8 +31,8 @@ services:
       context: ../
       dockerfile: docker/frontend/Dockerfile
       args:
-        API_BASE_URL: http://localhost:3001
-        API_BASE_URL_SERVER: http://adonisjs:3333
+        API_BASE_URL: https://adonisjs.mcube.uk
+        API_BASE_URL_SERVER: https://adonisjs.mcube.uk
     ports:
       - "3002:3333"
     env_file:
@@ -41,6 +41,24 @@ services:
     depends_on:
       - adonisjs
     networks:
+      - db-network
+
+  cloudflared_adonis:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN_ADONIS}
+    networks: # This should be set to enable http://server:3000 as a URL
+      - db-network
+
+  cloudflared_next:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN_NEXT}
+    networks: # This should be set to enable http://server:3000 as a URL
       - db-network
 
 networks:
