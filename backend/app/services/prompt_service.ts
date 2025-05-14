@@ -73,9 +73,9 @@ class PromptResponseGenerator {
       Logger.info('Returning text response')
       return { response: JSON.parse(response.text), image: '' }
     } catch (error) {
-      Logger.error('Error generating response:', error)
+      Logger.error('Error generating response: ' + error)
       return {
-        response: JSON.parse(JSON.stringify({ error: error.message })) as JSON,
+        response: JSON.parse(JSON.stringify({ error: 'Failed to generate response' })) as JSON,
         image: '',
       }
     }

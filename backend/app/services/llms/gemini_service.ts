@@ -28,18 +28,22 @@ export class GeminiLLM implements GenAI {
   }: ConvoGenParams): Promise<LLMResponse> {
     const client = new GoogleGenAI({ apiKey: API_KEY })
 
+    Logger.info('Invoking Gemini LLM...')
     // Create attachments from the given URLs.
     const attachments = await Promise.all(
-      attachmentUrls
-        .filter((url) => url.trim() !== '') // Validate string
-        .map(async (url) => {
-          try {
-            return await client.files.upload({ file: url })
-          } catch (err) {
-            console.error(`Error fetching or uploading file from URL: ${url}`, err)
-            return null
-          }
-        })
+      attachmentUrls.map(async (url) => {
+        if (!url || url === '') {
+          return null
+        }
+
+        try {
+          Logger.info('Fetching file from URL' + { url })
+          return await client.files.upload({ file: url })
+        } catch (err) {
+          console.error(`Error fetching or uploading file from URL: ${url}`, err)
+          return null
+        }
+      })
     )
 
     const validAttachments = attachments.filter((file) => file !== null)
