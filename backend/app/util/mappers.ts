@@ -13,7 +13,7 @@ export default class Mappers {
         image: messagePair.image,
         image_description: messagePair.image_description,
         template: messagePair.template,
-        chatId: messagePair.chat,
+        chatId: messagePair.chat.id,
       }
     } catch (error) {
       Logger.error('Error mapping message pair model to response')
