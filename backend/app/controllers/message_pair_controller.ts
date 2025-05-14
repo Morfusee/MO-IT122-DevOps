@@ -148,9 +148,7 @@ export default class MessagePairController {
 
     if (!messagePairs) return response.notFound({ message: 'Message pairs not found' })
 
-    const formattedMessagePairs = messagePairs.map((messagePair) => {
-      return Mappers.toMessagePairResponse(messagePair)
-    })
+    const formattedMessagePairs = messagePairs.map((msg) => Mappers.toMessagePairResponse(msg))
 
     response.ok(formattedMessagePairs) // TODO: Add pagination
   }
