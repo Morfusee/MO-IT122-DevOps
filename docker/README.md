@@ -15,6 +15,8 @@ docker compose -f compose.dev.yml up --build
 ```
 docker/
 ├── compose.dev.yml           # Combined dev environment (main setup)
+├── compose.temp.yml          # Temporary compose file for testing (Disregard)
+├── old.compose.dev.yml       # Old copy of the compose.dev.yml (Disregard)
 ├── backend/
 │   ├── Dockerfile            # AdonisJS production build setup
 │   └── compose.dev.yml       # Backend-only dev config (Traefik v2.2)
@@ -27,11 +29,6 @@ docker/
 ```
 
 ## Services Overview
-
-### 🌐 Traefik Reverse Proxy
-- Routes traffic based on host headers
-- **Dashboard**: http://localhost:8080
-- Version: v3 (main setup), v2.2 (individual service setups)
 
 ### 🗃️ MongoDB Database
 - **Image**: `mongo:latest`
@@ -46,7 +43,7 @@ docker/
   - `MONGO_INITDB_DATABASE`
 
 ### 🔙 Backend (AdonisJS)
-- **URL**: http://adonis.localhost
+- **URL**: http://localhost:3001
 - **Depends on**: MongoDB
 - **Dockerfile**:
   - Multi-stage build with PNPM
@@ -54,7 +51,7 @@ docker/
   - Sets `IS_DOCKERIZED=true` environment variable
 
 ### 🖥 Frontend (Next.js)
-- **URL**: http://nextjs.localhost
+- **URL**: http://localhost:3002
 - **Dockerfile**:
   - Standard Next.js production setup
   - Builds from project root context
