@@ -182,7 +182,7 @@ export default class ChatController {
   /**
    * Creates a new chat session based on a user prompt.
    *
-   * This method processes the user's prompt, generates a title and topic using AI,
+   * This method processes the user's prompt, generates a chat title and topic using AI,
    * creates a new chat record, generates an AI response to the prompt, and stores
    * the message pair. It handles various error cases including missing data and
    * AI generation failures.
@@ -228,14 +228,14 @@ export default class ChatController {
       return response.badRequest({ error: 'Missing userId or prompt' })
     }
 
-    const titleGenerator = await promptService.build(LLM.GEMINI).generateResponse({
+    const chatMetaDataGenerator = await promptService.build(LLM.GEMINI).generateResponse({
       userInput: userPrompt,
       template: Template.GENERATE_TITLE,
     })
 
-    Logger.info('AI response: ' + JSON.stringify(titleGenerator.response))
+    Logger.info('AI response: ' + JSON.stringify(chatMetaDataGenerator.response))
 
-    const raw = titleGenerator.response
+    const raw = chatMetaDataGenerator.response
 
     const chatMetaData: (JSON & ChatMetaData) | null = isChatMetaData(raw) ? raw : null
 
@@ -290,7 +290,7 @@ function isChatMetaData(obj: any): obj is ChatMetaData {
   return (
     typeof obj === 'object' &&
     obj !== null &&
-    typeof obj.title === 'string' &&
+    typeof obj.name === 'string' &&
     typeof obj.topic === 'string'
   )
 }
@@ -299,13 +299,13 @@ function isChatMetaData(obj: any): obj is ChatMetaData {
  * Interface representing metadata for a chat session.
  *
  * This interface defines the structure of metadata that is generated
- * for a chat session, including a title and topic.
+ * for a chat session, including a name and topic.
  *
  * @interface ChatMetaData
- * @property {string} title - The title of the chat session
+ * @property {string} name - The name of the chat session
  * @property {string} topic - The topic or category of the chat session
  */
 interface ChatMetaData {
-  title: string
+  name: string
   topic: string
 }
