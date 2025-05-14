@@ -41,10 +41,13 @@ export default class ChatController {
     description: 'Successfully retrieved all chats associated with the authenticated user.',
     type: [Chat],
   })
-  async index({ request }: HttpContext) {
+  async index({ response, request }: HttpContext) {
     const id = request.auth.user?.userId
 
-    return ChatModel.find({ userId: id }).sort({ updatedAt: -1 })
+    const chats = await ChatModel.find({ userId: id }).sort({ updatedAt: -1 })
+    const mappedChats = chats.map((chat) => Mappers.toChatResponse(chat))
+
+    return response.ok(mappedChats)
   }
 
   /**
