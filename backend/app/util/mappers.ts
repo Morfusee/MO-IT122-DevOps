@@ -11,7 +11,6 @@ export default class Mappers {
         prompt: messagePair.prompt,
         json_response: messagePair.json_response,
         image: messagePair.image,
-        image_description: messagePair.image_description,
         template: messagePair.template,
         chatId: messagePair.chat.id,
       }

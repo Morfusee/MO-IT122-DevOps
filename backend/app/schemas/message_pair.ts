@@ -24,9 +24,6 @@ export class MessagePair {
   @ApiProperty()
   declare image: string
 
-  @ApiProperty()
-  declare image_description: string
-
   @ApiProperty({ required: false })
   declare template: string
 
