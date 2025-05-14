@@ -179,7 +179,7 @@ export default class ChatController {
 
     const imagePath =
       templateType === Template.GENERATE_IMAGE
-        ? await FileUploads.uploadImage(message.image, 'base64')
+        ? FileUploads.uploadImage(message.image, 'base64')
         : ''
 
     const messagePair = await MessagePairModel.create({

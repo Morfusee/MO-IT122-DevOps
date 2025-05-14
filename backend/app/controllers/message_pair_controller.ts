@@ -63,7 +63,10 @@ export default class MessagePairController {
     if (!ai) return response.badRequest({ message: 'Failed to generate response' })
 
     // Decode base64 image and save to file (if exists)
-    const imagePath = await FileUploads.uploadImage(ai.image, 'base64')
+    const imagePath =
+      templateType === Template.GENERATE_IMAGE
+        ? await FileUploads.uploadImage(ai.image, 'base64')
+        : ''
 
     const messagePair = await MessagePairModel.create({
       prompt,
