@@ -11,9 +11,8 @@ export default class Mappers {
         prompt: messagePair.prompt,
         json_response: messagePair.json_response,
         image: messagePair.image,
-        image_description: messagePair.image_description,
         template: messagePair.template,
-        chatId: messagePair.chat.id,
+        chatId: messagePair.chat._id,
       }
     } catch (error) {
       Logger.error('Error mapping message pair model to response')
