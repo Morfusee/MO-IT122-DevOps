@@ -1,78 +1,93 @@
 import { Template } from '#models/message_pair'
-import LLMService, { LLM } from '#services/llm_service'
 import { inject } from '@adonisjs/core'
 import Logger from '@adonisjs/core/services/logger'
+import { GenAI } from './llm_service.js'
+import { LLM } from '../util/llm_handler.js'
 
 @inject()
-/**
- * Service for generating responses to user input based on a prompt and any
- * attachments that are provided.
- */
 export default class PromptService {
-  /**
-   * Constructor that takes the LLM service to use.
-   * @param {LLMService} llmService The LLM service to use.
-   */
-  constructor(private llmService: LLMService) {}
+  constructor() {
+    Logger.info('PromptService initialized')
+  }
 
-  /**
-   * Generates a response to the user's input based on the provided prompt and
-   * any attachments that are provided.
-   * @param {string} userInput The user's input.
-   * @param {string[] | undefined} attachmentUrls The URLs of any attachments
-   *     that are provided.
-   * @param {string | undefined} template The template that the
-   *     prompt should be based on.
-   */
-  async generateResponse(
-    userInput: string,
-    template: Template,
-    attachmentUrls?: string[]
-  ): Promise<PromptResponse> {
+  build(llm?: GenAI) {
+    Logger.debug(
+      `Building PromptResponseGenerator with LLM: ${llm?.constructor?.name || 'Default (GEMINI)'}`
+    )
+    return new PromptResponseGenerator(llm || LLM.GEMINI)
+  }
+}
+
+interface GenerateConversationParams {
+  userInput: string
+  attachmentUrls?: string[]
+  history?: ConversationHistory[]
+  template?: Template
+}
+
+class PromptResponseGenerator {
+  constructor(private llm: GenAI) {
+    if (!llm || typeof llm.invoke !== 'function') {
+      Logger.error('Invalid or missing LLM provided to PromptResponseGenerator')
+      throw new Error('Invalid LLM instance')
+    }
+    Logger.info(`PromptResponseGenerator initialized with LLM: ${llm.constructor.name}`)
+  }
+
+  async generateResponse({
+    userInput,
+    attachmentUrls,
+    template,
+    history,
+  }: GenerateConversationParams): Promise<PromptResponse> {
     if (!userInput) {
+      Logger.warn('PromptResponseGenerator: generateResponse called without user input')
       throw new Error('User input is required')
     }
 
-    if (!this.llmService) {
-      throw new Error('LLM service is required')
-    }
+    Logger.info(`Generating response for user input: "${userInput}"`)
+    Logger.debug(
+      `Attachments: ${JSON.stringify(attachmentUrls)}, Template: ${template}, History length: ${history?.length || 0}`
+    )
 
     try {
-      const response = await this.llmService.invoke(userInput, template, attachmentUrls ? [] : [])
+      const response = await this.llm.invoke({
+        prompt: userInput,
+        attachmentUrls: attachmentUrls || [],
+        template: template || Template.DEFAULT,
+        history: history || [],
+      })
 
-      if (!response || !response.response || response.response === '') {
-        throw new Error('Failed to generate response')
+      if (!response) {
+        Logger.error('LLM returned an invalid response')
       }
 
-      const parsedData =
-        template === Template.GENERATE_IMAGE
-          ? JSON.parse(JSON.stringify({ response: response.response }))
-          : JSON.parse(response.response)
-
-      return {
-        response: parsedData as JSON,
-        image: response.image,
+      if (template === Template.GENERATE_IMAGE) {
+        Logger.info('Returning image generation response')
+        return {
+          response: JSON.parse(JSON.stringify({ response: response.text })) as JSON,
+          image: response.image,
+        }
       }
+
+      Logger.info('Returning text response')
+      return { response: JSON.parse(response.text), image: '' }
     } catch (error) {
-      Logger.error(error)
+      Logger.error('Error generating response: ' + error)
       return {
-        response: JSON.parse('{"error": "Failed to generate response"}') as JSON,
+        response: JSON.parse(JSON.stringify({ error: 'Failed to generate response' })) as JSON,
         image: '',
       }
     }
-  }
-
-  /**
-   * Creates a new prompt service with the provided LLM service.
-   * @param {LLM} llm The LLM service to use.
-   * @returns {PromptService} A new prompt service.
-   */
-  static build(llm: LLM) {
-    return new PromptService(new LLMService(llm))
   }
 }
 
 export interface PromptResponse {
   response: JSON
   image: string
+}
+
+export interface ConversationHistory {
+  prompt: string
+  response: string
 }

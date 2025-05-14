@@ -19,17 +19,14 @@ export class MessagePair {
   declare prompt: string
 
   @ApiProperty()
-  declare response: JSON
+  declare json_response: JSON
 
   @ApiProperty()
   declare image: string
 
-  @ApiProperty()
-  declare image_description: string
-
   @ApiProperty({ required: false })
   declare template: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   declare chatId: string
 }

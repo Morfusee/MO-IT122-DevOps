@@ -2,6 +2,7 @@ import UserModel from '#models/user'
 import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import type { HttpContext } from '@adonisjs/core/http'
 import { User } from '../schemas/user.js'
+import Mappers from '../util/mappers.js'
 
 export default class UsersController {
   @ApiOperation({ summary: 'List all users', description: 'List all users' })
@@ -10,10 +11,12 @@ export default class UsersController {
     description: 'Sends a list of users',
     type: [User],
   })
-  async index() {
+  async index({ response }: HttpContext) {
     const users = await UserModel.find()
-
-    return users
+    const mappedUsers = users.map((user) => {
+      return Mappers.toUserResponse(user)
+    })
+    return response.ok(mappedUsers)
   }
 
   @ApiOperation({ summary: 'Create a new User' })

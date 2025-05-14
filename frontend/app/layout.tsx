@@ -7,6 +7,7 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from "@mantine/core";
+import QueryProvider from "@/components/query-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,7 +29,9 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className="antialiased">
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <QueryProvider>
+          <MantineProvider theme={theme}>{children}</MantineProvider>
+        </QueryProvider>
       </body>
     </html>
   );

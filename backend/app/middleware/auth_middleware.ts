@@ -21,7 +21,6 @@ export default class AuthMiddleware {
       }
 
       request.auth = { user: { userId: payload.userId } }
-      console.log(request.auth)
 
       await next()
     } catch (err) {

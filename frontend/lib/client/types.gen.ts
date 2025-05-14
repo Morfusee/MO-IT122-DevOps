@@ -44,6 +44,43 @@ export type AuthTokens = {
     accessToken: string;
 };
 
+export type Chat = {
+    id?: string;
+    userId: string;
+    name: string;
+    topic: string;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type NewChatPrompt = {
+    prompt: string;
+};
+
+export type NewChat = {
+    chat: Chat;
+    messagePair: MessagePair;
+};
+
+export type MessagePair = {
+    id: string;
+    prompt: string;
+    response: Array<Response>;
+    templateId?: string;
+    chatId?: string;
+};
+
+export type Response = {
+    text?: string;
+    image?: string;
+};
+
+export type MessagePrompt = {
+    prompt: string;
+    attachmentUrls?: Array<string>;
+    templateId?: string;
+};
+
 export type GetUsersData = {
     body?: never;
     path?: never;
@@ -126,7 +163,7 @@ export type PostLoginError = PostLoginErrors[keyof PostLoginErrors];
 
 export type PostLoginResponses = {
     /**
-     * Registration successful
+     * Login successful
      */
     200: AuthTokens;
 };
@@ -164,6 +201,190 @@ export type GetMeResponses = {
 };
 
 export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type GetChatsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/chats';
+};
+
+export type GetChatsResponses = {
+    /**
+     * Successfully retrieved all chats associated with the authenticated user.
+     */
+    200: Array<Chat>;
+};
+
+export type GetChatsResponse = GetChatsResponses[keyof GetChatsResponses];
+
+export type PostChatsData = {
+    body?: NewChatPrompt;
+    path?: never;
+    query?: never;
+    url: '/chats';
+};
+
+export type PostChatsErrors = {
+    /**
+     * Missing userId or prompt in request
+     */
+    400: unknown;
+    /**
+     * Internal server error or AI generation failure
+     */
+    500: unknown;
+};
+
+export type PostChatsResponses = {
+    /**
+     * Successfully created a new chat based on the user prompt
+     */
+    200: NewChat;
+};
+
+export type PostChatsResponse = PostChatsResponses[keyof PostChatsResponses];
+
+export type DeleteChatsByIdData = {
+    body?: never;
+    path?: {
+        id?: string;
+    };
+    query?: never;
+    url: '/chats/{id}';
+};
+
+export type DeleteChatsByIdErrors = {
+    /**
+     * Chat not found
+     */
+    404: unknown;
+};
+
+export type DeleteChatsByIdResponses = {
+    /**
+     * Successfully deleted the chat
+     */
+    200: unknown;
+};
+
+export type GetChatsByIdData = {
+    body?: never;
+    path?: {
+        id?: string;
+    };
+    query?: never;
+    url: '/chats/{id}';
+};
+
+export type GetChatsByIdResponses = {
+    /**
+     * Successfully retrieved the requested chat details.
+     */
+    200: Chat;
+};
+
+export type GetChatsByIdResponse = GetChatsByIdResponses[keyof GetChatsByIdResponses];
+
+export type PatchChatsByIdData = {
+    body?: never;
+    path?: {
+        id?: string;
+    };
+    query?: never;
+    url: '/chats/{id}';
+};
+
+export type PatchChatsByIdErrors = {
+    /**
+     * Name field is required or invalid chatId
+     */
+    400: unknown;
+    /**
+     * Chat not found
+     */
+    404: unknown;
+};
+
+export type PatchChatsByIdResponses = {
+    /**
+     * Successfully updated the chat name
+     */
+    200: Chat;
+};
+
+export type PatchChatsByIdResponse = PatchChatsByIdResponses[keyof PatchChatsByIdResponses];
+
+export type PutChatsByIdData = {
+    body?: never;
+    path?: {
+        id?: string;
+    };
+    query?: never;
+    url: '/chats/{id}';
+};
+
+export type PutChatsByIdErrors = {
+    /**
+     * Name field is required or invalid chatId
+     */
+    400: unknown;
+    /**
+     * Chat not found
+     */
+    404: unknown;
+};
+
+export type PutChatsByIdResponses = {
+    /**
+     * Successfully updated the chat name
+     */
+    200: Chat;
+};
+
+export type PutChatsByIdResponse = PutChatsByIdResponses[keyof PutChatsByIdResponses];
+
+export type GetChatsByChatIdMessagesData = {
+    body?: MessagePrompt;
+    path: {
+        /**
+         * The ID of the chat to attach this message to
+         */
+        chat_id: string;
+    };
+    query?: never;
+    url: '/chats/{chat_id}/messages';
+};
+
+export type GetChatsByChatIdMessagesResponses = {
+    /**
+     * Message Pair retrieved successfully
+     */
+    200: Array<MessagePair>;
+};
+
+export type GetChatsByChatIdMessagesResponse = GetChatsByChatIdMessagesResponses[keyof GetChatsByChatIdMessagesResponses];
+
+export type PostChatsByChatIdMessagesData = {
+    body?: MessagePrompt;
+    path: {
+        /**
+         * The ID of the chat to attach this message to
+         */
+        chat_id: string;
+    };
+    query?: never;
+    url: '/chats/{chat_id}/messages';
+};
+
+export type PostChatsByChatIdMessagesResponses = {
+    /**
+     * Message Pair created successfully
+     */
+    200: MessagePair;
+};
+
+export type PostChatsByChatIdMessagesResponse = PostChatsByChatIdMessagesResponses[keyof PostChatsByChatIdMessagesResponses];
 
 export type ClientOptions = {
     baseUrl: 'http://localhost:3333' | (string & {});
