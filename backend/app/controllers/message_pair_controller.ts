@@ -144,7 +144,7 @@ export default class MessagePairController {
     const chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: 1 })
+    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: -1 })
 
     if (!messagePairs) return response.notFound({ message: 'Message pairs not found' })
 
