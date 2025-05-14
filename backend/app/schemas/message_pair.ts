@@ -19,7 +19,7 @@ export class MessagePair {
   declare prompt: string
 
   @ApiProperty()
-  declare response: JSON
+  declare json_response: JSON
 
   @ApiProperty()
   declare image: string

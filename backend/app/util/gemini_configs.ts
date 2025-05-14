@@ -1,9 +1,11 @@
 import { Topic } from '#models/chat'
 import { GenerateContentConfig, Modality, Type } from '@google/genai'
-import TemplateConfig from './template_config.js'
+import TemplateConfig, { AI_TUTOR_INSTRUCTION } from './template_config.js'
 
 export default class GeminiConfigs extends TemplateConfig {
   default: GenerateContentConfig = {
+    maxOutputTokens: 1024,
+    temperature: 0.7,
     responseMimeType: 'application/json',
     responseSchema: {
       type: Type.OBJECT,
@@ -14,28 +16,32 @@ export default class GeminiConfigs extends TemplateConfig {
   }
 
   generate_title: GenerateContentConfig = {
-    maxOutputTokens: 256,
-    temperature: 0.5,
+    maxOutputTokens: 128,
+    temperature: 0.8,
     systemInstruction:
-      'You are a tutorial assistant. Generate a title (short and catchy) for the following text. And choose the right topic.',
+      AI_TUTOR_INSTRUCTION +
+      'For this task you are expected to generate a title / name (short and catchy) for the following text. And choose the right topic.',
     responseMimeType: 'application/json',
     responseSchema: {
       type: Type.OBJECT,
       properties: {
-        title: { type: Type.STRING },
+        name: { type: Type.STRING },
         topic: { type: Type.STRING, enum: Object.values(Topic) },
       },
     },
   }
 
   generate_image: GenerateContentConfig = {
+    maxOutputTokens: 2048,
+    temperature: 0.9,
     responseModalities: [Modality.TEXT, Modality.IMAGE],
   }
 
   summarize: GenerateContentConfig = {
-    maxOutputTokens: 256,
-    temperature: 0.5,
-    systemInstruction: 'You are a tutorial assistant. Summarize the following text.',
+    maxOutputTokens: 512,
+    temperature: 0.3,
+    systemInstruction:
+      AI_TUTOR_INSTRUCTION + 'For this task you are expected to summarize the following text.',
     responseMimeType: 'application/json',
     responseSchema: {
       type: Type.OBJECT,
@@ -46,10 +52,11 @@ export default class GeminiConfigs extends TemplateConfig {
   }
 
   explain_like_im_5: GenerateContentConfig = {
-    maxOutputTokens: 256,
-    temperature: 0.5,
+    maxOutputTokens: 512,
+    temperature: 0.2,
     systemInstruction:
-      'You are a tutorial assistant. Explain the following text like I am a 5 year old.',
+      AI_TUTOR_INSTRUCTION +
+      'For this task you are expected to explain the following text like I am a 5 year old.',
     responseMimeType: 'application/json',
     responseSchema: {
       type: Type.OBJECT,
@@ -60,16 +67,18 @@ export default class GeminiConfigs extends TemplateConfig {
   }
 
   multiple_choice_question: GenerateContentConfig = {
-    maxOutputTokens: 256,
-    temperature: 0.5,
+    maxOutputTokens: 1024,
+    temperature: 0.4,
     systemInstruction:
-      'You are a tutorial assistant. Generate a multiple choice question with 4 options based on the following text.',
+      AI_TUTOR_INSTRUCTION +
+      'For this task you are expected to generate a multiple choice question with 4 options based on the following text.',
     responseMimeType: 'application/json',
     responseSchema: {
       type: Type.ARRAY,
       items: {
         type: Type.OBJECT,
         properties: {
+          response: { type: Type.STRING },
           question: { type: Type.STRING },
           answer: { type: Type.STRING },
           options: { type: Type.ARRAY, items: { type: Type.STRING } },

@@ -9,9 +9,6 @@ export class Chat {
   declare userId: string
 
   @ApiProperty()
-  declare title: String
-
-  @ApiProperty()
   declare name: string
 
   @ApiProperty()
