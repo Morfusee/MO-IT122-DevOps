@@ -5,17 +5,13 @@ export class Chat {
   declare id: string
 
   @ApiProperty()
-  declare userId: string
-
-  @ApiProperty()
-  declare name: String
+  declare title: String
 
   @ApiProperty()
   declare topic: string
+}
 
+export class ChatRequest {
   @ApiProperty()
-  declare createdAt: string
-
-  @ApiProperty()
-  declare updatedAt: string
+  declare prompt: string
 }

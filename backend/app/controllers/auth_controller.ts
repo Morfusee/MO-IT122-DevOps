@@ -5,12 +5,12 @@ import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators
 import jwt from 'jsonwebtoken'
 import { Success, Error, AuthTokens } from '../schemas/response.js'
 import { appKey } from '#config/app'
-import { AuthForm } from '../schemas/auth.js'
+import { AuthForm, RegisterForm } from '../schemas/auth.js'
 import { User } from '../schemas/user.js'
 
 export default class AuthController {
   @ApiOperation({ summary: 'Registers a new user' })
-  @ApiBody({ type: AuthForm })
+  @ApiBody({ type: RegisterForm })
   @ApiResponse({
     status: 200,
     description: 'Registration successful',
@@ -39,7 +39,7 @@ export default class AuthController {
   @ApiBody({ type: AuthForm })
   @ApiResponse({
     status: 200,
-    description: 'Registration successful',
+    description: 'Login successful',
     type: AuthTokens,
   })
   @ApiResponse({
@@ -65,6 +65,9 @@ export default class AuthController {
       httpOnly: true,
       maxAge: 60 * 15,
       encode: false,
+      // sameSite: 'none',
+      // secure: true,
+      // domain: 'mcube.uk'
     })
 
     return {
