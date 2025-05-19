@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import "./globals.css";
 import {
   ColorSchemeScript,
@@ -8,6 +9,7 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import QueryProvider from "@/components/query-provider";
+import { Notifications } from "@mantine/notifications";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,7 +32,10 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <QueryProvider>
-          <MantineProvider theme={theme}>{children}</MantineProvider>
+          <MantineProvider theme={theme}>
+            <Notifications />
+            {children}
+          </MantineProvider>
         </QueryProvider>
       </body>
     </html>

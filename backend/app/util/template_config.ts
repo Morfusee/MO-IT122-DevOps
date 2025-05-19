@@ -5,6 +5,7 @@ export default abstract class TemplateConfig {
   abstract summarize: any
   abstract generate_title: any
   abstract generate_image: any
+  abstract tutor: any
   abstract explain_like_im_5: any
   abstract multiple_choice_question: any
 
@@ -18,6 +19,8 @@ export default abstract class TemplateConfig {
         return this.generate_title
       case Template.GENERATE_IMAGE:
         return this.generate_image
+      case Template.TUTOR:
+        return this.tutor
       case Template.EXPLAIN_LIKE_IM_5:
         return this.explain_like_im_5
       case Template.MULTIPLE_CHOICE_QUESTION:

@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 export enum Template {
   DEFAULT = 'default',
+  TUTOR = 'tutor',
   SUMMARIZE = 'summarize',
   GENERATE_TITLE = 'generate_title',
   GENERATE_IMAGE = 'generate_image',

@@ -3,6 +3,8 @@ import { Group, Loader, ScrollArea, Stack, Text } from "@mantine/core";
 import React, { useEffect, useRef } from "react";
 import { useMessageQuery } from "@/lib/queries/message-query";
 import DotsLoading from "@/components/dots-loading";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MessageListProps {
   id: string;
@@ -21,13 +23,27 @@ function MessageList(props: MessageListProps) {
     query: { isPending, data },
   } = useMessageQuery(props.id);
 
+  const isResponse = (json: unknown): json is { response: string } => {
+    console.log(json);
+    return (
+      typeof json === "object" &&
+      json !== null &&
+      "response" in json &&
+      typeof (json as any).response === "string"
+    );
+  };
+
   return !isPending && data ? (
     <ScrollArea className="w-full flex-1" viewportRef={viewport}>
       {data.map((item) => (
         <React.Fragment key={item.id}>
           <UserMessageBubble content={item.prompt} />
-          {item.response.length > 0 ? (
-            <LLMMessageBubble content={item.response[0].text} />
+          {item.json_response ? (
+            isResponse(item.json_response) ? (
+              <LLMMessageBubble content={item.json_response.response} />
+            ) : (
+              <div>An error as occured</div>
+            )
           ) : (
             <Group className="w-full max-w-2xl mx-auto mb-18">
               <DotsLoading size={8} />
@@ -63,8 +79,8 @@ interface LLMMessageBubbleProps {
 
 function LLMMessageBubble(props: LLMMessageBubbleProps) {
   return (
-    <Group className="w-full max-w-2xl mx-auto mb-18">
-      <Text className="whitespace-pre-wrap">{props.content}</Text>
+    <Group className="markdown w-full max-w-2xl mx-auto mb-18">
+      <Markdown remarkPlugins={[remarkGfm]}>{props.content}</Markdown>
     </Group>
   );
 }

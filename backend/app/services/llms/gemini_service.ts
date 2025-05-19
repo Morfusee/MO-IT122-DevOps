@@ -1,5 +1,5 @@
 import env from '#start/env'
-import { Content, createPartFromUri, GoogleGenAI } from '@google/genai'
+import { createPartFromUri, GoogleGenAI } from '@google/genai'
 import { Template } from '#models/message_pair'
 import Logger from '@adonisjs/core/services/logger'
 import { ConvoGenParams, GenAI, LLMResponse } from '#services/llm_service'
@@ -52,21 +52,18 @@ export class GeminiLLM implements GenAI {
     const geminiModel = template === Template.GENERATE_IMAGE ? IMAGE_MODEL : BASE_MODEL
 
     // Convert the history into a Gemini history.
-    let geminiHistory: Content[] = []
-    if (history) {
-      history.flatMap((item) => {
-        return [
-          {
-            role: 'user',
-            parts: [{ text: item.prompt || '' }],
-          },
-          {
-            role: 'model',
-            parts: [{ text: item.response || '' }],
-          },
-        ]
-      })
-    }
+    const geminiHistory = history?.flatMap((item) => {
+      return [
+        {
+          role: 'user',
+          parts: [{ text: item.prompt || '' }],
+        },
+        {
+          role: 'model',
+          parts: [{ text: item.response || '' }],
+        },
+      ]
+    })
 
     // Use the configuration specified by the template.
     const config = this.templateConfig.get(template)

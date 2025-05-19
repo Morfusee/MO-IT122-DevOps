@@ -21,7 +21,7 @@ export class MessagePair {
   @ApiProperty()
   declare json_response: JSON
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   declare image: string
 
   @ApiProperty({ required: false })

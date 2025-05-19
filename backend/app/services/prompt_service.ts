@@ -26,13 +26,7 @@ interface GenerateConversationParams {
 }
 
 class PromptResponseGenerator {
-  constructor(private llm: GenAI) {
-    if (!llm || typeof llm.invoke !== 'function') {
-      Logger.error('Invalid or missing LLM provided to PromptResponseGenerator')
-      throw new Error('Invalid LLM instance')
-    }
-    Logger.info(`PromptResponseGenerator initialized with LLM: ${llm.constructor.name}`)
-  }
+  constructor(private llm: GenAI) {}
 
   async generateResponse({
     userInput,

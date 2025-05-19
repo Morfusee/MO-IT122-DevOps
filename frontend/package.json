@@ -14,6 +14,7 @@
     "@mantine/core": "^8.0.0",
     "@mantine/form": "^8.0.0",
     "@mantine/hooks": "^8.0.0",
+    "@mantine/notifications": "^8.0.1",
     "@next/env": "^15.3.2",
     "@tabler/icons-react": "^3.31.0",
     "@tanstack/react-query": "^5.75.5",
@@ -23,11 +24,14 @@
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "zod": "^3.24.4"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.67.3",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

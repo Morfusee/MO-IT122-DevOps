@@ -19,6 +19,7 @@ import { redirect } from "next/navigation";
 import "@/lib/client-init";
 import { useToggle } from "@mantine/hooks";
 import { ForgotPasswordForm } from "./forget-pass-form";
+import { notifications } from "@mantine/notifications";
 
 function LoginForm() {
   const [type, toggle] = useToggle(["login", "forget password"]);
@@ -38,7 +39,16 @@ function LoginForm() {
       credentials: "include",
     });
 
-    if (res.response.ok) redirect("/chat");
+    if (!res.response.ok) {
+      notifications.show({
+        title: "Error logging in",
+        message: "The email or password is incorrect",
+        autoClose: 3000,
+        color: "red",
+      });
+    }
+
+    redirect("/chat");
   };
 
   const register = () => {
@@ -58,7 +68,7 @@ function LoginForm() {
             <Anchor onClick={register}>Create account</Anchor>
           </Text>
 
-          <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
+          <Paper withBorder shadow="sm" p={22} mt={30} w={350} radius="md">
             <form onSubmit={form.onSubmit(login)}>
               <TextInput
                 label="Email"
@@ -77,12 +87,18 @@ function LoginForm() {
               />
               <Group justify="space-between" mt="lg">
                 <Checkbox label="Remember me" />
-                <Anchor component="button" size="sm" onClick={() => toggle()}>
+                <Anchor size="sm" onClick={() => toggle()}>
                   Forgot password?
                 </Anchor>
               </Group>
-              <Button fullWidth mt="xl" radius="md">
-                Sign in
+              <Button
+                type="submit"
+                fullWidth
+                mt="xl"
+                radius="md"
+                loading={form.submitting}
+              >
+                Login
               </Button>
             </form>
           </Paper>

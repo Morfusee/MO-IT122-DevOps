@@ -37,6 +37,17 @@ export default class GeminiConfigs extends TemplateConfig {
     responseModalities: [Modality.TEXT, Modality.IMAGE],
   }
 
+  tutor: GenerateContentConfig = {
+    systemInstruction: AI_TUTOR_INSTRUCTION,
+    responseMimeType: 'application/json',
+    responseSchema: {
+      type: Type.OBJECT,
+      properties: {
+        response: { type: Type.STRING },
+      },
+    },
+  }
+
   summarize: GenerateContentConfig = {
     maxOutputTokens: 512,
     temperature: 0.3,
