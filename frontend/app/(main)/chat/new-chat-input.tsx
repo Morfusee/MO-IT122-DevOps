@@ -18,6 +18,7 @@ function NewChatInput() {
       minRows={3}
       onSubmit={handleSubmit}
       disabled={submitted}
+      loading={submitted}
     />
   );
 }

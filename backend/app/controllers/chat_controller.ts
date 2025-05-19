@@ -2,7 +2,7 @@ import ChatModel from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
-import { Chat, NewChat } from '../schemas/chat.js'
+import { Chat, EditChat, NewChat } from '../schemas/chat.js'
 import PromptService from '#services/prompt_service'
 import MessagePairModel, { Template } from '#models/message_pair'
 import { inject } from '@adonisjs/core'
@@ -116,6 +116,7 @@ export default class ChatController {
       'Updates only the name of an existing chat using the provided chatId. Only the `name` field will be modified.',
   })
   @ApiParam({ name: 'id' })
+  @ApiBody({ type: EditChat })
   @ApiResponse({
     status: 200,
     description: 'Successfully updated the chat name',
@@ -130,7 +131,7 @@ export default class ChatController {
     description: 'Chat not found',
   })
   async update({ request, response, params }: HttpContext) {
-    const chatId = params.chatId
+    const chatId = params.id
 
     if (!chatId || !Types.ObjectId.isValid(chatId)) return response.badRequest('Invalid chatId')
 
@@ -173,7 +174,7 @@ export default class ChatController {
     description: 'Chat not found',
   })
   async destroy({ params, response }: HttpContext) {
-    const chatId = params.chatId
+    const chatId = params.id
 
     const deleted = await ChatModel.findByIdAndDelete(chatId)
 
@@ -218,7 +219,9 @@ export default class ChatController {
   @inject()
   async store({ request, response }: HttpContext, promptService: PromptService) {
     const { attachmentUrls, template } = request.body()
-    const templateType: Template = EnumUtil.getTemplateFromString(template)
+    const templateType: Template = template
+      ? EnumUtil.getTemplateFromString(template)
+      : Template.TUTOR
 
     // Get userId from request.auth
     const userId = request.auth.user?.userId

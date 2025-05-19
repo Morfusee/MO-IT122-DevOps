@@ -37,7 +37,7 @@ export default class MessagePairController {
    */
   @ApiOperation({ summary: 'Create a message pair in the chat' })
   @ApiParam({
-    name: 'chat_Id',
+    name: 'chat_id',
     required: true,
     description: 'The ID of the chat to attach this message to',
     type: String,
@@ -67,7 +67,9 @@ export default class MessagePairController {
     if (!chat) chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    const templateType: Template = EnumUtil.getTemplateFromString(template)
+    const templateType: Template = template
+      ? EnumUtil.getTemplateFromString(template)
+      : Template.TUTOR
 
     const messages = await MessagePairModel.find({ chat: params.chat_id })
       .sort({ createdAt: 1 })
@@ -144,7 +146,7 @@ export default class MessagePairController {
     const chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: -1 })
+    const messagePairs = await MessagePairModel.find({ chat: chat }).sort({ createdAt: 1 })
 
     if (!messagePairs) return response.notFound({ message: 'Message pairs not found' })
 

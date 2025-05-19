@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import MessagePairModel from './message_pair.js'
 
 export enum Topic {
   MATH = 'math',
@@ -24,6 +25,12 @@ const ChatSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
+ChatSchema.post('findOneAndDelete', async (doc) => {
+  if (doc) {
+    await MessagePairModel.deleteMany({ chat: doc._id })
+  }
+})
 
 ChatSchema.set('toJSON', {
   versionKey: false,

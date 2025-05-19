@@ -22,3 +22,8 @@ export class NewChat {
   @ApiProperty()
   declare messagePair: MessagePair
 }
+
+export class EditChat {
+  @ApiProperty()
+  declare name: string
+}

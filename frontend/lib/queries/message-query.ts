@@ -52,8 +52,9 @@ export const useMessageQuery = (id: string) => {
         ...(old as MessagePair[]),
         {
           id: "",
+          chatId: "",
           prompt: newPrompt,
-          response: [],
+          json_response: null,
         },
       ]);
 

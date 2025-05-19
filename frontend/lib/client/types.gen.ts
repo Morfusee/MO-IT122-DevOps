@@ -5,8 +5,6 @@ export type User = {
     email: string;
     firstName: string;
     lastName: string;
-    createdAt: string;
-    updatedAt: string;
 };
 
 export type GeminiPromptSample = {
@@ -17,17 +15,11 @@ export type GeminiResponseSample = {
     content: string;
 };
 
-export type AuthForm = {
-    email: string;
-    password: string;
-};
-
-export type RegistrationForm = {
+export type RegisterForm = {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
-    institution?: string;
 };
 
 export type Success = {
@@ -40,6 +32,11 @@ export type _Error = {
     error: string;
 };
 
+export type AuthForm = {
+    email: string;
+    password: string;
+};
+
 export type AuthTokens = {
     accessToken: string;
 };
@@ -49,12 +46,16 @@ export type Chat = {
     userId: string;
     name: string;
     topic: string;
-    createdAt: string;
-    updatedAt: string;
 };
 
-export type NewChatPrompt = {
+export type EditChat = {
+    name: string;
+};
+
+export type MessagePrompt = {
     prompt: string;
+    attachmentUrls?: Array<string>;
+    template?: string;
 };
 
 export type NewChat = {
@@ -65,20 +66,10 @@ export type NewChat = {
 export type MessagePair = {
     id: string;
     prompt: string;
-    response: Array<Response>;
-    templateId?: string;
-    chatId?: string;
-};
-
-export type Response = {
-    text?: string;
+    json_response: unknown;
     image?: string;
-};
-
-export type MessagePrompt = {
-    prompt: string;
-    attachmentUrls?: Array<string>;
-    templateId?: string;
+    template?: string;
+    chatId: string;
 };
 
 export type GetUsersData = {
@@ -121,7 +112,7 @@ export type PostPromptResponses = {
 export type PostPromptResponse = PostPromptResponses[keyof PostPromptResponses];
 
 export type PostRegisterData = {
-    body?: RegistrationForm;
+    body?: RegisterForm;
     path?: never;
     query?: never;
     url: '/register';
@@ -193,9 +184,18 @@ export type GetMeData = {
     url: '/me';
 };
 
+export type GetMeErrors = {
+    /**
+     * User not authenticated
+     */
+    401: _Error;
+};
+
+export type GetMeError = GetMeErrors[keyof GetMeErrors];
+
 export type GetMeResponses = {
     /**
-     * Sends a list of users
+     * Returns the current user information
      */
     200: User;
 };
@@ -219,7 +219,7 @@ export type GetChatsResponses = {
 export type GetChatsResponse = GetChatsResponses[keyof GetChatsResponses];
 
 export type PostChatsData = {
-    body?: NewChatPrompt;
+    body?: MessagePrompt;
     path?: never;
     query?: never;
     url: '/chats';
@@ -240,7 +240,7 @@ export type PostChatsResponses = {
     /**
      * Successfully created a new chat based on the user prompt
      */
-    200: NewChat;
+    201: NewChat;
 };
 
 export type PostChatsResponse = PostChatsResponses[keyof PostChatsResponses];
@@ -277,6 +277,17 @@ export type GetChatsByIdData = {
     url: '/chats/{id}';
 };
 
+export type GetChatsByIdErrors = {
+    /**
+     * Invalid chat ID format
+     */
+    400: unknown;
+    /**
+     * Chat not found
+     */
+    404: unknown;
+};
+
 export type GetChatsByIdResponses = {
     /**
      * Successfully retrieved the requested chat details.
@@ -287,7 +298,7 @@ export type GetChatsByIdResponses = {
 export type GetChatsByIdResponse = GetChatsByIdResponses[keyof GetChatsByIdResponses];
 
 export type PatchChatsByIdData = {
-    body?: never;
+    body?: EditChat;
     path?: {
         id?: string;
     };
@@ -316,7 +327,7 @@ export type PatchChatsByIdResponses = {
 export type PatchChatsByIdResponse = PatchChatsByIdResponses[keyof PatchChatsByIdResponses];
 
 export type PutChatsByIdData = {
-    body?: never;
+    body?: EditChat;
     path?: {
         id?: string;
     };
@@ -345,10 +356,10 @@ export type PutChatsByIdResponses = {
 export type PutChatsByIdResponse = PutChatsByIdResponses[keyof PutChatsByIdResponses];
 
 export type GetChatsByChatIdMessagesData = {
-    body?: MessagePrompt;
+    body?: never;
     path: {
         /**
-         * The ID of the chat to attach this message to
+         * The ID of the chat to retrieve message pairs from
          */
         chat_id: string;
     };
@@ -356,9 +367,18 @@ export type GetChatsByChatIdMessagesData = {
     url: '/chats/{chat_id}/messages';
 };
 
+export type GetChatsByChatIdMessagesErrors = {
+    /**
+     * Chat not found or message pairs not found
+     */
+    404: _Error;
+};
+
+export type GetChatsByChatIdMessagesError = GetChatsByChatIdMessagesErrors[keyof GetChatsByChatIdMessagesErrors];
+
 export type GetChatsByChatIdMessagesResponses = {
     /**
-     * Message Pair retrieved successfully
+     * Message Pairs retrieved successfully
      */
     200: Array<MessagePair>;
 };
@@ -377,11 +397,24 @@ export type PostChatsByChatIdMessagesData = {
     url: '/chats/{chat_id}/messages';
 };
 
+export type PostChatsByChatIdMessagesErrors = {
+    /**
+     * Failed to generate response or create message pair
+     */
+    400: _Error;
+    /**
+     * Chat not found
+     */
+    404: _Error;
+};
+
+export type PostChatsByChatIdMessagesError = PostChatsByChatIdMessagesErrors[keyof PostChatsByChatIdMessagesErrors];
+
 export type PostChatsByChatIdMessagesResponses = {
     /**
      * Message Pair created successfully
      */
-    200: MessagePair;
+    201: MessagePair;
 };
 
 export type PostChatsByChatIdMessagesResponse = PostChatsByChatIdMessagesResponses[keyof PostChatsByChatIdMessagesResponses];
