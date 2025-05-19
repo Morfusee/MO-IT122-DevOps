@@ -4,9 +4,8 @@ import { registerSchema } from "@/schema/auth";
 import {
   Anchor,
   Button,
-  Checkbox,
   Container,
-  Divider,
+  // Divider,
   Group,
   Paper,
   PasswordInput,
@@ -16,11 +15,12 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { redirect } from "next/navigation";
-import { upperFirst, useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+
+// import { GoogleButton } from "@/components/google-button";
+// import { ForgotPasswordForm } from "../login/forget-pass-form";
 
 import "@/lib/client-init";
-import { GoogleButton } from "@/components/google-button";
-import { ForgotPasswordForm } from "../login/forget-pass-form";
 
 function RegistrationForm() {
   const form = useForm({
@@ -29,7 +29,6 @@ function RegistrationForm() {
       email: "",
       firstName: "",
       lastName: "",
-      institution: "",
       password: "",
       confirmPassword: "",
     },
@@ -41,24 +40,31 @@ function RegistrationForm() {
     password,
     firstName,
     lastName,
-    institution,
   }: typeof form.values) => {
     const res = await postRegister({
-      body: { email, password, firstName, lastName, institution },
+      body: { email, password, firstName, lastName },
       credentials: "include",
     });
 
-    if (res.response.ok) redirect("/chat");
+    if (!res.response.ok) {
+      notifications.show({
+        title: "Error logging in",
+        message: "The email or password is incorrect",
+        autoClose: 3000,
+        color: "red",
+      });
+    }
+
+    redirect("/chat");
   };
 
   const login = () => {
     redirect("/login");
   };
 
-
   return (
     <Container>
-      <Title ta="center">Welcome back!</Title>
+      <Title ta="center">Join now!</Title>
 
       <Text className="text-center mt-2" c="dimmed" size="sm">
         Already have an account? <Anchor onClick={login}>Login here</Anchor>
@@ -108,16 +114,21 @@ function RegistrationForm() {
             mt="md"
           ></TextInput> */}
 
-          <Checkbox label="Remember me" my="lg" />
-          <Button fullWidth radius="md" mt="xl">
-            Sign in
+          <Button
+            type="submit"
+            fullWidth
+            mt="xl"
+            radius="md"
+            loading={form.submitting}
+          >
+            Sign up
           </Button>
         </form>
-        <Divider label="Or continue with" labelPosition="center" my="lg" />
+        {/* <Divider label="Or continue with" labelPosition="center" my="lg" />
 
         <Group grow mb="md" mt="md">
           <GoogleButton radius="xl">Google</GoogleButton>
-        </Group>
+        </Group> */}
       </Paper>
     </Container>
   );

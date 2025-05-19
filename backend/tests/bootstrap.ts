@@ -5,6 +5,8 @@ import type { Config } from '@japa/runner/types'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { openapi as openapiAssert } from '@japa/openapi-assertions'
+import { writeFile } from 'fs/promises'
+import { existsSync } from 'fs'
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -14,14 +16,25 @@ import { openapi as openapiAssert } from '@japa/openapi-assertions'
  * Configure Japa plugins in the plugins array.
  * Learn more - https://japa.dev/docs/runner-config#plugins-optional
  */
-export const plugins: Config['plugins'] = [
-  assert(),
-  openapiAssert({
-    schemas: [app.makePath()],
-  }),
-  apiClient(),
-  pluginAdonisJS(app),
-]
+export const plugins: Config['plugins'] = await (async () => {
+  const filePath = 'resources/api-schema.json'
+  const apiUrl = 'http://localhost:3333/api'
+
+  if (!existsSync(filePath)) {
+    const res = await fetch(apiUrl)
+    const schema = await res.text()
+    await writeFile(app.makePath(filePath), schema)
+  }
+
+  return [
+    assert(),
+    openapiAssert({
+      schemas: [app.makePath(filePath)],
+    }),
+    apiClient(),
+    pluginAdonisJS(app),
+  ]
+})()
 
 /**
  * Configure lifecycle function to run before and after all the

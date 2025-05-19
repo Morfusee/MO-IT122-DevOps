@@ -7,8 +7,29 @@ import { Success, Error, AuthTokens } from '../schemas/response.js'
 import { appKey } from '#config/app'
 import { AuthForm, RegisterForm } from '../schemas/auth.js'
 import { User } from '../schemas/user.js'
+import Logger from '@adonisjs/core/services/logger'
+import Mappers from '../util/mappers.js'
 
+/**
+ * AuthController handles user authentication operations including registration,
+ * login, logout, and retrieving the current user's information.
+ *
+ * This controller provides endpoints for user management and authentication
+ * using JWT tokens for secure access.
+ */
 export default class AuthController {
+  /**
+   * Registers a new user in the system.
+   *
+   * This method validates the incoming registration data, checks if the user
+   * already exists, and creates a new user record if the email is not already taken.
+   *
+   * @param {HttpContext} context - The HTTP context containing request and response
+   * @param {Request} context.request - The request object containing user registration data
+   * @param {Response} context.response - The response object for sending HTTP responses
+   * @returns {Success} A success message if registration is successful
+   * @throws {Error} If the user already exists (409 Conflict)
+   */
   @ApiOperation({ summary: 'Registers a new user' })
   @ApiBody({ type: RegisterForm })
   @ApiResponse({
@@ -27,7 +48,7 @@ export default class AuthController {
 
     const existing = await UserModel.findOne({ email })
     if (existing) {
-      response.conflict({ message: 'User already exists' })
+      return response.conflict({ message: 'User already exists' })
     }
 
     await UserModel.create({ email, passwordHash: password, firstName, lastName })
@@ -35,6 +56,19 @@ export default class AuthController {
     return response.ok({ message: 'Successfully registered the user' })
   }
 
+  /**
+   * Authenticates a user and creates a JWT token for authorized access.
+   *
+   * This method validates the login credentials, verifies the user exists,
+   * checks the password, and if valid, generates a JWT token and sets it
+   * as an HTTP-only cookie.
+   *
+   * @param {HttpContext} context - The HTTP context containing request and response
+   * @param {Request} context.request - The request object containing login credentials
+   * @param {Response} context.response - The response object for sending HTTP responses
+   * @returns {AuthTokens} An object containing the access token if login is successful
+   * @throws {Error} If the credentials are invalid (401 Unauthorized)
+   */
   @ApiOperation({ summary: 'Login an existing user' })
   @ApiBody({ type: AuthForm })
   @ApiResponse({
@@ -63,6 +97,8 @@ export default class AuthController {
 
     response.plainCookie('accessToken', accessToken, {
       httpOnly: true,
+      secure: true,
+      sameSite: 'none',
       maxAge: 60 * 15,
       encode: false,
       // sameSite: 'none',
@@ -75,6 +111,15 @@ export default class AuthController {
     }
   }
 
+  /**
+   * Logs out the currently authenticated user.
+   *
+   * This method clears the authentication cookie, effectively ending the user's session.
+   *
+   * @param {HttpContext} context - The HTTP context containing request and response
+   * @param {Object} context.response - The response object for sending HTTP responses
+   * @returns {Object} A success message confirming logout
+   */
   @ApiOperation({ summary: 'Logs out the authenticated user' })
   @ApiResponse({
     status: 200,
@@ -89,19 +134,47 @@ export default class AuthController {
     }
   }
 
+  /**
+   * Retrieves information about the currently authenticated user.
+   *
+   * This method checks if a user is authenticated and returns their profile information.
+   * If no user is authenticated, it returns an unauthorized response.
+   *
+   * @param {HttpContext} context - The HTTP context containing request and response
+   * @param {Object} context.request - The request object containing authentication data
+   * @param {Object} context.response - The response object for sending HTTP responses
+   * @returns {Object} The user's profile information if authenticated
+   * @throws {Error} If the user is not authenticated (401 Unauthorized)
+   */
+  @ApiOperation({ summary: 'Get current user information' })
   @ApiResponse({
     status: 200,
-    description: 'Sends a list of users',
+    description: 'Returns the current user information',
     type: User,
   })
+  @ApiResponse({
+    status: 401,
+    description: 'User not authenticated',
+    type: Error,
+  })
   async me({ request, response }: HttpContext) {
-    console.log(request.auth)
-    if (!request.auth.user) return response.unauthorized({ message: 'Invalid auth' })
+    Logger.info('[AuthController.me] Checking auth user')
 
-    const user = UserModel.findById(request.auth.user.userId)
+    if (!request.auth.user) {
+      console.log('[AuthController.me] Invalid auth - user not found in request')
+      return response.unauthorized({ message: 'Invalid auth' })
+    }
 
-    if (!user) return response.unauthorized({ message: 'User not found' })
+    Logger.debug('[AuthController.me] Looking up user with ID: ' + request.auth.user.userId)
+    const user = await UserModel.findById(request.auth.user.userId)
 
-    return user
+    if (!user) {
+      Logger.info('[AuthController.me] User not found in database')
+      return response.unauthorized({ message: 'User not found' })
+    }
+
+    Logger.info('[AuthController.me] User found, returning user data')
+
+    return response.ok(Mappers.toUserResponse(user))
   }
 }

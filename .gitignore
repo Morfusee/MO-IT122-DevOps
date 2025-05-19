@@ -25,3 +25,6 @@ dist/
 
 # Miscs
 **/mongodb-data
+
+# Certs
+**/certs

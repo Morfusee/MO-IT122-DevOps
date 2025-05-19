@@ -1,6 +1,7 @@
 "use client";
 import { MantineSize, Stack, Textarea } from "@mantine/core";
-import { KeyboardEvent, useRef, useState } from "react";
+import { KeyboardEvent, useState } from "react";
+import DotsLoading from "./dots-loading";
 
 interface InputAreaProps {
   size?: MantineSize | (string & {});
@@ -8,6 +9,7 @@ interface InputAreaProps {
   minRows?: number;
   maxRows?: number;
   disabled?: boolean;
+  loading?: boolean;
   onSubmit: (value: string) => void;
 }
 
@@ -26,18 +28,27 @@ function InputArea(props: InputAreaProps) {
 
   return (
     <Stack className="px-4 py-1 w-full max-w-2xl rounded-2xl bg-gray-100">
-      <Textarea
-        variant="unstyled"
-        size={props.size}
-        placeholder={props.placeholder}
-        autosize
-        minRows={props.minRows}
-        maxRows={props.maxRows}
-        disabled={props.disabled}
-        value={value}
-        onChange={(e) => setValue(e.currentTarget.value)}
-        onKeyDown={handleKeyDown}
-      />
+      {!props.loading ? (
+        <Textarea
+          variant="unstyled"
+          size={props.size}
+          placeholder={props.placeholder}
+          autosize
+          minRows={props.minRows}
+          maxRows={props.maxRows}
+          disabled={props.disabled}
+          value={value}
+          onChange={(e) => setValue(e.currentTarget.value)}
+          onKeyDown={handleKeyDown}
+        />
+      ) : (
+        <Stack
+          className="w-min h-min p-1 py-4"
+          h={17 + 25 * (props.minRows || 1)}
+        >
+          <DotsLoading />
+        </Stack>
+      )}
     </Stack>
   );
 }

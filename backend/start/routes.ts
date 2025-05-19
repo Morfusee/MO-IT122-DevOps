@@ -15,7 +15,7 @@ import { middleware } from './kernel.js'
 const MessagePairController = () => import('#controllers/message_pair_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const GeminiSamplesController = () => import('#controllers/gemini_samples_controller')
-import ChatController from '#controllers/chat_controller'
+const ChatController = () => import('#controllers/chat_controller')
 
 router.get('/', async () => {
   return {
@@ -24,9 +24,6 @@ router.get('/', async () => {
 })
 
 router.resource('users', UsersController)
-
-// Posts a new message pair to a chat
-router.resource('chats.messages', MessagePairController).use('*', middleware.auth())
 
 router.post('/prompt', [GeminiSamplesController, 'index'])
 
@@ -44,11 +41,8 @@ router
 
 router
   .group(() => {
-    router.get('/chats', [ChatController, 'index'])
-    router.get('/chats/:chatId', [ChatController, 'show'])
-    router.patch('/chats/:chatId', [ChatController, 'update'])
-    router.delete('/chats/:chatId', [ChatController, 'destroy'])
-    router.post('/chats', [ChatController, 'store'])
+    router.resource('chats', ChatController).apiOnly()
+    router.resource('chats.messages', MessagePairController).apiOnly()
   })
   .use(middleware.auth())
 
