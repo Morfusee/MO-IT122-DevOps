@@ -2,7 +2,7 @@ import ChatModel from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
-import { Chat, EditChat, NewChat } from '../schemas/chat.js'
+import { Chat, DeleteChat, EditChat, NewChat } from '../schemas/chat.js'
 import PromptService from '#services/prompt_service'
 import MessagePairModel, { Template } from '#models/message_pair'
 import { inject } from '@adonisjs/core'
@@ -168,6 +168,7 @@ export default class ChatController {
   @ApiResponse({
     status: 200,
     description: 'Successfully deleted the chat',
+    type: DeleteChat,
   })
   @ApiResponse({
     status: 404,

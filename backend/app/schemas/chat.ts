@@ -27,3 +27,8 @@ export class EditChat {
   @ApiProperty()
   declare name: string
 }
+
+export class DeleteChat {
+  @ApiProperty()
+  declare message: string
+}
