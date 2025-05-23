@@ -5,7 +5,7 @@ import { postChats } from "@/lib/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import "@/lib/client-init";
+import "@/lib/server-init";
 import { cookies } from "next/headers";
 
 export async function createNewChat(prompt: string) {

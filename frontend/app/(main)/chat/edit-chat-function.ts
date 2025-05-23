@@ -4,7 +4,7 @@ import { patchChatsById } from "@/lib/client";
 
 import { revalidatePath } from "next/cache";
 
-import "@/lib/client-init";
+import "@/lib/server-init";
 import { cookies } from "next/headers";
 
 export async function editChatTitle(chatId: string, title: string) {
