@@ -19,7 +19,7 @@ COPY backend/package.json backend/pnpm-lock.yaml ./
 
 # Install ALL dependencies (including dev)
 # https://pnpm.io/docker
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 
 ###################################
 #### Second stage of the build ####
