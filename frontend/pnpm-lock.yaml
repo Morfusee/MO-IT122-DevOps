@@ -11,6 +11,9 @@ importers:
       '@hey-api/client-fetch':
         specifier: ^0.10.0
         version: 0.10.0(@hey-api/openapi-ts@0.67.3(typescript@5.8.3))
+      '@hey-api/client-next':
+        specifier: ^0.3.1
+        version: 0.3.1(@hey-api/openapi-ts@0.67.3(typescript@5.8.3))
       '@mantine/core':
         specifier: ^8.0.0
         version: 8.0.0(@mantine/hooks@8.0.0(react@19.1.0))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -130,6 +133,11 @@ packages:
 
   '@hey-api/client-fetch@0.10.0':
     resolution: {integrity: sha512-C7vzj4t52qPiHCqjn1l8cRTI2p4pZCd7ViLtJDTHr5ZwI4sWOYC1tmv6bd529qqY6HFFbhGCz4TAZSwKAMJncg==}
+    peerDependencies:
+      '@hey-api/openapi-ts': < 2
+
+  '@hey-api/client-next@0.3.1':
+    resolution: {integrity: sha512-0iwYGOs7BV/ip8i2+nX6frevPne/ztkeE6VqnwGMs7yM1yym0ZcxcIs7tkoO01THqzs5qokG9A8JFUiLTZgONw==}
     peerDependencies:
       '@hey-api/openapi-ts': < 2
 
@@ -1465,6 +1473,10 @@ snapshots:
   '@floating-ui/utils@0.2.9': {}
 
   '@hey-api/client-fetch@0.10.0(@hey-api/openapi-ts@0.67.3(typescript@5.8.3))':
+    dependencies:
+      '@hey-api/openapi-ts': 0.67.3(typescript@5.8.3)
+
+  '@hey-api/client-next@0.3.1(@hey-api/openapi-ts@0.67.3(typescript@5.8.3))':
     dependencies:
       '@hey-api/openapi-ts': 0.67.3(typescript@5.8.3)
 

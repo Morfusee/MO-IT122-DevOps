@@ -12,6 +12,7 @@ import FileUploads from '../util/file_uploads.js'
 import EnumUtil from '../util/enum_util.js'
 import Logger from '@adonisjs/core/services/logger'
 import Mappers from '../util/mappers.js'
+import { Error } from '../schemas/response.js'
 
 /**
  * ChatController handles operations related to chat sessions in the AI tutoring platform.
@@ -77,10 +78,12 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Invalid chat ID format',
+    type: Error,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
   async show({ params, response }: HttpContext) {
     const chatId = params.id
@@ -125,10 +128,12 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Name field is required or invalid chatId',
+    type: Error,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
   async update({ request, response, params }: HttpContext) {
     const chatId = params.id
@@ -173,6 +178,7 @@ export default class ChatController {
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
   async destroy({ params, response }: HttpContext) {
     const chatId = params.id
@@ -212,10 +218,12 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Missing userId or prompt in request',
+    type: Error,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error or AI generation failure',
+    type: Error,
   })
   @inject()
   async store({ request, response }: HttpContext, promptService: PromptService) {

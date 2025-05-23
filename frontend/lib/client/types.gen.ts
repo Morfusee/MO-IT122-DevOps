@@ -52,6 +52,10 @@ export type EditChat = {
     name: string;
 };
 
+export type DeleteChat = {
+    message: string;
+};
+
 export type MessagePrompt = {
     prompt: string;
     attachmentUrls?: Array<string>;
@@ -229,12 +233,14 @@ export type PostChatsErrors = {
     /**
      * Missing userId or prompt in request
      */
-    400: unknown;
+    400: _Error;
     /**
      * Internal server error or AI generation failure
      */
-    500: unknown;
+    500: _Error;
 };
+
+export type PostChatsError = PostChatsErrors[keyof PostChatsErrors];
 
 export type PostChatsResponses = {
     /**
@@ -258,15 +264,19 @@ export type DeleteChatsByIdErrors = {
     /**
      * Chat not found
      */
-    404: unknown;
+    404: _Error;
 };
+
+export type DeleteChatsByIdError = DeleteChatsByIdErrors[keyof DeleteChatsByIdErrors];
 
 export type DeleteChatsByIdResponses = {
     /**
      * Successfully deleted the chat
      */
-    200: unknown;
+    200: DeleteChat;
 };
+
+export type DeleteChatsByIdResponse = DeleteChatsByIdResponses[keyof DeleteChatsByIdResponses];
 
 export type GetChatsByIdData = {
     body?: never;
@@ -281,12 +291,14 @@ export type GetChatsByIdErrors = {
     /**
      * Invalid chat ID format
      */
-    400: unknown;
+    400: _Error;
     /**
      * Chat not found
      */
-    404: unknown;
+    404: _Error;
 };
+
+export type GetChatsByIdError = GetChatsByIdErrors[keyof GetChatsByIdErrors];
 
 export type GetChatsByIdResponses = {
     /**
@@ -310,12 +322,14 @@ export type PatchChatsByIdErrors = {
     /**
      * Name field is required or invalid chatId
      */
-    400: unknown;
+    400: _Error;
     /**
      * Chat not found
      */
-    404: unknown;
+    404: _Error;
 };
+
+export type PatchChatsByIdError = PatchChatsByIdErrors[keyof PatchChatsByIdErrors];
 
 export type PatchChatsByIdResponses = {
     /**
@@ -339,12 +353,14 @@ export type PutChatsByIdErrors = {
     /**
      * Name field is required or invalid chatId
      */
-    400: unknown;
+    400: _Error;
     /**
      * Chat not found
      */
-    404: unknown;
+    404: _Error;
 };
+
+export type PutChatsByIdError = PutChatsByIdErrors[keyof PutChatsByIdErrors];
 
 export type PutChatsByIdResponses = {
     /**
