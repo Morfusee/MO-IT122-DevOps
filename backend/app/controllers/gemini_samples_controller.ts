@@ -5,6 +5,7 @@ import { promptValidator } from '#validators/llm'
 import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 import { GeminiPromptSample, GeminiResponseSample } from '../schemas/llm.js'
 import PromptService from '#services/prompt_service'
+import { Template } from '#services/template_config'
 
 export default class GeminiSamplesController {
   @ApiOperation({ summary: 'Ask gemini a question' })
@@ -18,7 +19,9 @@ export default class GeminiSamplesController {
   async index({ request, response }: HttpContext, ai: PromptService) {
     const { prompt } = await request.validateUsing(promptValidator)
 
-    const geminiResponse = await ai.build().generateResponse({ userInput: prompt })
+    const geminiResponse = await ai
+      .build()
+      .generateResponse({ userInput: prompt, template: Template.DEFAULT })
 
     response.ok({ prompt: geminiResponse })
   }

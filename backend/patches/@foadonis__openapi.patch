@@ -1,13 +1,18 @@
 diff --git a/build/src/loader.js b/build/src/loader.js
-index aede78964a6ca8fa9ad716eec75312a7a9821596..f35608e6ee40404dbf7a6570feba374098de464f 100644
+index aede78964a6ca8fa9ad716eec75312a7a9821596..ed38508fb5107a11eb191ed71b5281cf857a2ed0 100644
 --- a/build/src/loader.js
 +++ b/build/src/loader.js
-@@ -34,7 +34,7 @@ export class RouterLoader {
+@@ -33,10 +33,12 @@ export class RouterLoader {
+             return;
          const [target, propertyKey] = reference;
          const name = stringHelpers.create(target.name).removeSuffix('Controller').toString();
++        const metadata = OperationMetadataStorage.getMetadata(target.prototype, propertyKey, true)
          OperationMetadataStorage.defineMetadata(target.prototype, {
 -            path: route.pattern,
 +            path: route.pattern.replace(/:([\w]+)/g, '{$1}'),
              methods: route.methods.filter((m) => m !== 'HEAD').map((r) => r.toLowerCase()),
              tags: [name],
++            ...metadata
          }, propertyKey);
+         return target;
+     }

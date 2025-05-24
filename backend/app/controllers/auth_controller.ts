@@ -7,8 +7,6 @@ import { Success, Error, AuthTokens } from '../schemas/response.js'
 import { appKey } from '#config/app'
 import { AuthForm, RegisterForm } from '../schemas/auth.js'
 import { User } from '../schemas/user.js'
-import Logger from '@adonisjs/core/services/logger'
-import Mappers from '../util/mappers.js'
 
 /**
  * AuthController handles user authentication operations including registration,
@@ -24,13 +22,8 @@ export default class AuthController {
    * This method validates the incoming registration data, checks if the user
    * already exists, and creates a new user record if the email is not already taken.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Request} context.request - The request object containing user registration data
-   * @param {Response} context.response - The response object for sending HTTP responses
-   * @returns {Success} A success message if registration is successful
-   * @throws {Error} If the user already exists (409 Conflict)
    */
-  @ApiOperation({ summary: 'Registers a new user' })
+  @ApiOperation({ description: 'Registers a new user' })
   @ApiBody({ type: RegisterForm })
   @ApiResponse({
     status: 200,
@@ -63,13 +56,8 @@ export default class AuthController {
    * checks the password, and if valid, generates a JWT token and sets it
    * as an HTTP-only cookie.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Request} context.request - The request object containing login credentials
-   * @param {Response} context.response - The response object for sending HTTP responses
-   * @returns {AuthTokens} An object containing the access token if login is successful
-   * @throws {Error} If the credentials are invalid (401 Unauthorized)
    */
-  @ApiOperation({ summary: 'Login an existing user' })
+  @ApiOperation({ description: 'Login an existing user' })
   @ApiBody({ type: AuthForm })
   @ApiResponse({
     status: 200,
@@ -116,11 +104,8 @@ export default class AuthController {
    *
    * This method clears the authentication cookie, effectively ending the user's session.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @returns {Object} A success message confirming logout
    */
-  @ApiOperation({ summary: 'Logs out the authenticated user' })
+  @ApiOperation({ description: 'Logs out the authenticated user' })
   @ApiResponse({
     status: 200,
     description: 'Logout successful',
@@ -140,13 +125,8 @@ export default class AuthController {
    * This method checks if a user is authenticated and returns their profile information.
    * If no user is authenticated, it returns an unauthorized response.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Object} context.request - The request object containing authentication data
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @returns {Object} The user's profile information if authenticated
-   * @throws {Error} If the user is not authenticated (401 Unauthorized)
    */
-  @ApiOperation({ summary: 'Get current user information' })
+  @ApiOperation({ description: 'Get current user information' })
   @ApiResponse({
     status: 200,
     description: 'Returns the current user information',
@@ -157,24 +137,29 @@ export default class AuthController {
     description: 'User not authenticated',
     type: Error,
   })
-  async me({ request, response }: HttpContext) {
-    Logger.info('[AuthController.me] Checking auth user')
+  async me({ request, response, logger }: HttpContext) {
+    logger.info('Checking auth user')
 
     if (!request.auth.user) {
-      console.log('[AuthController.me] Invalid auth - user not found in request')
+      logger.error('Invalid auth - user not found in request')
       return response.unauthorized({ message: 'Invalid auth' })
     }
 
-    Logger.debug('[AuthController.me] Looking up user with ID: ' + request.auth.user.userId)
+    logger.debug('Looking up user with ID: ' + request.auth.user.userId)
     const user = await UserModel.findById(request.auth.user.userId)
 
     if (!user) {
-      Logger.info('[AuthController.me] User not found in database')
+      logger.error('User not found in database')
       return response.unauthorized({ message: 'User not found' })
     }
 
-    Logger.info('[AuthController.me] User found, returning user data')
+    logger.info('User found, returning user data')
 
-    return response.ok(Mappers.toUserResponse(user))
+    return response.ok({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    })
   }
 }

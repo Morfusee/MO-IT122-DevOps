@@ -12,4 +12,10 @@ export class User {
 
   @ApiProperty()
   declare lastName: string
+
+  @ApiProperty()
+  declare createdAt: string
+
+  @ApiProperty()
+  declare updatedAt: string
 }
