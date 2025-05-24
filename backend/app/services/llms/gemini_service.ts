@@ -1,17 +1,14 @@
 import env from '#start/env'
 import { createPartFromUri, GoogleGenAI } from '@google/genai'
-import { Template } from '#models/message_pair'
 import Logger from '@adonisjs/core/services/logger'
 import { ConvoGenParams, GenAI, LLMResponse } from '#services/llm_service'
-import GeminiConfigs from '../../util/gemini_configs.js'
+import { GeminiConfig } from '#services/templates/gemini_configs'
 
 const API_KEY = env.get('GEMINI_KEY')
 const BASE_MODEL = 'gemini-2.0-flash'
-const IMAGE_MODEL = 'gemini-2.0-flash-preview-image-generation'
+// const IMAGE_MODEL = 'gemini-2.0-flash-preview-image-generation'
 
 export class GeminiLLM implements GenAI {
-  templateConfig = GeminiConfigs.build()
-
   /**
    * Invoke the LLM with a given prompt and optional attachment URLs. Returns an object with a "response" property containing the output of the LLM.
    * @param {string} prompt The prompt to give to the LLM.
@@ -48,9 +45,6 @@ export class GeminiLLM implements GenAI {
 
     const validAttachments = attachments.filter((file) => file !== null)
 
-    // Use the model according to the template, or the default if none is specified.
-    const geminiModel = template === Template.GENERATE_IMAGE ? IMAGE_MODEL : BASE_MODEL
-
     // Convert the history into a Gemini history.
     const geminiHistory = history?.flatMap((item) => {
       return [
@@ -65,14 +59,11 @@ export class GeminiLLM implements GenAI {
       ]
     })
 
-    // Use the configuration specified by the template.
-    const config = this.templateConfig.get(template)
-
     // Generate chat using the Gemini model.
     const chat = client.chats.create({
-      model: geminiModel,
+      model: BASE_MODEL,
       history: geminiHistory,
-      config: config,
+      config: GeminiConfig[template],
     })
 
     // Send the prompt and attachments to the chat.
@@ -99,21 +90,9 @@ export class GeminiLLM implements GenAI {
 
     Logger.info('Generated response: ' + response.text)
 
-    let imageBase64: string | null = null
-
-    // If the template is for generating an image, process the response.
-    if (template === Template.GENERATE_IMAGE && response?.candidates?.[0]?.content) {
-      for (const part of response.candidates[0].content.parts ?? []) {
-        if (part.text) {
-        } else if (part.inlineData && part.inlineData.data) {
-          imageBase64 = part.inlineData.data
-        }
-      }
-    }
-
     return {
       text: response.text?.trim() || '',
-      image: imageBase64 || '',
+      image: '',
     }
   }
 

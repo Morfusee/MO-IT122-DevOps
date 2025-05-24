@@ -1,14 +1,5 @@
+import { Template } from '#services/template_config'
 import mongoose from 'mongoose'
-
-export enum Template {
-  DEFAULT = 'default',
-  TUTOR = 'tutor',
-  SUMMARIZE = 'summarize',
-  GENERATE_TITLE = 'generate_title',
-  GENERATE_IMAGE = 'generate_image',
-  EXPLAIN_LIKE_IM_5 = 'explain_like_im_5',
-  MULTIPLE_CHOICE_QUESTION = 'multiple_choice_question',
-}
 
 const MessagePairSchema = new mongoose.Schema(
   {

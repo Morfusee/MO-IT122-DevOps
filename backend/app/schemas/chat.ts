@@ -13,6 +13,12 @@ export class Chat {
 
   @ApiProperty()
   declare topic: string
+
+  @ApiProperty()
+  declare createdAt: string
+
+  @ApiProperty()
+  declare updatedAt: string
 }
 
 export class NewChat {

@@ -1,8 +1,7 @@
-import { Template } from '#models/message_pair'
 import { inject } from '@adonisjs/core'
 import Logger from '@adonisjs/core/services/logger'
-import { GenAI } from './llm_service.js'
-import { LLM } from '../util/llm_handler.js'
+import { LLM, GenAI } from '#services/llm_service'
+import { Template, TemplateResponseMap, TemplateValue } from '#services/template_config'
 
 @inject()
 export default class PromptService {
@@ -22,18 +21,28 @@ interface GenerateConversationParams {
   userInput: string
   attachmentUrls?: string[]
   history?: ConversationHistory[]
-  template?: Template
+  template?: TemplateValue
+}
+
+export interface ConversationHistory {
+  prompt: string
+  response: string
+}
+
+export interface PromptResponse<T extends TemplateValue> {
+  response: TemplateResponseMap[T]
+  image: string
 }
 
 class PromptResponseGenerator {
   constructor(private llm: GenAI) {}
 
-  async generateResponse({
+  async generateResponse<T extends TemplateValue>({
     userInput,
     attachmentUrls,
     template,
     history,
-  }: GenerateConversationParams): Promise<PromptResponse> {
+  }: GenerateConversationParams & { template: T }): Promise<PromptResponse<T>> {
     if (!userInput) {
       Logger.warn('PromptResponseGenerator: generateResponse called without user input')
       throw new Error('User input is required')
@@ -56,32 +65,16 @@ class PromptResponseGenerator {
         Logger.error('LLM returned an invalid response')
       }
 
-      if (template === Template.GENERATE_IMAGE) {
-        Logger.info('Returning image generation response')
-        return {
-          response: JSON.parse(JSON.stringify({ response: response.text })) as JSON,
-          image: response.image,
-        }
-      }
-
       Logger.info('Returning text response')
       return { response: JSON.parse(response.text), image: '' }
     } catch (error) {
       Logger.error('Error generating response: ' + error)
       return {
-        response: JSON.parse(JSON.stringify({ error: 'Failed to generate response' })) as JSON,
+        response: JSON.parse(
+          JSON.stringify({ error: 'Failed to generate response' })
+        ) as TemplateResponseMap[T],
         image: '',
       }
     }
   }
-}
-
-export interface PromptResponse {
-  response: JSON
-  image: string
-}
-
-export interface ConversationHistory {
-  prompt: string
-  response: string
 }

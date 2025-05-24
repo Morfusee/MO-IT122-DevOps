@@ -1,9 +1,10 @@
 import { Topic } from '#models/chat'
-import { GenerateContentConfig, Modality, Type } from '@google/genai'
-import TemplateConfig, { AI_TUTOR_INSTRUCTION } from './template_config.js'
+import { AI_TUTOR_INSTRUCTION } from '#services/prompt_instructions'
+import { TemplateConfigType } from '#services/template_config'
+import { GenerateContentConfig, Type } from '@google/genai'
 
-export default class GeminiConfigs extends TemplateConfig {
-  default: GenerateContentConfig = {
+export const GeminiConfig: TemplateConfigType<GenerateContentConfig> = {
+  default: {
     maxOutputTokens: 1024,
     temperature: 0.7,
     responseMimeType: 'application/json',
@@ -13,9 +14,9 @@ export default class GeminiConfigs extends TemplateConfig {
         response: { type: Type.STRING },
       },
     },
-  }
+  },
 
-  generate_title: GenerateContentConfig = {
+  generate_title: {
     maxOutputTokens: 128,
     temperature: 0.8,
     systemInstruction:
@@ -29,15 +30,9 @@ export default class GeminiConfigs extends TemplateConfig {
         topic: { type: Type.STRING, enum: Object.values(Topic) },
       },
     },
-  }
+  },
 
-  generate_image: GenerateContentConfig = {
-    maxOutputTokens: 2048,
-    temperature: 0.9,
-    responseModalities: [Modality.TEXT, Modality.IMAGE],
-  }
-
-  tutor: GenerateContentConfig = {
+  tutor: {
     systemInstruction: AI_TUTOR_INSTRUCTION,
     responseMimeType: 'application/json',
     responseSchema: {
@@ -46,9 +41,9 @@ export default class GeminiConfigs extends TemplateConfig {
         response: { type: Type.STRING },
       },
     },
-  }
+  },
 
-  summarize: GenerateContentConfig = {
+  summarize: {
     maxOutputTokens: 512,
     temperature: 0.3,
     systemInstruction:
@@ -60,9 +55,9 @@ export default class GeminiConfigs extends TemplateConfig {
         response: { type: Type.STRING },
       },
     },
-  }
+  },
 
-  explain_like_im_5: GenerateContentConfig = {
+  explain_like_im_5: {
     maxOutputTokens: 512,
     temperature: 0.2,
     systemInstruction:
@@ -75,9 +70,9 @@ export default class GeminiConfigs extends TemplateConfig {
         response: { type: Type.STRING },
       },
     },
-  }
+  },
 
-  multiple_choice_question: GenerateContentConfig = {
+  multiple_choice_question: {
     maxOutputTokens: 1024,
     temperature: 0.4,
     systemInstruction:
@@ -96,9 +91,5 @@ export default class GeminiConfigs extends TemplateConfig {
         },
       },
     },
-  }
-
-  static build() {
-    return new GeminiConfigs()
-  }
+  },
 }
