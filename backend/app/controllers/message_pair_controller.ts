@@ -1,16 +1,14 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import { inject } from '@adonisjs/core'
-import { idValidator, promptValidator } from '#validators/llm'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
-import MessagePairModel, { Template } from '#models/message_pair'
+import MessagePairModel from '#models/message_pair'
 import PromptService, { ConversationHistory } from '#services/prompt_service'
 import { MessagePrompt, MessagePair } from '../schemas/message_pair.js'
 import { Error } from '../schemas/response.js'
 import ChatModel from '#models/chat'
-import EnumUtil from '../util/enum_util.js'
-import FileUploads from '../util/file_uploads.js'
-import Mappers from '../util/mappers.js'
+import { Template, TemplateValue } from '#services/template_config'
+import { chatIdValidator, createMessageValidator } from '#validators/message'
 
 /**
  * MessagePairController handles operations related to message pairs in chat sessions.
@@ -27,15 +25,8 @@ export default class MessagePairController {
    * and creates a new message pair in the specified chat. It handles various template types,
    * including image generation, and maintains conversation history for context-aware responses.
    *
-   * @param {HttpContext} context - The HTTP context containing params, request, and response
-   * @param {Object} context.params - The route parameters containing the chat ID
-   * @param {Object} context.request - The request object containing the prompt and other data
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @param {PromptService} promptService - The service for generating AI responses (injected)
-   * @returns {Promise<MessagePair>} The created message pair or an error response
-   * @throws {Error} If the chat is not found (404 Not Found) or if there's an error in creating the message pair (400 Bad Request)
    */
-  @ApiOperation({ summary: 'Create a message pair in the chat' })
+  @ApiOperation({ description: 'Create a message pair in the chat' })
   @ApiParam({
     name: 'chat_id',
     required: true,
@@ -59,17 +50,15 @@ export default class MessagePairController {
     type: Error,
   })
   @inject()
-  async store({ params, request, response }: HttpContext, promptService: PromptService) {
-    const { attachmentUrls, template } = request.body()
-    const { prompt } = await request.validateUsing(promptValidator)
+  async store({ request, response }: HttpContext, promptService: PromptService) {
+    const { params, prompt, attachmentUrls, template } =
+      await request.validateUsing(createMessageValidator)
 
     let chat = await ChatModel.findById(request.param('chat_id'))
     if (!chat) chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
 
-    const templateType: Template = template
-      ? EnumUtil.getTemplateFromString(template)
-      : Template.TUTOR
+    const templateType: TemplateValue = template || Template.TUTOR
 
     const messages = await MessagePairModel.find({ chat: params.chat_id })
       .sort({ createdAt: 1 })
@@ -91,23 +80,20 @@ export default class MessagePairController {
 
     if (!ai) return response.badRequest({ message: 'Failed to generate response' })
 
-    // Decode base64 image and save to file (if exists)
-    const imagePath =
-      templateType === Template.GENERATE_IMAGE
-        ? await FileUploads.uploadImage(ai.image, 'base64')
-        : ''
-
     const messagePair = await MessagePairModel.create({
       prompt,
       json_response: ai.response,
-      image: imagePath || '',
+      image: '',
       template: templateType,
       chat: chat,
     })
 
     if (!messagePair) return response.badRequest({ message: 'Failed to create message pair' })
 
-    response.created(Mappers.toMessagePairResponse(messagePair))
+    response.created({
+      chatId: chat.id,
+      ...messagePair.toJSON(),
+    })
   }
 
   /**
@@ -116,13 +102,8 @@ export default class MessagePairController {
    * This method fetches all message pairs from the database that belong to the
    * specified chat and returns them sorted by creation time (oldest first).
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Object} context.request - The request object containing the validated chat ID
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @returns {Promise<Array<MessagePair>>} A list of message pairs belonging to the specified chat
-   * @throws {Error} If the chat is not found (404 Not Found) or if message pairs are not found (404 Not Found)
    */
-  @ApiOperation({ summary: 'Retrieve all message pairs in the chat' })
+  @ApiOperation({ description: 'Retrieve all message pairs in the chat' })
   @ApiParam({
     name: 'chat_id',
     required: true,
@@ -141,7 +122,7 @@ export default class MessagePairController {
   })
   @inject()
   async index({ request, response }: HttpContext) {
-    const { params } = await request.validateUsing(idValidator)
+    const { params } = await request.validateUsing(chatIdValidator)
 
     const chat = await ChatModel.findById(params.chat_id)
     if (!chat) return response.notFound({ message: 'Chat not found' })
@@ -150,8 +131,11 @@ export default class MessagePairController {
 
     if (!messagePairs) return response.notFound({ message: 'Message pairs not found' })
 
-    const formattedMessagePairs = messagePairs.map((msg) => Mappers.toMessagePairResponse(msg))
+    const messagePairList = messagePairs.map((msg) => ({
+      chatId: chat.id,
+      ...msg.toJSON(),
+    }))
 
-    response.ok(formattedMessagePairs) // TODO: Add pagination
+    response.ok(messagePairList)
   }
 }
