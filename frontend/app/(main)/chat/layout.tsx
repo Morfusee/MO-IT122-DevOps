@@ -4,7 +4,7 @@ import ChatList from "./chat-list";
 import { getChats } from "@/lib/client";
 import { cookies } from "next/headers";
 
-import "@/lib/client-init";
+import "@/lib/server-init";
 
 async function Layout({
   children,

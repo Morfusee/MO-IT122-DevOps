@@ -25,7 +25,7 @@ export class NewChat {
   @ApiProperty()
   declare chat: Chat
 
-  @ApiProperty()
+  @ApiProperty({ type: MessagePair })
   declare messagePair: MessagePair
 }
 
