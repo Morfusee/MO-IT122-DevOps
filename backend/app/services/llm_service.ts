@@ -1,20 +1,26 @@
-import { Template } from '#models/message_pair'
-import TemplateConfig from '../util/template_config.js'
 import { ConversationHistory } from '#services/prompt_service'
+import { TemplateValue } from './template_config.js'
+import { GeminiLLM } from '#services/llms/gemini_service'
 
 export interface ConvoGenParams {
   prompt: string
   attachmentUrls: string[]
-  template: Template
+  template: TemplateValue
   history?: ConversationHistory[]
 }
 
 export interface GenAI {
-  templateConfig: TemplateConfig
   invoke(params: ConvoGenParams): Promise<LLMResponse>
 }
 
 export interface LLMResponse {
   text: string
   image: string
+}
+
+/**
+ * Enum representing the different language models available.
+ */
+export const LLM = {
+  GEMINI: GeminiLLM.create(),
 }

@@ -4,7 +4,7 @@ import MessageInput from "./message-input";
 import { cookies } from "next/headers";
 import { getChatsById } from "@/lib/client";
 
-import "@/lib/client-init";
+import "@/lib/server-init";
 
 type Params = Promise<{ id: string }>;
 

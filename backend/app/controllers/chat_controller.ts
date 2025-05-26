@@ -2,16 +2,14 @@ import ChatModel from '#models/chat'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@foadonis/openapi/decorators'
 import { Types } from 'mongoose'
-import { Chat, EditChat, NewChat } from '../schemas/chat.js'
+import { Chat, DeleteChat, EditChat, NewChat } from '../schemas/chat.js'
 import PromptService from '#services/prompt_service'
-import MessagePairModel, { Template } from '#models/message_pair'
+import MessagePairModel from '#models/message_pair'
 import { inject } from '@adonisjs/core'
 import { MessagePrompt } from '../schemas/message_pair.js'
-import { LLM } from '../util/llm_handler.js'
-import FileUploads from '../util/file_uploads.js'
-import EnumUtil from '../util/enum_util.js'
-import Logger from '@adonisjs/core/services/logger'
-import Mappers from '../util/mappers.js'
+import { Template, TemplateValue } from '#services/template_config'
+import { chatIdValidator, createChatValidator, editNameValidator } from '#validators/chat'
+import { Error } from '../schemas/response.js'
 
 /**
  * ChatController handles operations related to chat sessions in the AI tutoring platform.
@@ -27,12 +25,8 @@ export default class ChatController {
    * This method fetches all chat entries from the database that belong to the
    * authenticated user and returns them sorted by most recently updated first.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Object} context.request - The request object containing authentication data
-   * @returns {Promise<Array<Chat>>} A list of chat sessions belonging to the authenticated user
    */
   @ApiOperation({
-    summary: 'Retrieve all chats for the authenticated user',
     description:
       'Fetches and returns a list of all chat entries that belong to the currently authenticated user.',
   })
@@ -45,9 +39,8 @@ export default class ChatController {
     const id = request.auth.user?.userId
 
     const chats = await ChatModel.find({ userId: id }).sort({ updatedAt: -1 })
-    const mappedChats = chats.map((chat) => Mappers.toChatResponse(chat))
 
-    return response.ok(mappedChats)
+    return response.ok(chats)
   }
 
   /**
@@ -57,18 +50,17 @@ export default class ChatController {
    * and returns it if found. If the ID is invalid or the chat doesn't exist,
    * it returns an appropriate error response.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Object} context.params - The route parameters containing the chat ID
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @returns {Promise<Chat|Object>} The requested chat details or an error response
-   * @throws {Error} If the chat ID is invalid (400 Bad Request) or the chat is not found (404 Not Found)
    */
   @ApiOperation({
-    summary: 'Get details of a specific chat by Id',
     description:
       'Retrieves a single chat based on the provided chatId, if it belongs to the authenticated user and the ID is valid.',
   })
-  @ApiParam({ name: 'id' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The ID of the chat',
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Successfully retrieved the requested chat details.',
@@ -77,15 +69,18 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Invalid chat ID format',
+    type: Error,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
-  async show({ params, response }: HttpContext) {
+  async show({ request, response }: HttpContext) {
+    const { params } = await request.validateUsing(chatIdValidator)
     const chatId = params.id
 
-    if (!chatId || !Types.ObjectId.isValid(chatId)) return response.badRequest('Invalid chatId')
+    if (!Types.ObjectId.isValid(chatId)) return response.badRequest('Invalid chatId')
 
     const chat = await ChatModel.findById(chatId)
 
@@ -102,20 +97,17 @@ export default class ChatController {
    * If the ID is invalid, the name is missing, or the chat doesn't exist,
    * it returns an appropriate error response.
    *
-   * @param {HttpContext} context - The HTTP context containing request, response, and params
-   * @param {Object} context.request - The request object containing the updated chat name
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @param {Object} context.params - The route parameters containing the chat ID
-   * @returns {Promise<Chat|Object>} The updated chat details or an error response
-   * @throws {Error} If the chat ID is invalid (400 Bad Request), the name is missing (400 Bad Request),
-   *                 or the chat is not found (404 Not Found)
    */
   @ApiOperation({
-    summary: 'Update the name of an existing chat by ID',
     description:
       'Updates only the name of an existing chat using the provided chatId. Only the `name` field will be modified.',
   })
-  @ApiParam({ name: 'id' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The ID of the chat',
+    type: String,
+  })
   @ApiBody({ type: EditChat })
   @ApiResponse({
     status: 200,
@@ -125,19 +117,18 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Name field is required or invalid chatId',
+    type: Error,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
-  async update({ request, response, params }: HttpContext) {
+  async update({ request, response }: HttpContext) {
+    const { params, name } = await request.validateUsing(editNameValidator)
     const chatId = params.id
 
     if (!chatId || !Types.ObjectId.isValid(chatId)) return response.badRequest('Invalid chatId')
-
-    const { name } = request.body()
-
-    if (!name) return response.badRequest('Name field is required')
 
     const updated = await ChatModel.findByIdAndUpdate(chatId, { name }, { new: true })
 
@@ -153,27 +144,29 @@ export default class ChatController {
    * If the chat is successfully deleted, it returns a success message. If the chat doesn't exist,
    * it returns a not found error response.
    *
-   * @param {HttpContext} context - The HTTP context containing params and response
-   * @param {Object} context.params - The route parameters containing the chat ID
-   * @param {Object} context.response - The response object for sending HTTP responses
-   * @returns {Promise<Object>} A success message or an error response
-   * @throws {Error} If the chat is not found (404 Not Found)
    */
   @ApiOperation({
-    summary: 'Delete a chat by ID',
     description:
       'Deletes a specific chat identified by the provided chatId. This action is irreversible.',
   })
-  @ApiParam({ name: 'id' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The ID of the chat',
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Successfully deleted the chat',
+    type: DeleteChat,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ request, response }: HttpContext) {
+    const { params } = await request.validateUsing(chatIdValidator)
     const chatId = params.id
 
     const deleted = await ChatModel.findByIdAndDelete(chatId)
@@ -191,15 +184,8 @@ export default class ChatController {
    * the message pair. It handles various error cases including missing data and
    * AI generation failures.
    *
-   * @param {HttpContext} context - The HTTP context containing request and response
-   * @param {Request} context.request - The request object containing the user prompt and other data
-   * @param {Response} context.response - The response object for sending HTTP responses
-   * @param {PromptService} promptService - The service for generating AI responses (injected)
-   * @returns {Promise<Object>} The created chat and message pair or an error response
-   * @throws {Error} If userId or prompt is missing (400 Bad Request) or if there's an internal error (500 Internal Server Error)
    */
   @ApiOperation({
-    summary: 'Create a new chat based on user prompt',
     description: `Generates a new chat using an AI model based on the user's prompt. Returns the created chat.`,
   })
   @ApiBody({ type: MessagePrompt })
@@ -211,42 +197,40 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Missing userId or prompt in request',
+    type: Error,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error or AI generation failure',
+    type: Error,
   })
   @inject()
-  async store({ request, response }: HttpContext, promptService: PromptService) {
-    const { attachmentUrls, template } = request.body()
-    const templateType: Template = template
-      ? EnumUtil.getTemplateFromString(template)
-      : Template.TUTOR
+  async store({ request, response, logger }: HttpContext, promptService: PromptService) {
+    const { prompt, attachmentUrls, template } = await request.validateUsing(createChatValidator)
+    const templateType: TemplateValue = template || Template.TUTOR
 
     // Get userId from request.auth
     const userId = request.auth.user?.userId
 
     // Get user prompt from request.body()
-    const { prompt: userPrompt } = request.body()
+    const userPrompt = prompt
 
-    if (!userId || !userPrompt) {
-      Logger.error('Missing userId or prompt')
+    if (!userId) {
+      logger.error('Missing userId or prompt')
       return response.badRequest({ error: 'Missing userId or prompt' })
     }
 
-    const chatMetaDataGenerator = await promptService.build(LLM.GEMINI).generateResponse({
+    const chatMetaDataGenerator = await promptService.build().generateResponse({
       userInput: userPrompt,
       template: Template.GENERATE_TITLE,
     })
 
-    Logger.info('AI response: ' + JSON.stringify(chatMetaDataGenerator.response))
+    logger.info('AI response: ' + JSON.stringify(chatMetaDataGenerator.response))
 
-    const raw = chatMetaDataGenerator.response
-
-    const chatMetaData: (JSON & ChatMetaData) | null = isChatMetaData(raw) ? raw : null
+    const chatMetaData = chatMetaDataGenerator.response
 
     if (!chatMetaData) {
-      Logger.error('Failed to generate chat metadata')
+      logger.error('Failed to generate chat metadata')
       return response.internalServerError({ error: 'Failed to generate chat metadata' })
     }
 
@@ -256,7 +240,7 @@ export default class ChatController {
     })
 
     if (!chat) {
-      Logger.error('Failed to create chat')
+      logger.error('Failed to create chat')
       return response.internalServerError({ error: 'Failed to create chat' })
     }
 
@@ -266,52 +250,25 @@ export default class ChatController {
       template: templateType,
     })
 
-    const imagePath =
-      templateType === Template.GENERATE_IMAGE
-        ? await FileUploads.uploadImage(message.image, 'base64')
-        : ''
+    //upload images
 
     const messagePair = await MessagePairModel.create({
       prompt: userPrompt,
       json_response: message.response,
-      image: imagePath || '',
+      image: '',
       template: templateType,
       chat: chat,
     })
 
-    return response.created(Mappers.toNewChatResponse(chat, messagePair))
+    return response.created({
+      chat: {
+        chatId: chat.id,
+        ...chat.toJSON(),
+      },
+      messagePair: {
+        chatId: chat.id,
+        ...messagePair.toJSON(),
+      },
+    })
   }
-}
-
-/**
- * Type guard function to check if an object conforms to the ChatMetaData interface.
- *
- * This function validates that the provided object has the required properties
- * with the correct types to be considered valid ChatMetaData.
- *
- * @param {any} obj - The object to check
- * @returns {boolean} True if the object is valid ChatMetaData, false otherwise
- */
-function isChatMetaData(obj: any): obj is ChatMetaData {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof obj.name === 'string' &&
-    typeof obj.topic === 'string'
-  )
-}
-
-/**
- * Interface representing metadata for a chat session.
- *
- * This interface defines the structure of metadata that is generated
- * for a chat session, including a name and topic.
- *
- * @interface ChatMetaData
- * @property {string} name - The name of the chat session
- * @property {string} topic - The topic or category of the chat session
- */
-interface ChatMetaData {
-  name: string
-  topic: string
 }

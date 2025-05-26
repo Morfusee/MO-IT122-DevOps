@@ -13,17 +13,28 @@ export class Chat {
 
   @ApiProperty()
   declare topic: string
+
+  @ApiProperty()
+  declare createdAt: string
+
+  @ApiProperty()
+  declare updatedAt: string
 }
 
 export class NewChat {
-  @ApiProperty()
+  @ApiProperty({ type: Chat })
   declare chat: Chat
 
-  @ApiProperty()
+  @ApiProperty({ type: MessagePair })
   declare messagePair: MessagePair
 }
 
 export class EditChat {
   @ApiProperty()
   declare name: string
+}
+
+export class DeleteChat {
+  @ApiProperty()
+  declare message: string
 }
