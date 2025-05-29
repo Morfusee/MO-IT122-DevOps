@@ -6,7 +6,7 @@ This document explains the Continuous Integration (CI) setup for building Docker
 
 ## Workflow Status Badge
 
--   [![BrainBytes Docker Image Build CI](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml/badge.svg)](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml) - Shows the status of the Docker Image Build CI pipeline.
+-   [![BrainBytes Docker Image Build CI](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml/badge.svg)](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml)
 
 ---
 
