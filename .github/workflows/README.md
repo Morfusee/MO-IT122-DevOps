@@ -4,6 +4,12 @@ This document explains the Continuous Integration (CI) setup for building Docker
 
 ---
 
+## Workflow Status Badge
+
+-   [![BrainBytes Docker Image Build CI](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml/badge.svg)](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml) - Shows the status of the Docker Image Build CI pipeline.
+
+---
+
 ## Workflow
 
 ### BrainBytes Docker Image Build CI (`automation.yml`)
@@ -51,12 +57,6 @@ To run this workflow manually:
         * Sets up Docker Buildx for efficient Docker builds.
         * **Builds and Pushes Backend Image**: Builds the backend Docker image using the `docker/backend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
         * **Builds and Pushes Frontend Image**: Builds the frontend Docker image using the `docker/frontend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
-
----
-
-## Workflow Status Badge
-
--   [![BrainBytes Docker Image Build CI](https://github.com/morfusee/brainbytes/actions/workflows/brainbytes-docker-image-build-ci.yml/badge.svg)](https://github.com/morfusee/brainbytes/actions/workflows/brainbytes-docker-image-build-ci.yml) - Shows the status of the Docker Image Build CI pipeline. (Note: Replace `morfusee/brainbytes` with your actual repository path if different).
 
 ---
 
