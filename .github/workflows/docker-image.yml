@@ -20,6 +20,7 @@ on:
 jobs:
   lint:
       name: Code Quality Checks
+      timeout-minutes: 10
       runs-on: ubuntu-latest
 
       steps:
@@ -76,8 +77,9 @@ jobs:
           run: pnpm run lint
 
   build:
-    needs: lint
     name: Build Docker Images
+    timeout-minutes: 30
+    needs: lint
     runs-on: ubuntu-latest
     environment: GitHub Actions
     steps:
