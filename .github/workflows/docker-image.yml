@@ -74,12 +74,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+          cache: 'pnpm' # This caches pnpm dependencies but doesn't install pnpm itself as an executable
 
       # Frontend linting
+      - name: Install pnpm globally and add to PATH
+        run: |
+          npm install -g pnpm
+          echo "$(npm root -g)/.bin" >> $GITHUB_PATH
+
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: pnpm install --no-frozen-lockfile
@@ -89,7 +91,6 @@ jobs:
         run: |
           pnpm run lint || echo "Frontend linting failed but continuing workflow"
 
-      # Backend linting
       - name: Install backend dependencies
         working-directory: ./backend
         run: pnpm install --no-frozen-lockfile
