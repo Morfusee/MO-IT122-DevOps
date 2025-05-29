@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          cache: 'pnpm' # Use 'pnpm' for caching pnpm dependencies
+          cache: 'npm' # Use 'pnpm' for caching pnpm dependencies
 
       - name: Install pnpm
         run: |
