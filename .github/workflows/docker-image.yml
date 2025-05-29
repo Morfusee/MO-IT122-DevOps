@@ -34,7 +34,8 @@ jobs:
             if [ "${{ github.ref_name }}" = "main" ]; then
               TAG="latest"
             else
-              TAG="${{ github.ref_name }}"
+              # Replace slashes in branch name with dashes
+              TAG=$(echo "${{ github.ref_name }}" | tr '/' '-')
             fi
           fi
 
