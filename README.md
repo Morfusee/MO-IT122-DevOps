@@ -30,56 +30,85 @@ BrainBytes is an AI-powered tutoring platform designed to provide accessible aca
 
 ## Project Setup
 
-1. **Clone the repository**  
-   Use **GitHub Desktop**:
+Get BrainBytes up and running on your local machine with these simple steps.
 
-   - Open GitHub Desktop
-   - Go to **File > Clone Repository**
-   - Paste the repository URL:
-     ```
-     https://github.com/Morfusee/MO-IT122-DevOps
-     ```
-   - Choose a local path and click **Clone**
+### Prerequisites
 
-   Or use Git via terminal:
+Before you start, make sure you have the following installed:
 
-   ```bash
-   git clone https://github.com/Morfusee/MO-IT122-DevOps.git
-   ```
+* **Git**: For cloning the repository.
+* **Node.js** (LTS version recommended): Includes npm, which is needed to install pnpm.
+* **pnpm**: Our preferred package manager for faster and more efficient dependency management.
+    * If you don't have pnpm, you can install it globally via npm:
+        ```bash
+        npm install -g pnpm
+        ```
+* **Docker Desktop**: Required to run the application using Docker Compose.
 
-2. **Create environment variables**
+### Installation
 
-   - Duplicate the .env.example file found in the root directory
-   - Fill in any required values in the .env file
+1.  **Clone the Repository**
 
-3. **Install dependencies**
+    You can clone the BrainBytes repository using either **GitHub Desktop** or **Git via your terminal**.
 
-   - From the project root directory, run:
+    * **Using GitHub Desktop**:
+        1.  Open GitHub Desktop.
+        2.  Go to **File > Clone Repository**.
+        3.  Paste the repository URL:
+            ```
+            [https://github.com/Morfusee/MO-IT122-DevOps](https://github.com/Morfusee/MO-IT122-DevOps)
+            ```
+        4.  Choose your desired local path and click **Clone**.
 
-   ```bash
-   pnpm install:all
-   ```
+    * **Using Git via terminal**:
+        ```bash
+        git clone [https://github.com/Morfusee/MO-IT122-DevOps.git](https://github.com/Morfusee/MO-IT122-DevOps.git)
+        ```
 
-   - This command installs all dependencies for both the frontend and backend
+2.  **Configure Environment Variables**
 
-4. **Run the app locally**
+    Navigate to the root directory of the cloned repository and set up your environment variables.
 
-   - To start both the frontend and backend in development mode:
+    * Duplicate the `.env.example` file and rename the copy to `.env`.
+    * Open the newly created `.env` file and fill in all the required values, such as database connection strings or API keys.
 
-   ```bash
-   pnpm dev
-   ```
+3.  **Install Dependencies**
 
-   - Once running, access the app at:
-     - Frontend: http://localhost:3000
-     - Backend API Docs: http://localhost:3333/docs
+    From the **root directory** of your project, run the following command to install all necessary dependencies for both the frontend and backend:
 
-5. **Run the app with Docker**
-   - Make sure Docker Desktop is running on your machine
-   - Then in the root directory, run:
-   ```bash
-   pnpm compose
-   ```
-   - Once running, access the app at:
-     - Frontend: http://localhost:3002
-     - Backend API Docs: http://localhost:3001/docs
+    ```bash
+    pnpm install:all
+    ```
+    This command leverages pnpm workspaces to efficiently install dependencies across your monorepo.
+
+### Running the Application
+
+You have two options for running the BrainBytes application locally: directly in development mode or using Docker Compose.
+
+#### Run Locally (Development Mode)
+
+This method is ideal for active development, as it allows for hot-reloading and easy debugging.
+
+1.  From the project's root directory, start both the frontend and backend services:
+    ```bash
+    pnpm dev
+    ```
+2.  Once the services are running, access the application at the following URLs:
+    * **Frontend**: `http://localhost:3000`
+    * **Backend API Docs**: `http://localhost:3333/docs`
+
+#### Run with Docker (Containerized)
+
+For a more production-like environment or to ensure consistency across different development setups, you can run BrainBytes using Docker Compose.
+
+1.  Ensure **Docker Desktop** is running on your machine.
+2.  From the project's root directory, execute the Docker Compose command:
+    ```bash
+    pnpm compose
+    ```
+    This will build the Docker images (if not already built) and start the containers for both the frontend and backend.
+3.  Once the containers are up and running, access the application at:
+    * **Frontend**: `http://localhost:3002`
+    * **Backend API Docs**: `http://localhost:3001/docs`
+
+---
