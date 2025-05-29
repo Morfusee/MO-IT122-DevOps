@@ -86,7 +86,7 @@ jobs:
 
       - name: Lint frontend code
         working-directory: ./frontend
-        run: pnpm run lint || echo "Frontend linting failed but continuing workflow"
+        run: pnpm run lint
 
       # Backend linting
       - name: Install backend dependencies
@@ -95,5 +95,5 @@ jobs:
 
       - name: Lint backend code
         working-directory: ./backend
-        run: pnpm run lint || echo "Backend linting failed but continuing workflow"
+        run: pnpm run lint
 
