@@ -5,6 +5,10 @@ on:
     branches:
       - "main"
       - "develop"
+  pull_request:
+    branches:
+      - "main"
+      - "develop"
   workflow_dispatch:
     inputs:
       tag:
@@ -81,6 +85,7 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     environment: GitHub Actions
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only run on push to main branch
     steps:
       - uses: actions/checkout@v4
 
