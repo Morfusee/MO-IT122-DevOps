@@ -1,0 +1,60 @@
+name: BrainBytes Docker Image Build CI
+
+on:
+  push:
+    branches:
+      - "main"
+      - "develop"
+      - "feat/create-github-workflow"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag for the Docker image"
+        required: false
+        default: "latest"
+      image_path:
+        description: "Base image path (e.g., ghcr.io/owner/project-name)"
+        required: false
+        default: "ghcr.io/morfusee/brainbytes"
+
+jobs:
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    environment: Prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set dynamic tag and image path
+        id: vars
+        run: |
+          # Determine the tag
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            if [ "${{ github.ref_name }}" = "main" ]; then
+              TAG="latest"
+            else
+              TAG="${{ github.ref_name }}"
+            fi
+          fi
+
+          IMAGE_PATH="${{ github.event.inputs.image_path || 'ghcr.io/morfusee/brainbytes' }}"
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "image=$IMAGE_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Build and Push Frontend and Backend Images
+        env:
+          TAG: ${{ steps.vars.outputs.tag }}
+          IMAGE: ${{ steps.vars.outputs.image }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
+
+          # Build and push backend
+          docker build ./docker/backend --file ./docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
+          docker push $IMAGE-backend:$TAG
+
+          # Build and push frontend
+          docker build ./docker/frontend --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
+          docker push $IMAGE-frontend:$TAG
