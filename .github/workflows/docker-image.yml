@@ -53,11 +53,43 @@ jobs:
           echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
 
           # Build and push backend
-          # The period after "docker build" sets the context of 
-          # where to perform the actions inside the dockerfile
-          docker build . --file docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
+          # docker build [what to build] -- file [dockerfile location]
+          docker build ./backend --file docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
           docker push $IMAGE-backend:$TAG
 
           # Build and push frontend
-          docker build . --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
+          docker build ./frontend --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
           docker push $IMAGE-frontend:$TAG
+  lint:
+      name: Code Quality Checks
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: Check out repository
+          uses: actions/checkout@v2
+        
+        - name: Set up Node.js
+          uses: actions/setup-node@v2
+          with:
+            node-version: '16'
+            cache: 'npm'
+        
+        # Frontend linting
+        - name: Install frontend dependencies
+          working-directory: ./frontend
+          run: npm ci
+        
+        - name: Lint frontend code
+          working-directory: ./frontend
+          run: |
+            npm run lint || echo "Frontend linting failed but continuing workflow"
+        
+        # Backend linting
+        - name: Install backend dependencies
+          working-directory: ./backend
+          run: npm ci
+        
+        - name: Lint backend code
+          working-directory: ./backend
+          run: |
+            npm run lint || echo "Backend linting failed but continuing workflow"
