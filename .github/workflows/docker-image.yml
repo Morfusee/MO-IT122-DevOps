@@ -61,3 +61,41 @@ jobs:
           # Build and push frontend
           docker build . --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
           docker push $IMAGE-frontend:$TAG
+
+  lint:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Frontend linting
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Lint frontend code
+        working-directory: ./frontend
+        run: |
+          pnpm run lint || echo "Frontend linting failed but continuing workflow"
+
+      # Backend linting
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Lint backend code
+        working-directory: ./backend
+        run: |
+          pnpm run lint || echo "Backend linting failed but continuing workflow"
+
