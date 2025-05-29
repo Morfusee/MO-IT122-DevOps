@@ -18,109 +18,131 @@ on:
         default: "ghcr.io/morfusee/brainbytes"
 
 jobs:
-  # lint:
-  #     name: Code Quality Checks
-  #     runs-on: ubuntu-latest
+  lint:
+      name: Code Quality Checks
+      runs-on: ubuntu-latest
 
-  #     steps:
-  #       - name: Check out repository
-  #         uses: actions/checkout@v2
+      steps:
+        - name: Check out repository
+          uses: actions/checkout@v2
 
-  #       - name: Set up Node.js
-  #         uses: actions/setup-node@v2
+        - name: Set up Node.js
+          uses: actions/setup-node@v2
 
-  #       - name: Install pnpm
-  #         run: |
-  #           npm install -g pnpm # This will install pnpm globally
-  #           pnpm setup # This sets up pnpm's environment variables and PATH
-  #           echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
+        - name: Install pnpm
+          run: |
+            npm install -g pnpm # This will install pnpm globally
+            pnpm setup # This sets up pnpm's environment variables and PATH
+            echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
         
-  #       # Frontend linting
-  #       - name: Install frontend dependencies
-  #         working-directory: ./frontend
-  #         run: pnpm install --no-frozen-lockfile
+        # Cache frontend
+        - name: Restore frontend dependencies cache
+          uses: actions/cache@v3
+          with:
+            path: |
+              ~/.pnpm-store
+              frontend/node_modules
+            key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+            restore-keys: |
+              ${{ runner.os }}-frontend-
 
-  #       - name: Lint frontend code
-  #         working-directory: ./frontend
-  #         run: pnpm run lint
+        # Frontend linting
+        - name: Install frontend dependencies
+          working-directory: ./frontend
+          run: pnpm install --no-frozen-lockfile
 
-  #       # Backend linting
-  #       - name: Install backend dependencies
-  #         working-directory: ./backend
-  #         run: pnpm install --no-frozen-lockfile
+        - name: Lint frontend code
+          working-directory: ./frontend
+          run: pnpm run lint
 
-  #       - name: Lint backend code
-  #         working-directory: ./backend
-  #         run: pnpm run lint
+        # Cache backend
+        - name: Restore backend dependencies cache
+          uses: actions/cache@v3
+          with:
+            path: |
+              ~/.pnpm-store
+              backend/node_modules
+            key: ${{ runner.os }}-backend-${{ hashFiles('backend/pnpm-lock.yaml') }}
+            restore-keys: |
+              ${{ runner.os }}-backend-
 
-  # build:
-  #   needs: lint
-  #   name: Build Docker Images
-  #   runs-on: ubuntu-latest
-  #   environment: GitHub Actions
-  #   steps:
-  #     - uses: actions/checkout@v4
+        # Backend linting
+        - name: Install backend dependencies
+          working-directory: ./backend
+          run: pnpm install --no-frozen-lockfile
 
-  #     - name: Set dynamic tag and image path
-  #       id: vars
-  #       run: |
-  #         # Determine the tag
-  #         TAG="${{ github.event.inputs.tag }}"
-  #         if [ -z "$TAG" ]; then
-  #           if [ "${{ github.ref_name }}" = "main" ]; then
-  #             TAG="latest"
-  #           else
-  #             # Replace slashes in branch name with dashes
-  #             TAG=$(echo "${{ github.ref_name }}" | tr '/' '-')
-  #           fi
-  #         fi
+        - name: Lint backend code
+          working-directory: ./backend
+          run: pnpm run lint
 
-  #         IMAGE_PATH="${{ github.event.inputs.image_path || 'ghcr.io/morfusee/brainbytes' }}"
-
-  #         echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-  #         echo "image=$IMAGE_PATH" >> "$GITHUB_OUTPUT"
-
-  #     - name: Build and Push Frontend and Backend Images
-  #       env:
-  #         TAG: ${{ steps.vars.outputs.tag }}
-  #         IMAGE: ${{ steps.vars.outputs.image }}
-  #         GH_PAT: ${{ secrets.GH_PAT }}
-  #       run: |
-  #         echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
-
-  #         # Build and push backend
-  #         # The period after "docker build" sets the CONTEXT of 
-  #         # where to perform the actions inside the dockerfile
-  #         docker build . --file docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
-  #         docker push $IMAGE-backend:$TAG
-
-  #         # Build and push frontend
-  #         docker build . --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
-  #         docker push $IMAGE-frontend:$TAG
-
-  test:
-    name: Run Tests
+  build:
+    needs: lint
+    name: Build Docker Images
     runs-on: ubuntu-latest
+    environment: GitHub Actions
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-
-      - name: Install pnpm
+      - name: Set dynamic tag and image path
+        id: vars
         run: |
-          npm install -g pnpm # This will install pnpm globally
-          pnpm setup # This sets up pnpm's environment variables and PATH
-          echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
+          # Determine the tag
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            if [ "${{ github.ref_name }}" = "main" ]; then
+              TAG="latest"
+            else
+              # Replace slashes in branch name with dashes
+              TAG=$(echo "${{ github.ref_name }}" | tr '/' '-')
+            fi
+          fi
 
-      # Backend tests
-      - name: Install backend dependencies
-        working-directory: ./backend
-        run: pnpm install --no-frozen-lockfile
+          IMAGE_PATH="${{ github.event.inputs.image_path || 'ghcr.io/morfusee/brainbytes' }}"
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "image=$IMAGE_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Build and Push Frontend and Backend Images
+        env:
+          TAG: ${{ steps.vars.outputs.tag }}
+          IMAGE: ${{ steps.vars.outputs.image }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
+
+          # Build and push backend
+          # The period after "docker build" sets the CONTEXT of 
+          # where to perform the actions inside the dockerfile
+          docker build . --file docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
+          docker push $IMAGE-backend:$TAG
+
+          # Build and push frontend
+          docker build . --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
+          docker push $IMAGE-frontend:$TAG
+
+  # test:
+  #   name: Run Tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v2
+
+  #     - name: Install pnpm
+  #       run: |
+  #         npm install -g pnpm # This will install pnpm globally
+  #         pnpm setup # This sets up pnpm's environment variables and PATH
+  #         echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
+
+  #     # Backend tests
+  #     - name: Install backend dependencies
+  #       working-directory: ./backend
+  #       run: pnpm install --no-frozen-lockfile
       
-      - name: Run backend tests
-        working-directory: ./backend
-        run: pnpm test
+  #     - name: Run backend tests
+  #       working-directory: ./backend
+  #       run: pnpm test
 
 
