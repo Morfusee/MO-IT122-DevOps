@@ -18,49 +18,49 @@ on:
         default: "ghcr.io/morfusee/brainbytes"
 
 jobs:
-  build:
-    name: Build Docker Images
-    runs-on: ubuntu-latest
-    environment: GitHub Actions
-    steps:
-      - uses: actions/checkout@v4
+  # build:
+  #   name: Build Docker Images
+  #   runs-on: ubuntu-latest
+  #   environment: GitHub Actions
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Set dynamic tag and image path
-        id: vars
-        run: |
-          # Determine the tag
-          TAG="${{ github.event.inputs.tag }}"
-          if [ -z "$TAG" ]; then
-            if [ "${{ github.ref_name }}" = "main" ]; then
-              TAG="latest"
-            else
-              # Replace slashes in branch name with dashes
-              TAG=$(echo "${{ github.ref_name }}" | tr '/' '-')
-            fi
-          fi
+  #     - name: Set dynamic tag and image path
+  #       id: vars
+  #       run: |
+  #         # Determine the tag
+  #         TAG="${{ github.event.inputs.tag }}"
+  #         if [ -z "$TAG" ]; then
+  #           if [ "${{ github.ref_name }}" = "main" ]; then
+  #             TAG="latest"
+  #           else
+  #             # Replace slashes in branch name with dashes
+  #             TAG=$(echo "${{ github.ref_name }}" | tr '/' '-')
+  #           fi
+  #         fi
 
-          IMAGE_PATH="${{ github.event.inputs.image_path || 'ghcr.io/morfusee/brainbytes' }}"
+  #         IMAGE_PATH="${{ github.event.inputs.image_path || 'ghcr.io/morfusee/brainbytes' }}"
 
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "image=$IMAGE_PATH" >> "$GITHUB_OUTPUT"
+  #         echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+  #         echo "image=$IMAGE_PATH" >> "$GITHUB_OUTPUT"
 
-      - name: Build and Push Frontend and Backend Images
-        env:
-          TAG: ${{ steps.vars.outputs.tag }}
-          IMAGE: ${{ steps.vars.outputs.image }}
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
+  #     - name: Build and Push Frontend and Backend Images
+  #       env:
+  #         TAG: ${{ steps.vars.outputs.tag }}
+  #         IMAGE: ${{ steps.vars.outputs.image }}
+  #         GH_PAT: ${{ secrets.GH_PAT }}
+  #       run: |
+  #         echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
 
-          # Build and push backend
-          # The period after "docker build" sets the CONTEXT of 
-          # where to perform the actions inside the dockerfile
-          docker build . --file docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
-          docker push $IMAGE-backend:$TAG
+  #         # Build and push backend
+  #         # The period after "docker build" sets the CONTEXT of 
+  #         # where to perform the actions inside the dockerfile
+  #         docker build . --file docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
+  #         docker push $IMAGE-backend:$TAG
 
-          # Build and push frontend
-          docker build . --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
-          docker push $IMAGE-frontend:$TAG
+  #         # Build and push frontend
+  #         docker build . --file ./docker/frontend/Dockerfile --tag $IMAGE-frontend:$TAG
+  #         docker push $IMAGE-frontend:$TAG
 
   lint:
     name: Code Quality Checks
@@ -74,29 +74,29 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          cache: 'npm' # This caches pnpm dependencies but doesn't install pnpm itself as an executable
+          cache: 'pnpm' # Use 'pnpm' for caching pnpm dependencies
 
-      # Frontend linting
-      - name: Install pnpm globally and add to PATH
+      - name: Install pnpm
         run: |
-          npm install -g pnpm
-          echo "$(npm root -g)/.bin" >> $GITHUB_PATH
-
+          npm install -g pnpm # This will install pnpm globally
+          pnpm setup # This sets up pnpm's environment variables and PATH
+          echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
+      
+      # Frontend linting
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: pnpm install --no-frozen-lockfile
 
       - name: Lint frontend code
         working-directory: ./frontend
-        run: |
-          pnpm run lint || echo "Frontend linting failed but continuing workflow"
+        run: pnpm run lint || echo "Frontend linting failed but continuing workflow"
 
+      # Backend linting
       - name: Install backend dependencies
         working-directory: ./backend
         run: pnpm install --no-frozen-lockfile
 
       - name: Lint backend code
         working-directory: ./backend
-        run: |
-          pnpm run lint || echo "Backend linting failed but continuing workflow"
+        run: pnpm run lint || echo "Backend linting failed but continuing workflow"
 
