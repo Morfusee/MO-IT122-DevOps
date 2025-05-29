@@ -49,7 +49,7 @@ jobs:
           IMAGE: ${{ steps.vars.outputs.image }}
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          echo "$GH_PAT" | docker login ghcr.io -u Morfusee --password-stdin
+          docker login --username Morfusee --password ${{ secrets.GH_PAT }} ghcr.io
 
           # Build and push backend
           docker build ./docker/backend --file ./docker/backend/Dockerfile --tag $IMAGE-backend:$TAG
