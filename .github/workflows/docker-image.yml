@@ -21,7 +21,7 @@ jobs:
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
-    environment: Prod
+    environment: GitHub Actions
     steps:
       - uses: actions/checkout@v4
 
