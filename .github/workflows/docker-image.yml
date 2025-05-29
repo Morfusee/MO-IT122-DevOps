@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          cache: 'pnpm' # This caches pnpm dependencies but doesn't install pnpm itself as an executable
+          cache: 'npm' # This caches pnpm dependencies but doesn't install pnpm itself as an executable
 
       # Frontend linting
       - name: Install pnpm globally and add to PATH
