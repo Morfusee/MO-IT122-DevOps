@@ -72,9 +72,6 @@ jobs:
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          cache: 'npm' # Use 'pnpm' for caching pnpm dependencies
 
       - name: Install pnpm
         run: |
