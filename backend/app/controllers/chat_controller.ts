@@ -9,6 +9,7 @@ import { inject } from '@adonisjs/core'
 import { MessagePrompt } from '../schemas/message_pair.js'
 import { Template, TemplateValue } from '#services/template_config'
 import { chatIdValidator, createChatValidator, editNameValidator } from '#validators/chat'
+import { Error } from '../schemas/response.js'
 
 /**
  * ChatController handles operations related to chat sessions in the AI tutoring platform.
@@ -68,10 +69,12 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Invalid chat ID format',
+    type: Error,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
   async show({ request, response }: HttpContext) {
     const { params } = await request.validateUsing(chatIdValidator)
@@ -114,10 +117,12 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Name field is required or invalid chatId',
+    type: Error,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
   async update({ request, response }: HttpContext) {
     const { params, name } = await request.validateUsing(editNameValidator)
@@ -158,6 +163,7 @@ export default class ChatController {
   @ApiResponse({
     status: 404,
     description: 'Chat not found',
+    type: Error,
   })
   async destroy({ request, response }: HttpContext) {
     const { params } = await request.validateUsing(chatIdValidator)
@@ -191,10 +197,12 @@ export default class ChatController {
   @ApiResponse({
     status: 400,
     description: 'Missing userId or prompt in request',
+    type: Error,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error or AI generation failure',
+    type: Error,
   })
   @inject()
   async store({ request, response, logger }: HttpContext, promptService: PromptService) {

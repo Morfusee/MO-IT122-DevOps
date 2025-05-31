@@ -28,7 +28,7 @@ async function Sidebar() {
           Bytes
         </Text> */}
       </Stack>
-      <SidebarNav />
+      {/* <SidebarNav /> */}
 
       <AccountMenu user={userDetails.data} />
     </Stack>

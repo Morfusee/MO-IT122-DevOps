@@ -12,16 +12,25 @@ interface MessageListProps {
 
 function MessageList(props: MessageListProps) {
   const viewport = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (viewport.current) {
-      viewport.current.scrollTo({ top: viewport.current.scrollHeight });
-    }
-  }, [viewport.current]);
+  const previousChatId = useRef<string | null>(null);
 
   const {
     query: { isPending, data },
   } = useMessageQuery(props.id);
+
+  useEffect(() => {
+    if (viewport.current) {
+      const behavior =
+        previousChatId.current === props.id ? "smooth" : "instant";
+
+      viewport.current.scrollTo({
+        top: viewport.current.scrollHeight,
+        behavior,
+      });
+
+      previousChatId.current = props.id;
+    }
+  }, [data, props.id]);
 
   const isResponse = (json: unknown): json is { response: string } => {
     console.log(json);
