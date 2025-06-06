@@ -21,6 +21,7 @@ import { notifications } from "@mantine/notifications";
 // import { ForgotPasswordForm } from "../login/forget-pass-form";
 
 import "@/lib/client-init";
+import Link from "next/link";
 
 function RegistrationForm() {
   const form = useForm({
@@ -38,9 +39,20 @@ function RegistrationForm() {
   const register = async ({
     email,
     password,
+    confirmPassword,
     firstName,
     lastName,
   }: typeof form.values) => {
+    if (password !== confirmPassword) {
+      notifications.show({
+        title: "Confirm Password",
+        message: "Password is not the same as the confirmed password",
+        autoClose: 3000,
+        color: "red",
+      });
+      return;
+    }
+
     const res = await postRegister({
       body: { email, password, firstName, lastName },
       credentials: "include",
@@ -53,12 +65,10 @@ function RegistrationForm() {
         autoClose: 3000,
         color: "red",
       });
+
+      return;
     }
 
-    redirect("/chat");
-  };
-
-  const login = () => {
     redirect("/login");
   };
 
@@ -67,45 +77,58 @@ function RegistrationForm() {
       <Title ta="center">Join now!</Title>
 
       <Text className="text-center mt-2" c="dimmed" size="sm">
-        Already have an account? <Anchor onClick={login}>Login here</Anchor>
+        Already have an account?{" "}
+        <Anchor component={Link} href="/login">
+          Login here
+        </Anchor>
       </Text>
 
       <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
         <form onSubmit={form.onSubmit(register)}>
           <Group justify="space-between">
             <TextInput
+              name="fname"
               label="First name"
               placeholder="Your first name"
               required
               radius="md"
+              {...form.getInputProps("firstName")}
             />
             <TextInput
+              name="lname"
               label="Last name"
               placeholder="Your last name"
               required
               radius="md"
+              {...form.getInputProps("lastName")}
             />
           </Group>
           <TextInput
+            name="email"
             label="Email"
             placeholder="you@example.com"
             required
             radius="md"
             mt="md"
+            {...form.getInputProps("email")}
           />
           <PasswordInput
+            name="password"
             label="Password"
             placeholder="Your password"
             required
             mt="md"
             radius="md"
+            {...form.getInputProps("password")}
           />
           <PasswordInput
+            name="cpassword"
             label="Confirm password"
             placeholder="Your password"
             required
             mt="md"
             radius="md"
+            {...form.getInputProps("confirmPassword")}
           />
           {/* <TextInput
             label="Institution"

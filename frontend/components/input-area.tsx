@@ -4,6 +4,7 @@ import { KeyboardEvent, useState } from "react";
 import DotsLoading from "./dots-loading";
 
 interface InputAreaProps {
+  name?: string;
   size?: MantineSize | (string & {});
   placeholder?: string;
   minRows?: number;
@@ -30,6 +31,7 @@ function InputArea(props: InputAreaProps) {
     <Stack className="px-4 py-1 w-full max-w-2xl rounded-2xl bg-gray-100">
       {!props.loading ? (
         <Textarea
+          name={props.name}
           variant="unstyled"
           size={props.size}
           placeholder={props.placeholder}

@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import QueryProvider from "@/components/query-provider";
 import { Notifications } from "@mantine/notifications";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <Suspense>
+          <ColorSchemeScript />
+        </Suspense>
       </head>
       <body className="antialiased">
         <QueryProvider>
