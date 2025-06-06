@@ -119,6 +119,10 @@ jobs:
         working-directory: ./frontend
         run: pnpm install --no-frozen-lockfile
 
+      - name: Install root dependencies
+        working-directory: ./
+        run: pnpm install --no-frozen-lockfile
+
       - name: Run e2e tests
         working-directory: ./
         run: pnpm test:e2e-headless
