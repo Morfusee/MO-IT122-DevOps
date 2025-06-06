@@ -86,6 +86,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: GitHub Actions
     env:
+      APP_KEY: ${{ secrets.APP_KEY }}
+      GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+      MONGO_ATLAS_URI: ${{ secrets.MONGO_ATLAS_URI }}
+      MONGO_DOCKER_URI: ${{ secrets.MONGO_DOCKER_URI }}
       HOST: "0.0.0.0"
       LOG_LEVEL: "info"
       IS_DOCKERIZED: "false"
@@ -110,11 +114,6 @@ jobs:
       - name: Run backend tests
         working-directory: ./backend
         run: pnpm test
-        env:
-          APP_KEY: ${{ secrets.APP_KEY }}
-          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
-          MONGO_ATLAS_URI: ${{ secrets.MONGO_ATLAS_URI }}
-          MONGO_DOCKER_URI: ${{ secrets.MONGO_DOCKER_URI }}
 
   build:
     name: Build Docker Images
