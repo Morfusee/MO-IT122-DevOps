@@ -5,7 +5,6 @@ on:
     branches:
       - "main"
       - "develop"
-      - "feat/create-github-workflow"
   pull_request:
     branches:
       - "main"
