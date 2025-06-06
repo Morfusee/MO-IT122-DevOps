@@ -112,6 +112,6 @@
 import { test } from '@japa/runner'
 
 test('2 + 2 should equal 4', ({ assert }) => {
-  const result = 2 + 3
+  const result = 2 + 2
   assert.equal(result, 4)
 })
