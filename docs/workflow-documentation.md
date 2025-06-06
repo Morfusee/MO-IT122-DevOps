@@ -18,6 +18,7 @@ This document explains the Continuous Integration (CI) setup for building Docker
 
 **Triggers**:
 * **`push`**: This workflow automatically runs on pushes to the `main` and `develop` branches.
+* **`pull_request`**: This workflow also triggers on pull requests targeting the `main` and `develop` branches.
 * **`workflow_dispatch`**: This workflow can be manually triggered from the GitHub Actions tab.
 
 **Manual Execution**:
@@ -45,11 +46,24 @@ To run this workflow manually:
         * Installs backend dependencies using `pnpm install --no-frozen-lockfile`.
         * Runs backend linting using `pnpm run lint`.
 
-2.  **`build` (Build Docker Images)**:
+2.  **`test` (Run Tests)**:
+    * **Purpose**: Executes backend tests.
+    * **Runs on**: `ubuntu-latest`
+    * **Environment**: GitHub Actions
+    * **Environment Variables**: This job uses several environment variables, including `APP_KEY`, `GEMINI_KEY`, `MONGO_ATLAS_URI`, `MONGO_DOCKER_URI`, `HOST`, `LOG_LEVEL`, and `IS_DOCKERIZED`. These are configured through GitHub Secrets and predefined values.
+    * **Steps**:
+        * Checks out the repository.
+        * Sets up Node.js.
+        * Installs `pnpm` globally.
+        * Installs backend dependencies using `pnpm install --no-frozen-lockfile`.
+        * Runs backend tests using `pnpm test`.
+
+3.  **`build` (Build Docker Images)**:
     * **Purpose**: Builds and pushes the Docker images for the backend and frontend services to the GitHub Container Registry.
     * **Runs on**: `ubuntu-latest`
-    * **Dependencies**: This job `needs` the `lint` job to complete successfully.
+    * **Dependencies**: This job `needs` both the `lint` and `test` jobs to complete successfully.
     * **Environment**: GitHub Actions
+    * **Conditional Execution**: This job only runs on pushes to the `main` branch.
     * **Steps**:
         * Checks out the repository.
         * **Sets dynamic tag and image path**: Determines the Docker image tag based on the trigger (manual input, `main` branch uses `latest`, other branches use the branch name) and sets the full image path.
@@ -58,6 +72,7 @@ To run this workflow manually:
         * **Builds and Pushes Backend Image**: Builds the backend Docker image using the `docker/backend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
         * **Builds and Pushes Frontend Image**: Builds the frontend Docker image using the `docker/frontend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
 
+
 ---
 
 ## Configuration
@@ -65,6 +80,28 @@ To run this workflow manually:
 ### Secrets
 
 * `GH_PAT`: A GitHub Personal Access Token with `package:write` scope to allow pushing Docker images to the GitHub Container Registry. This secret must be configured in your repository's settings.
+* `APP_KEY`: Used by the backend application.
+* `GEMINI_KEY`: Used by the backend application for Gemini API access.
+* `MONGO_ATLAS_URI`: The MongoDB Atlas connection URI for the backend.
+* `MONGO_DOCKER_URI`: The MongoDB Docker connection URI for the backend (likely for local or CI testing against a Dockerized MongoDB).
+
+
+---
+
+## Testing Strategy
+
+The current CI workflow now includes a dedicated **`test`** job, which primarily focuses on backend testing.
+
+* **Frontend Testing**: Frontend tests are currently executed manually during development.
+* **Backend Testing**: Backend tests are now integrated into the CI workflow.
+    * **Challenge**: A significant challenge in the past was dealing with backend tests that did not terminate on their own. This has been addressed to allow for automated execution within the `test` job.
+
+---
+
+## Challenges Encountered
+
+1.  **Non-Terminating Backend Tests (Addressed)**: Previously, the backend test suite contained tests that did not automatically terminate, making automation difficult. This issue has been resolved, enabling the `test` job to run successfully within the CI.
+2.  **Workflow Iteration Requiring Pushes**: A common challenge encountered during the development and refinement of this GitHub Actions workflow is the need to push changes to the repository for each iteration of testing. This means that even minor adjustments to the `automation.yml` file require a commit and push to trigger a new workflow run, which can still slow down the debugging and development process.
 
 ---
 
@@ -75,8 +112,11 @@ To run this workflow manually:
 1.  **Linting Failures**:
     * Check the `lint` job logs for specific ESLint errors.
     * Ensure your local environment passes linting before pushing by running `pnpm run lint` in both `frontend` and `backend` directories.
-
-2.  **Docker Build Failures**:
+2.  **Test Failures**:
+    * Review the `test` job logs for specific errors from the backend test suite.
+    * Verify that all required environment variables (e.g., `APP_KEY`, `GEMINI_KEY`, MongoDB URIs) are correctly configured as secrets in your GitHub repository.
+    * Ensure backend dependencies are correctly installed before running tests.
+3.  **Docker Build Failures**:
     * **Authentication Issues**: Verify that the `GH_PAT` secret is correctly configured and has the necessary `package:write` permissions.
     * **Dockerfile Errors**: Review the `docker/backend/Dockerfile` and `docker/frontend/Dockerfile` for any syntax errors or missing dependencies.
     * **Context Issues**: Ensure all necessary files are included in the build context.
