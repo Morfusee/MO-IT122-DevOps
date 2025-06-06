@@ -11,7 +11,7 @@ interface InputAreaProps {
   maxRows?: number;
   disabled?: boolean;
   loading?: boolean;
-  onSubmit: (value: string) => void;
+  onSubmit?: (value: string) => void;
 }
 
 function InputArea(props: InputAreaProps) {
@@ -20,7 +20,7 @@ function InputArea(props: InputAreaProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (value.trim()) {
+      if (value.trim() && props.onSubmit) {
         props.onSubmit(value);
         setValue("");
       }
@@ -28,7 +28,10 @@ function InputArea(props: InputAreaProps) {
   };
 
   return (
-    <Stack className="px-4 py-1 w-full max-w-2xl rounded-2xl bg-gray-100">
+    <Stack
+      className="px-4 py-1 w-full max-w-2xl rounded-2xl bg-gray-100"
+      data-name="input-area"
+    >
       {!props.loading ? (
         <Textarea
           name={props.name}

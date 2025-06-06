@@ -135,9 +135,9 @@ jobs:
         working-directory: ./
         run: pnpm install --no-frozen-lockfile
 
-      - name: Run e2e tests
+      - name: Run component tests
         working-directory: ./
-        run: pnpm test:e2e-headless
+        run: pnpm test:component-headless
 
   build:
     name: Build Docker Images

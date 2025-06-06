@@ -9,7 +9,8 @@
     "lint": "next lint",
     "openapi-ts": "openapi-ts",
     "cypress:open": "cypress open",
-    "e2e:headless": "cypress run",
+    "e2e:headless": "cypress run --e2e",
+    "component:headless": "cypress run --component",
     "e2e:run": "start-server-and-test dev http://localhost:3000 e2e:headless"
   },
   "dependencies": {

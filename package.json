@@ -14,7 +14,8 @@
     "e2e-test": "pnpm --filter frontend cypress:open --e2e",
     "e2e-test-headless": "pnpm --filter frontend e2e:headless",
     "test:e2e": "start-server-and-test e2e-start http://localhost:3000 e2e-test",
-    "test:e2e-headless": "start-server-and-test e2e-start http://localhost:3000 e2e-test-headless"
+    "test:e2e-headless": "start-server-and-test e2e-start http://localhost:3000 e2e-test-headless",
+    "test:component-headless": "pnpm --filter frontend component:headless"
   },
   "keywords": [],
   "author": "",
