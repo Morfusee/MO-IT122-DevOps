@@ -119,6 +119,18 @@ jobs:
         working-directory: ./frontend
         run: pnpm install --no-frozen-lockfile
 
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: Install Cypress binary
+        working-directory: ./frontend
+        run: npx cypress install
+
       - name: Install root dependencies
         working-directory: ./
         run: pnpm install --no-frozen-lockfile
