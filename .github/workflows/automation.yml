@@ -5,6 +5,7 @@ on:
     branches:
       - "main"
       - "develop"
+      - "feat/create-github-workflow"
   pull_request:
     branches:
       - "main"
@@ -79,10 +80,36 @@ jobs:
           working-directory: ./backend
           run: pnpm run lint
 
+  test:
+    name: Run Tests
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm # This will install pnpm globally
+          pnpm setup # This sets up pnpm's environment variables and PATH
+          echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
+
+      # Backend tests
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: pnpm install --no-frozen-lockfile
+      
+      - name: Run backend tests
+        working-directory: ./backend
+        run: pnpm test
+
   build:
     name: Build Docker Images
     timeout-minutes: 30
-    needs: lint
+    needs: [lint, test]
     runs-on: ubuntu-latest
     environment: GitHub Actions
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only run on push to main branch
@@ -137,29 +164,6 @@ jobs:
           cache-to: type=gha,mode=max
 
 
-  # test:
-  #   name: Run Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v2
-
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v2
-
-  #     - name: Install pnpm
-  #       run: |
-  #         npm install -g pnpm # This will install pnpm globally
-  #         pnpm setup # This sets up pnpm's environment variables and PATH
-  #         echo "$(pnpm store path)" >> $GITHUB_PATH # Add pnpm's global store to PATH
-
-  #     # Backend tests
-  #     - name: Install backend dependencies
-  #       working-directory: ./backend
-  #       run: pnpm install --no-frozen-lockfile
-      
-  #     - name: Run backend tests
-  #       working-directory: ./backend
-  #       run: pnpm test
+  
 
 
