@@ -11,7 +11,9 @@ const testPrompts = {
   chatRename: "Biography",
 };
 
+// Authentication Test Suite
 describe("Auth Page", () => {
+  // Open website
   it("Visit the website", () => {
     cy.visit("/");
     cy.contains("Welcome back!");
@@ -57,7 +59,9 @@ describe("Auth Page", () => {
   });
 });
 
+// Chat Test Suite
 describe("Chat Page", () => {
+  // Logs in the user before each test
   beforeEach(() => {
     cy.login(testUser.email, testUser.password);
   });
@@ -127,7 +131,7 @@ describe("Chat Page", () => {
     cy.get('[data-name="llm-message"]');
   });
 
-  it("Rename the chat title", () => {
+  it("Delete the chat", () => {
     cy.visit("/chat");
 
     cy.contains('[data-name="chat-history-item"]', testPrompts.chatRename)

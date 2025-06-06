@@ -10,7 +10,6 @@
     "dev": "node ace serve --hmr",
     "test": "node ace test --force-exit --failed",
     "dev:memorydb": "cross-env NODE_ENV=test node ace serve --watch",
-    "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",

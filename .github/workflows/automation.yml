@@ -110,9 +110,18 @@ jobs:
         working-directory: ./backend
         run: pnpm install --no-frozen-lockfile
 
-      - name: Run backend tests
+      - name: Run api tests
         working-directory: ./backend
         run: pnpm test
+
+      # Frontend tests
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Run e2e tests
+        working-directory: ./
+        run: pnpm test:e2e-headless
 
   build:
     name: Build Docker Images
