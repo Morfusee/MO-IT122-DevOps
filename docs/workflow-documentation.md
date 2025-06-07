@@ -14,7 +14,7 @@ This document explains the Continuous Integration (CI) setup for building Docker
 
 ### BrainBytes Docker Image Build CI (`automation.yml`)
 
-**Purpose**: This workflow is responsible for linting the frontend and backend code, and then building and pushing Docker images for both the backend and frontend components of the BrainBytes application to the GitHub Container Registry.
+**Purpose**: This workflow is responsible for linting and testing the frontend and backend code, and then building and pushing Docker images for both the backend and frontend components of the BrainBytes application to the GitHub Container Registry.
 
 **Triggers**:
 * **`push`**: This workflow automatically runs on pushes to the `main` and `develop` branches.
@@ -47,7 +47,7 @@ To run this workflow manually:
         * Runs backend linting using `pnpm run lint`.
 
 2.  **`test` (Run Tests)**:
-    * **Purpose**: Executes backend tests.
+    * **Purpose**: Executes backend API tests and frontend component tests.
     * **Runs on**: `ubuntu-latest`
     * **Environment**: GitHub Actions
     * **Environment Variables**: This job uses several environment variables, including `APP_KEY`, `GEMINI_KEY`, `MONGO_ATLAS_URI`, `MONGO_DOCKER_URI`, `HOST`, `LOG_LEVEL`, and `IS_DOCKERIZED`. These are configured through GitHub Secrets and predefined values.
@@ -56,7 +56,12 @@ To run this workflow manually:
         * Sets up Node.js.
         * Installs `pnpm` globally.
         * Installs backend dependencies using `pnpm install --no-frozen-lockfile`.
-        * Runs backend tests using `pnpm test`.
+        * Runs backend API tests using `pnpm test`.
+        * Installs frontend dependencies using `pnpm install --no-frozen-lockfile`.
+        * Caches Cypress binary (`~/.cache/Cypress`).
+        * Installs Cypress binary using `npx cypress install`.
+        * Installs root dependencies using `pnpm install --no-frozen-lockfile`.
+        * Runs frontend component tests using `pnpm test:component-headless`.
 
 3.  **`build` (Build Docker Images)**:
     * **Purpose**: Builds and pushes the Docker images for the backend and frontend services to the GitHub Container Registry.
@@ -90,10 +95,10 @@ To run this workflow manually:
 
 ## Testing Strategy
 
-The current CI workflow now includes a dedicated **`test`** job, which primarily focuses on backend testing.
+The current CI workflow now includes a dedicated **`test`** job, which focuses on both backend API and frontend component testing.
 
-* **Frontend Testing**: Frontend tests are currently executed manually during development.
-* **Backend Testing**: Backend tests are now integrated into the CI workflow.
+* **Frontend Testing**: Frontend component tests are now integrated into the CI workflow.
+* **Backend Testing**: Backend API tests are now integrated into the CI workflow.
     * **Challenge**: A significant challenge in the past was dealing with backend tests that did not terminate on their own. This has been addressed to allow for automated execution within the `test` job.
 
 ---
@@ -113,9 +118,9 @@ The current CI workflow now includes a dedicated **`test`** job, which primarily
     * Check the `lint` job logs for specific ESLint errors.
     * Ensure your local environment passes linting before pushing by running `pnpm run lint` in both `frontend` and `backend` directories.
 2.  **Test Failures**:
-    * Review the `test` job logs for specific errors from the backend test suite.
+    * Review the `test` job logs for specific errors from the backend or frontend test suites.
     * Verify that all required environment variables (e.g., `APP_KEY`, `GEMINI_KEY`, MongoDB URIs) are correctly configured as secrets in your GitHub repository.
-    * Ensure backend dependencies are correctly installed before running tests.
+    * Ensure all dependencies are correctly installed before running tests for both backend and frontend.
 3.  **Docker Build Failures**:
     * **Authentication Issues**: Verify that the `GH_PAT` secret is correctly configured and has the necessary `package:write` permissions.
     * **Dockerfile Errors**: Review the `docker/backend/Dockerfile` and `docker/frontend/Dockerfile` for any syntax errors or missing dependencies.
