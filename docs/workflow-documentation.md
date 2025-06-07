@@ -63,8 +63,8 @@ To run this workflow manually:
         * Installs root dependencies using `pnpm install --no-frozen-lockfile`.
         * Runs frontend component tests using `pnpm test:component-headless`.
 
-3.  **`build` (Build Docker Images)**:
-    * **Purpose**: Builds and pushes the Docker images for the backend and frontend services to the GitHub Container Registry.
+3.  **`build-backend-image` (Build Backend Docker Image)**:
+    * **Purpose**: Builds and pushes the Docker image for the backend service to the GitHub Container Registry.
     * **Runs on**: `ubuntu-latest`
     * **Dependencies**: This job `needs` both the `lint` and `test` jobs to complete successfully.
     * **Environment**: GitHub Actions
@@ -75,8 +75,19 @@ To run this workflow manually:
         * Logs in to GitHub Container Registry (`ghcr.io`) using a Personal Access Token (PAT) stored as `secrets.GH_PAT`.
         * Sets up Docker Buildx for efficient Docker builds.
         * **Builds and Pushes Backend Image**: Builds the backend Docker image using the `docker/backend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
-        * **Builds and Pushes Frontend Image**: Builds the frontend Docker image using the `docker/frontend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
 
+4.  **`build-frontend-image` (Build Frontend Docker Image)**:
+    * **Purpose**: Builds and pushes the Docker image for the frontend service to the GitHub Container Registry.
+    * **Runs on**: `ubuntu-latest`
+    * **Dependencies**: This job `needs` both the `lint` and `test` jobs to complete successfully.
+    * **Environment**: GitHub Actions
+    * **Conditional Execution**: This job only runs on pushes to the `main` branch.
+    * **Steps**:
+        * Checks out the repository.
+        * **Sets dynamic tag and image path**: Determines the Docker image tag based on the trigger (manual input, `main` branch uses `latest`, other branches use the branch name) and sets the full image path.
+        * Logs in to GitHub Container Registry (`ghcr.io`) using a Personal Access Token (PAT) stored as `secrets.GH_PAT`.
+        * Sets up Docker Buildx for efficient Docker builds.
+        * **Builds and Pushes Frontend Image**: Builds the frontend Docker image using the `docker/frontend/Dockerfile` and pushes it to the configured image path with the determined tag. Utilizes GitHub Actions cache for efficient builds.
 
 ---
 
@@ -89,7 +100,6 @@ To run this workflow manually:
 * `GEMINI_KEY`: Used by the backend application for Gemini API access.
 * `MONGO_ATLAS_URI`: The MongoDB Atlas connection URI for the backend.
 * `MONGO_DOCKER_URI`: The MongoDB Docker connection URI for the backend (likely for local or CI testing against a Dockerized MongoDB).
-
 
 ---
 
