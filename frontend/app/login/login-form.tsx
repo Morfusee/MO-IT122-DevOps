@@ -15,11 +15,12 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { redirect } from "next/navigation";
-
-import "@/lib/client-init";
 import { useToggle } from "@mantine/hooks";
 import { ForgotPasswordForm } from "./forget-pass-form";
 import { notifications } from "@mantine/notifications";
+import Link from "next/link";
+
+import "@/lib/client-init";
 
 function LoginForm() {
   const [type, toggle] = useToggle(["login", "forget password"]);
@@ -51,10 +52,6 @@ function LoginForm() {
     redirect("/chat");
   };
 
-  const register = () => {
-    redirect("/register");
-  };
-
   return (
     <>
       {type === "forget password" && <ForgotPasswordForm toggle={toggle} />}
@@ -65,12 +62,15 @@ function LoginForm() {
 
           <Text className="text-center mt-2" c="dimmed" size="sm">
             Do not have an account yet?{" "}
-            <Anchor onClick={register}>Create account</Anchor>
+            <Anchor component={Link} href="/register">
+              Create account
+            </Anchor>
           </Text>
 
           <Paper withBorder shadow="sm" p={22} mt={30} w={350} radius="md">
             <form onSubmit={form.onSubmit(login)}>
               <TextInput
+                name="email"
                 label="Email"
                 placeholder="you@example.com"
                 required
@@ -78,6 +78,7 @@ function LoginForm() {
                 {...form.getInputProps("email")}
               />
               <PasswordInput
+                name="password"
                 label="Password"
                 placeholder="Your password"
                 required
