@@ -8,13 +8,21 @@
     "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\"",
     "install:all": "pnpm --filter frontend install && pnpm --filter backend install",
     "api-gen": "pnpm --filter frontend openapi-ts",
-    "compose": "cd docker && docker-compose -f compose.dev.yml up --build"
+    "compose": "cd docker && docker-compose -f compose.dev.yml up --build",
+    "test:api": "pnpm --filter backend test",
+    "e2e-start": "concurrently -k -s first -n BACKEND,FRONTEND \"pnpm --filter backend dev:memorydb\" \"pnpm --filter frontend dev\"",
+    "e2e-test": "pnpm --filter frontend cypress:open --e2e",
+    "e2e-test-headless": "pnpm --filter frontend e2e:headless",
+    "test:e2e": "start-server-and-test e2e-start http://localhost:3000 e2e-test",
+    "test:e2e-headless": "start-server-and-test e2e-start http://localhost:3000 e2e-test-headless",
+    "test:component-headless": "pnpm --filter frontend component:headless"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "start-server-and-test": "^2.0.12"
   }
 }

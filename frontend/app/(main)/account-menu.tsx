@@ -28,12 +28,17 @@ function AccountMenu(props: AccountMenuProps) {
   return (
     <Popover position="right-end">
       <PopoverTarget>
-        <ActionIcon variant="transparent" radius="xl" size="lg">
+        <ActionIcon
+          variant="transparent"
+          radius="xl"
+          size="lg"
+          data-name="account-menu"
+        >
           <Avatar />
         </ActionIcon>
       </PopoverTarget>
 
-      <PopoverDropdown>
+      <PopoverDropdown data-name="account-popup">
         <Stack align="center" gap={8} className="min-w-54">
           <Group className="w-full py-2">
             <Avatar size="md" />

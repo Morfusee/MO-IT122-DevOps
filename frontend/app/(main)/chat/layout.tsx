@@ -30,7 +30,7 @@ async function ChatHistory() {
   });
 
   return (
-    <Stack align="center" gap={2} className="w-full">
+    <Stack align="center" gap={2} className="w-full" data-name="chat-history">
       <Stack align="center" className="w-full mb-4">
         <Title order={4} fw={700}>
           AI Tutor

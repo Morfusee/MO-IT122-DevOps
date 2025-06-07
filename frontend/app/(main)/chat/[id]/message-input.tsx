@@ -14,6 +14,7 @@ function MessageInput(props: MessageInputProps) {
   };
   return (
     <InputArea
+      name="prompt-input"
       size="md"
       placeholder="Ask a question"
       onSubmit={handleSubmit}

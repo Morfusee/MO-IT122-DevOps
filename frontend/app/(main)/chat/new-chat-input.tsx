@@ -13,6 +13,7 @@ function NewChatInput() {
 
   return (
     <InputArea
+      name="new-prompt-input"
       size="md"
       placeholder="Ask a question"
       minRows={3}
