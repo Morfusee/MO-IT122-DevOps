@@ -43,7 +43,11 @@ function MessageList(props: MessageListProps) {
   };
 
   return !isPending && data ? (
-    <ScrollArea className="w-full flex-1" viewportRef={viewport}>
+    <ScrollArea
+      className="w-full flex-1"
+      viewportRef={viewport}
+      data-name="message-history"
+    >
       {data.map((item) => (
         <React.Fragment key={item.id}>
           <UserMessageBubble content={item.prompt} />
@@ -74,7 +78,11 @@ interface UserMessageBubbleProps {
 
 function UserMessageBubble(props: UserMessageBubbleProps) {
   return (
-    <Group justify="end" className="w-full max-w-2xl mx-auto mb-10">
+    <Group
+      justify="end"
+      className="w-full max-w-2xl mx-auto mb-10"
+      data-name="user-message"
+    >
       <Stack className="px-6 py-3 bg-neutral-300/60 rounded-3xl max-w-2/3">
         <Text>{props.content}</Text>
       </Stack>
@@ -88,7 +96,10 @@ interface LLMMessageBubbleProps {
 
 function LLMMessageBubble(props: LLMMessageBubbleProps) {
   return (
-    <Group className="markdown w-full max-w-2xl mx-auto mb-18">
+    <Group
+      className="markdown w-full max-w-2xl mx-auto mb-18"
+      data-name="llm-message"
+    >
       <Markdown remarkPlugins={[remarkGfm]}>{props.content}</Markdown>
     </Group>
   );

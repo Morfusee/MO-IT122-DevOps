@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "openapi-ts": "openapi-ts"
+    "openapi-ts": "openapi-ts",
+    "cypress:open": "cypress open",
+    "e2e:headless": "cypress run --e2e",
+    "component:headless": "cypress run --component",
+    "e2e:run": "start-server-and-test dev http://localhost:3000 e2e:headless"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.0",
@@ -36,9 +40,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cypress": "^14.4.0",
+    "eslint": "^9.27.0",
+    "eslint-config-next": "15.3.2",
     "postcss": "^8.5.3",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
+    "start-server-and-test": "^2.0.12",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -106,6 +106,7 @@ function ChatCard(props: ChatCardProps) {
           h={60}
           variant="transparent"
           className="flex-1"
+          data-name="chat-history-item"
         >
           <Stack align="start" gap={0} className="w-full">
             <Text fw={500} truncate="end" className="w-full">
@@ -129,7 +130,12 @@ function ChatCard(props: ChatCardProps) {
             }}
           >
             <MenuTarget>
-              <ActionIcon variant="light" size="sm" radius="xl">
+              <ActionIcon
+                variant="light"
+                size="sm"
+                radius="xl"
+                data-name="chat-item-menu-trigger"
+              >
                 <IconDots />
               </ActionIcon>
             </MenuTarget>
@@ -138,6 +144,7 @@ function ChatCard(props: ChatCardProps) {
               <MenuItem
                 leftSection={<IconEdit size={18} />}
                 onClick={() => handleEditClick(props.id)}
+                data-name="menu-rename-button"
               >
                 Rename
               </MenuItem>
@@ -145,6 +152,7 @@ function ChatCard(props: ChatCardProps) {
                 color="red"
                 leftSection={<IconTrash size={18} />}
                 onClick={() => handleDeleteClick(props.id)}
+                data-name="menu-delete-button"
               >
                 Delete
               </MenuItem>
@@ -218,7 +226,11 @@ function EditModalForm(props: EditModalFormProps) {
   };
   return (
     <form onSubmit={form.onSubmit(onEditTitle)}>
-      <TextInput radius="md" {...form.getInputProps("title")} />
+      <TextInput
+        radius="md"
+        data-name="rename-input"
+        {...form.getInputProps("title")}
+      />
       <Group mt="lg" justify="flex-end">
         <Button onClick={props.onClose} variant="default">
           Cancel
