@@ -25,6 +25,9 @@ dist/
 
 # Miscs
 **/mongodb-data
+**/.env
+**/traefik-logs
+**/letsencrypt
 
 # Certs
 **/certs
