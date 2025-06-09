@@ -13,12 +13,18 @@
     line: "PasswordAuthentication no"
   notify: Restart SSH
 
+- name: Check if 50-cloud-init.conf exists
+  ansible.builtin.stat:
+    path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+  register: cloud_init_ssh_config_stat
+
 - name: Ensure password authentication is disabled in 50-cloud-init.sshd_config
   lineinfile:
     path: /etc/ssh/sshd_config.d/50-cloud-init.conf
     regexp: "^#?PasswordAuthentication"
     line: "PasswordAuthentication no"
   notify: Restart SSH
+  when: cloud_init_ssh_config_stat.stat.exists
 
 - name: Disable root password authentication
   lineinfile:
