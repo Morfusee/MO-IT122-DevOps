@@ -31,8 +31,8 @@ services:
       context: ../
       dockerfile: docker/frontend/Dockerfile
       args:
-        API_BASE_URL: https://adonisjs.mcube.uk
-        API_BASE_URL_SERVER: https://adonisjs.mcube.uk
+        NEXT_PUBLIC_API_BASE_URL: https://adonisjs.mcube.uk
+        NEXT_PUBLIC_API_BASE_URL_SERVER: https://adonisjs.mcube.uk
     ports:
       - "3002:3333"
     env_file:
