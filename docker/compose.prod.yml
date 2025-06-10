@@ -23,12 +23,10 @@ services:
     - ./letsencrypt:/letsencrypt:rw # letsencrypt folder
     - ./traefik/config:/etc/traefik/config:ro # traefik folder
     - ./traefik/logs:/logs # traefik folder
-    # environment:
-    #   BASE_URL_FQDN: ${BASE_URL_FQDN}
-    #   CLIENT_URL: ${CLIENT_URL}
     restart: always
     networks:
     - main-network
+    - adonisjs-network
     - socket-proxy-network
     depends_on:
     - socket-proxy
@@ -56,6 +54,7 @@ services:
     networks:
       - db-network
       - main-network
+      - adonisjs-network
     labels:
     # Since you have two replicas, you can't put all of these inside dynamic.yml :(
     # Enable Traefik for this service
@@ -74,7 +73,7 @@ services:
     - "traefik.tls.options.default.curvePreferences=CurveP521,CurveP384"
 
     # Middleware: CORS Headers
-    - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PATCH,DELETE"
+    - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PATCH,DELETE,OPTIONS"
     - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
     - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=${FRONTEND_URL}"
     - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
@@ -160,9 +159,12 @@ services:
       WATCHTOWER_CLEANUP: true
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+    - /home/morfuse/.docker/config.json:/config.json
     restart: always
 
 networks:
+  adonisjs-network: # you actually need this for discoverability of the backend
+      driver: bridge
   db-network:
     driver: bridge
   socket-proxy-network:
