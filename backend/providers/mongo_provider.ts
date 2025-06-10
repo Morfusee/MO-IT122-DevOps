@@ -11,7 +11,7 @@ export default class MongoProvider {
    * The container bindings have booted
    */
   async boot() {
-    if (env.get('NODE_ENV') === 'development') {
+    if (env.get('NODE_ENV') === 'development' || env.get('NODE_ENV') === 'production') {
       const isDockerRunning = env.get('IS_DOCKERIZED')
       const DB_URI = isDockerRunning ? env.get('MONGO_DOCKER_URI') : env.get('MONGO_ATLAS_URI')
 
@@ -39,9 +39,7 @@ export default class MongoProvider {
     }
 
     // * Clear mongoose models before each test run to avoid conflicts
-    if (env.get('NODE_ENV') === 'test' || env.get('NODE_ENV') === 'development') {
-      clearMongooseModels()
-    }
+    clearMongooseModels()
   }
 }
 
