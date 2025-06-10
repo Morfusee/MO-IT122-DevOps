@@ -89,9 +89,7 @@ export default class AuthController {
       sameSite: 'none',
       maxAge: 86400,
       encode: false,
-      // sameSite: 'none',
-      // secure: true,
-      domain: 'mcube.uk'
+      domain: 'mcube.uk',
     })
 
     return {
@@ -112,7 +110,11 @@ export default class AuthController {
     type: Success,
   })
   async logout({ response }: HttpContext) {
-    response.clearCookie('accessToken')
+    response.clearCookie('accessToken', {
+      secure: true,
+      sameSite: 'none',
+      domain: 'mcube.uk',
+    })
 
     return {
       message: 'Logout successful',
