@@ -28,8 +28,6 @@ services:
     #   CLIENT_URL: ${CLIENT_URL}
     restart: always
     networks:
-    - adonisjs-network
-    - nextjs-network
     - main-network
     - socket-proxy-network
     depends_on:
@@ -57,7 +55,6 @@ services:
       - mongo
     networks:
       - db-network
-      - adonisjs-network
       - main-network
     labels:
     # Since you have two replicas, you can't put all of these inside dynamic.yml :(
@@ -109,7 +106,6 @@ services:
     depends_on:
       - adonisjs
     networks:
-      - nextjs-network
       - main-network
     labels:
     # Since you have two replicas, you can't put all of these inside dynamic.yml :(
@@ -167,11 +163,7 @@ services:
     restart: always
 
 networks:
-  adonisjs-network:
-    driver: bridge
   db-network:
-    driver: bridge
-  nextjs-network:
     driver: bridge
   socket-proxy-network:
     driver: bridge
