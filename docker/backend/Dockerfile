@@ -1,3 +1,5 @@
+LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
+
 # https://docs.adonisjs.com/guides/getting-started/deployment
 FROM node:20.12.2-alpine3.18 as base
 
