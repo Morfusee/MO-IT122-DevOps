@@ -27,6 +27,8 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+# Label it
+LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY frontend .

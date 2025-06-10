@@ -1,5 +1,3 @@
-LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
-
 # https://docs.adonisjs.com/guides/getting-started/deployment
 FROM node:20.12.2-alpine3.18 as base
 
@@ -27,6 +25,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockf
 #### Second stage of the build ####
 ###################################
 FROM base AS buildstage
+
+# Label it
+LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
 
 # Set where to perform the next actions
 WORKDIR /app
