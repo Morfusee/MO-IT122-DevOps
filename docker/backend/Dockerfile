@@ -26,9 +26,6 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockf
 ###################################
 FROM base AS buildstage
 
-# Label it
-LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
-
 # Set where to perform the next actions
 WORKDIR /app
 
@@ -53,6 +50,8 @@ WORKDIR /app
 # Copy build and modules over to this stage
 COPY --from=buildstage /app/build ./
 COPY --from=deps /app/node_modules ./node_modules
+
+LABEL org.opencontainers.image.source=https://github.com/Morfusee/MO-IT122-DevOps
 
 EXPOSE 3333
 CMD ["node", "./bin/server.js"]

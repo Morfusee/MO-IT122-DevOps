@@ -1,4 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1
+
 FROM node:18-alpine AS base
 
 ARG NEXT_PUBLIC_API_BASE_URL
@@ -25,8 +26,6 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
-# Label it
-LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY frontend .
@@ -60,6 +59,8 @@ COPY --from=builder /app/public ./public
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+LABEL org.opencontainers.image.source=https://github.com/Morfusee/MO-IT122-DevOps
 
 USER nextjs
 
