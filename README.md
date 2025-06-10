@@ -1,8 +1,15 @@
-# BrainBytes AI Tutoring Platform
+# BrainBytes AI Tutoring Platform [![BrainBytes Docker Image Build CI](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml/badge.svg)](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml)
 
 ## Project Overview
 
 BrainBytes is an AI-powered tutoring platform designed to provide accessible academic assistance to Filipino students. This project implements the platform using modern DevOps practices and containerization.
+
+## Documentation
+For more in-depth information about BrainBytes, please refer to our dedicated documentation:
+* **[Architecture Reference](docs/architecture.png)**: Detailed information about the BrainBytes backend API endpoints, request/response formats, and authentication.
+* **[Docker Development Setup](docs/docker-dev-setup.md)**: Comprehensive guide on setting up your local development environment using Docker and Traefik, covering services, project structure, and workflow.
+* **[BrainBytes Docker CI Documentation](docs/workflow-documentation.md)**: Details the Continuous Integration (CI) pipeline for building and pushing Docker images to the GitHub Container Registry, including triggers, stages, and troubleshooting.
+* **[Contribution Guidelines](docs/contributing.md)**: How to set up your development environment, submit changes, and adhere to our coding standards.
 
 ## Team Members
 

@@ -51,5 +51,7 @@ WORKDIR /app
 COPY --from=buildstage /app/build ./
 COPY --from=deps /app/node_modules ./node_modules
 
+LABEL org.opencontainers.image.source=https://github.com/Morfusee/MO-IT122-DevOps
+
 EXPOSE 3333
 CMD ["node", "./bin/server.js"]

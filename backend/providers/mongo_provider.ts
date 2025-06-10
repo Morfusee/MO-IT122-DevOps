@@ -11,7 +11,7 @@ export default class MongoProvider {
    * The container bindings have booted
    */
   async boot() {
-    if (this.app.getEnvironment() === 'web') {
+    if (env.get('NODE_ENV') === 'development' || env.get('NODE_ENV') === 'production') {
       const isDockerRunning = env.get('IS_DOCKERIZED')
       const DB_URI = isDockerRunning ? env.get('MONGO_DOCKER_URI') : env.get('MONGO_ATLAS_URI')
 
@@ -20,7 +20,7 @@ export default class MongoProvider {
       console.log('Using atlas as the database')
     }
 
-    if (this.app.getEnvironment() === 'test') {
+    if (env.get('NODE_ENV') === 'test') {
       this.memoryDB = await MongoMemoryServer.create()
 
       await mongoose.connect(this.memoryDB.getUri())
@@ -30,7 +30,7 @@ export default class MongoProvider {
   }
 
   async shutdown() {
-    if (this.app.getEnvironment() === 'test') {
+    if (env.get('NODE_ENV') === 'test') {
       if (this.memoryDB) {
         await this.memoryDB.stop()
 
@@ -39,9 +39,7 @@ export default class MongoProvider {
     }
 
     // * Clear mongoose models before each test run to avoid conflicts
-    if (env.get('NODE_ENV') === 'test' || env.get('NODE_ENV') === 'development') {
-      clearMongooseModels()
-    }
+    clearMongooseModels()
   }
 }
 

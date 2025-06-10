@@ -22,7 +22,9 @@ async function ChatLog({ params }: { params: Params }) {
   return (
     <Stack align="center" className="overflow-y-hidden w-full h-full">
       <Stack className="w-full max-w-2xl">
-        <Title order={3}>{chatDetail.data?.name}</Title>
+        <Title order={3} data-name="chat-title">
+          {chatDetail.data?.name}
+        </Title>
       </Stack>
       <MessageList id={id} />
       <MessageInput id={id} />

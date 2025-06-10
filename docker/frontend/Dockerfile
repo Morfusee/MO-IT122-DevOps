@@ -2,10 +2,10 @@
 
 FROM node:18-alpine AS base
 
-ARG API_BASE_URL
-ENV API_BASE_URL=$API_BASE_URL
-ARG API_BASE_URL_SERVER
-ENV API_BASE_URL_SERVER=$API_BASE_URL_SERVER
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_API_BASE_URL_SERVER
+ENV NEXT_PUBLIC_API_BASE_URL_SERVER=$NEXT_PUBLIC_API_BASE_URL_SERVER
 ENV HOSTNAME="0.0.0.0"
 
 # Install dependencies only when needed
@@ -59,6 +59,8 @@ COPY --from=builder /app/public ./public
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+LABEL org.opencontainers.image.source=https://github.com/Morfusee/MO-IT122-DevOps
 
 USER nextjs
 
