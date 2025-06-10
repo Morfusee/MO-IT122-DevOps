@@ -1,6 +1,4 @@
 # syntax=docker.io/docker/dockerfile:1
-LABEL org.opencontainers.image.source https://https://github.com/Morfusee/MO-IT122-DevOps
-
 FROM node:18-alpine AS base
 
 ARG NEXT_PUBLIC_API_BASE_URL
