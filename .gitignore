@@ -28,6 +28,7 @@ dist/
 **/.env
 **/traefik-logs
 **/letsencrypt
+**/grafana
 
 # Certs
 **/certs
