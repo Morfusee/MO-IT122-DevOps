@@ -12,6 +12,7 @@ const UsersController = () => import('#controllers/users_controller')
 import router from '@adonisjs/core/services/router'
 import openapi from '@foadonis/openapi/services/main'
 import { middleware } from './kernel.js'
+import HealthChecksController from '#controllers/health_checks_controller'
 const MessagePairController = () => import('#controllers/message_pair_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const GeminiSamplesController = () => import('#controllers/gemini_samples_controller')
@@ -45,6 +46,8 @@ router
     router.resource('chats.messages', MessagePairController).apiOnly()
   })
   .use(middleware.auth())
+
+router.get('/health', [HealthChecksController])
 
 /**
  * FIX: No UI for /api route
