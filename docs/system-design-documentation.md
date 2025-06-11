@@ -127,7 +127,7 @@ The Ansible playbook automates the networking and security configuration on the 
 ### Deployment Process Flow
 
 ![Deployment Process Flow Diagram](images/deployment-process-flow.png) *Figure: Deployment Process Flow Diagram*
-1.  **VPS Provisioning**: Ansible playbook (`provision.yml`) is run to set up the necessary environment on the OVHCloud VPS. This includes installing Docker, configuring security tools (UFW, Fail2ban), and setting up SSH access.
+1.  **VPS Provisioning**: Ansible playbook (`playbook.yml`) is run to set up the necessary environment on the OVHCloud VPS. This includes installing Docker, configuring security tools (UFW, Fail2ban), and setting up SSH access.
 2.  **Image Building & Pushing**: GitHub Actions builds the Docker images for the backend and frontend and pushes them to GitHub Container Registry (GHCR). This happens on every push to `main` (for `latest` tag) or `develop`, and on PRs.
 3.  **Application Deployment**: Once new images are available in GHCR, Watchtower, running on the VPS, automatically pulls the updated images and restarts the corresponding Docker containers.
 4.  **Traffic Management**: Traefik handles incoming HTTP/HTTPS requests, routes them to the correct `adonisjs` (backend) or `nextjs` (frontend) containers, and manages SSL certificates via Let's Encrypt (implied by Traefik configuration).
