@@ -16,7 +16,7 @@ Our mission-critical deployment goals:
 
 ## 3. Deployment Environment
 
-For reference, check out our [Deployment Process Flow Diagram](images/deployment-process-flow.png)
+![Deployment Process Flow Diagram](images/deployment-process-flow.png) *Figure: Deployment Process Flow Diagram*
 
 ### 3.1 Cloud Provider
 
