@@ -125,6 +125,8 @@ The Ansible playbook automates the networking and security configuration on the 
     * SSH key-based authentication is enforced for the `created_username` user.
 
 ### Deployment Process Flow
+
+![Deployment Process Flow Diagram](images/deployment-process-flow.png) *Figure: Deployment Process Flow Diagram*
 1.  **VPS Provisioning**: Ansible playbook (`provision.yml`) is run to set up the necessary environment on the OVHCloud VPS. This includes installing Docker, configuring security tools (UFW, Fail2ban), and setting up SSH access.
 2.  **Image Building & Pushing**: GitHub Actions builds the Docker images for the backend and frontend and pushes them to GitHub Container Registry (GHCR). This happens on every push to `main` (for `latest` tag) or `develop`, and on PRs.
 3.  **Application Deployment**: Once new images are available in GHCR, Watchtower, running on the VPS, automatically pulls the updated images and restarts the corresponding Docker containers.
@@ -135,6 +137,7 @@ The Ansible playbook automates the networking and security configuration on the 
 ## Integration Points
 
 ### How GitHub Actions Connects to Our VPS
+![How GitHub Actions Connects to Our VPS Diagram](images/gha-to-vps.png) *Figure: How GitHub Actions Connects to Our VPS Diagram*
 * **Image Registry**: GitHub Actions integrates with GHCR by logging in (`docker/login-action`) using a GitHub Personal Access Token (`GH_PAT`) and then pushing the built Docker images.
 * **Automatic Deployment**: The Watchtower service running directly on the OVHCloud VPS pulls the latest images from GHCR. This means GitHub Actions itself doesn't directly deploy to the VPS, but rather pushes artifacts that trigger an update on the VPS.
 
@@ -167,7 +170,7 @@ The primary artifacts of the BrainBytes CI/CD pipeline are containerized Docker 
 
 ### Pipeline Testing Procedures
 
-As detailed in the `workflow-documentation.md`:
+As detailed in the `workflow-documentation.md` and [CI/CD Pipeline Diagram](images/pipeline-diagram.png):
 
 * **Code Quality**: ESLint is used for linting, and Prettier for code formatting, ensuring consistent code style across both frontend and backend.
 * **Backend Tests**: `pnpm test` runs API-level tests for the backend, utilizing Japa as the testing framework. These tests cover **unit and integration** aspects of the backend API.
@@ -230,21 +233,50 @@ This matrix provides a quick reference for diagnosing and resolving common issue
 | **Security Patches** | Critical | Immediate Manual Intervention | `sudo apt update && sudo apt upgrade -y` for OS patches; application-specific updates as needed (triggering CI/CD) |
 
 ### Security Management
-Security is a cornerstone of the BrainBytes platform, implemented through a multi-layered approach across the infrastructure, application, and secrets management.
 
--   **Network Security**:
-    * **UFW Default-Deny Policy**: All incoming connections are blocked by default, with explicit rules only for essential services like SSH (on a non-standard port) and HTTP/HTTPS (handled by Traefik).
-    * **Fail2ban Automated IP Blocking**: Actively monitors authentication logs and dynamically bans suspicious IP addresses, providing a proactive defense against brute-force attacks.
--   **Application Security (via Traefik)**:
-    * **TLS 1.2+ Enforcement**: Traefik is configured to enforce modern TLS versions (1.2 or higher) for all HTTPS traffic, ensuring strong encryption and mitigating risks from outdated protocols.
-    * **Strong Cipher Suites**: Only robust cryptographic cipher suites are enabled, further enhancing the security of TLS connections.
-    * **Security Headers Middleware**: Traefik injects critical security headers into HTTP responses:
-        * `X-XSS-Protection: 1; mode=block`
-        * `X-Content-Type-Options: nosniff`
-        * `Strict-Transport-Security (HSTS)`: Forces browsers to interact with the application only over HTTPS.
-        * `X-Frame-Options: DENY`: Prevents clickjacking attacks by blocking the embedding of the application in iframes.
-    * **Sensitive File Access Blocking**: Traefik can be configured with middleware to block public access to sensitive files or directories (e.g., `.env`, `.git`, `docker-compose.yml`), preventing accidental exposure of internal configurations.
--   **Secrets Protection**:
-    * **GitHub Actions Encrypted Secrets**: All sensitive credentials for the CI/CD pipeline are stored as encrypted GitHub Actions Secrets, ensuring they are never exposed in public repositories or logs.
-    * **Production `.env` File Permissions**: On the production VPS, the `.env` file containing application secrets is placed with strict file permissions (e.g., `chmod 600`), restricting access only to the necessary user.
-    * **No Secrets in Version Control**: Absolutely no sensitive credentials, API keys, or private keys are committed to the Git repository, enforcing a fundamental security best practice.
+Security is a cornerstone of the BrainBytes platform, implemented through a multi-layered approach covering the network, application, and secrets management.
+
+---
+
+#### Network Security
+
+- **Default-Deny Firewall (UFW)**:  
+  All incoming connections are blocked by default. Only essential ports — such as SSH (on a non-standard port) and HTTP/HTTPS (via Traefik) — are explicitly allowed.
+
+- **Fail2ban Intrusion Prevention**:  
+  Monitors authentication logs and automatically bans suspicious IP addresses, proactively mitigating brute-force attacks.
+
+---
+
+#### Application Security (via Traefik)
+
+- **TLS Enforcement**:  
+  Enforces TLS 1.2 or higher for all HTTPS traffic to ensure secure encryption.
+
+- **Strong Cipher Suites**:  
+  Only modern, secure cipher suites are enabled for encrypted communications.
+
+- **Security Headers**:  
+  Traefik injects critical HTTP headers to strengthen browser-side protections:
+  - `Strict-Transport-Security`: Enforces HTTPS via HSTS.
+  - `X-XSS-Protection: 1; mode=block`: Blocks reflected XSS attacks.
+  - `X-Content-Type-Options: nosniff`: Prevents MIME-sniffing.
+  - `X-Frame-Options: DENY`: Blocks clickjacking via iframes.
+
+- **Sensitive File Access Controls**:  
+  Middleware rules are used to block access to sensitive files such as `.env`, `.git`, and `docker-compose.yml`, preventing unintended exposure.
+
+---
+
+#### Secrets Management
+
+- **Encrypted GitHub Actions Secrets**:  
+  All CI/CD credentials are securely stored in GitHub Actions as encrypted secrets, keeping them out of logs and version control.
+
+- **Production `.env` File Hardening**:  
+  The `.env` file on the VPS is secured with strict permissions (`chmod 600`), allowing access only to the intended system user.
+
+- **No Secrets in Version Control**:  
+  Sensitive credentials and API keys are explicitly excluded from Git repositories to uphold security best practices.
+
+
