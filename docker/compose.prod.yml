@@ -170,5 +170,5 @@ networks:
   socket-proxy-network:
     driver: bridge
   main-network:
-    driver: bridge
+    external: true
   

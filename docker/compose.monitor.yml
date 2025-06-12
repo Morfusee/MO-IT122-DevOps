@@ -1,0 +1,68 @@
+services:
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    pid: "host"
+    volumes:
+      - /:/host:ro
+    command:
+      - "--path.rootfs=/host"
+    restart: unless-stopped
+    networks:
+      - main-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/config.yml:/etc/prometheus/config.yml
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/config.yml
+    networks:
+      - main-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    volumes:
+      - ./grafana:/var/lib/grafana
+    cpus: "0.25"
+    networks:
+      - main-network
+    labels:
+    # Since you have two replicas, you can't put all of these inside dynamic.yml :(
+    # Enable Traefik for this service
+    - "traefik.enable=true"
+
+    # Router Configuration
+    - "traefik.http.routers.grafana.rule=Host(`traefik.brainbytes.mcube.uk`)"
+    - "traefik.http.routers.grafana.entrypoints=websecure"
+    - "traefik.http.routers.grafana.middlewares=security,block-sensitive"
+    - "traefik.http.routers.grafana.tls.certresolver=tlsresolver"
+
+    # TLS Configuration
+    - "traefik.tls.options.default.minVersion=VersionTLS12"
+    - "traefik.tls.options.default.sniStrict=true"
+    - "traefik.tls.options.default.cipherSuites=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+    - "traefik.tls.options.default.curvePreferences=CurveP521,CurveP384"
+
+    # Middleware: Security Headers
+    - "traefik.http.middlewares.security.headers.browserXssFilter=true"
+    - "traefik.http.middlewares.security.headers.contentTypeNosniff=true"
+    - "traefik.http.middlewares.security.headers.forceSTSHeader=true"
+    - "traefik.http.middlewares.security.headers.stsSeconds=31536000"
+    - "traefik.http.middlewares.security.headers.stsIncludeSubdomains=true"
+    - "traefik.http.middlewares.security.headers.stsPreload=true"
+    - "traefik.http.middlewares.security.headers.frameDeny=true"
+
+    # Middleware: Block Sensitive Files
+    - "traefik.http.middlewares.block-sensitive.redirectregex.regex=^.*(\\.env|\\.git|docker-compose\\.yml|\\.htaccess|\\.htpasswd|config\\.json).*$"
+    - "traefik.http.middlewares.block-sensitive.redirectregex.replacement=https://www.youtube.com/watch?v=xvFZjo5PgG0"
+    - "traefik.http.middlewares.block-sensitive.redirectregex.permanent=true"
+
+
+networks:
+  main-network:
+    external: true
