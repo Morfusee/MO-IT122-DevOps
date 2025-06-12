@@ -37,7 +37,7 @@ services:
     - "traefik.enable=true"
 
     # Router Configuration
-    - "traefik.http.routers.grafana.rule=Host(`${GRAFANA_URL_FQDN}`)"
+    - "traefik.http.routers.grafana.rule=Host(`traefik.brainbytes.mcube.uk`)"
     - "traefik.http.routers.grafana.entrypoints=websecure"
     - "traefik.http.routers.grafana.middlewares=security,block-sensitive"
     - "traefik.http.routers.grafana.tls.certresolver=tlsresolver"
