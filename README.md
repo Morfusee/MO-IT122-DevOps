@@ -5,11 +5,48 @@
 BrainBytes is an AI-powered tutoring platform designed to provide accessible academic assistance to Filipino students. This project implements the platform using modern DevOps practices and containerization.
 
 ## Documentation
-For more in-depth information about BrainBytes, please refer to our dedicated documentation:
-* **[Architecture Reference](docs/architecture.png)**: Detailed information about the BrainBytes backend API endpoints, request/response formats, and authentication.
-* **[Docker Development Setup](docs/docker-dev-setup.md)**: Comprehensive guide on setting up your local development environment using Docker and Traefik, covering services, project structure, and workflow.
-* **[BrainBytes Docker CI Documentation](docs/workflow-documentation.md)**: Details the Continuous Integration (CI) pipeline for building and pushing Docker images to the GitHub Container Registry, including triggers, stages, and troubleshooting.
-* **[Contribution Guidelines](docs/contributing.md)**: How to set up your development environment, submit changes, and adhere to our coding standards.
+
+Explore the documentation to understand how **BrainBytes** is architected, deployed, and developed.
+
+### 🛠️ Technical Guides
+- **[System Design Documentation](docs/system-design-documentation.md)**  
+  Learn how the BrainBytes platform is architected—covering backend APIs, data flow, authentication, and overall infrastructure.
+
+- **[Deployment Plan Documentation](docs/deployment-plan-documentation.md)**  
+  Step-by-step deployment process, from VPS setup to CI/CD integration, using Docker Compose and GitHub Actions.
+
+- **[Cloud Environment Documentation](docs/cloud-env-documentation.md)** _(Coming Soon)_  
+  Configuration details for hosting BrainBytes on a secure and scalable cloud environment.
+
+- **[Docker Development Setup](docs/docker-dev-setup.md)**  
+  Get started with local development using Docker and Traefik. Includes service structure, workflow tips, and environment management.
+
+- **[CI/CD Pipeline Workflow](docs/workflow-documentation.md)**  
+  Documentation of the GitHub Actions pipeline for automated builds and deployments using GHCR.
+
+### Visual References
+- **[Architecture Diagram](docs/images/architecture.png)**  
+  High-level visual of the platform’s microservices, ingress, databases, and CI/CD flow.
+
+- **[Deployment Architecture/Process Flow Diagram](docs/images/deployment-process-flow.png)**  
+   A step-by-step visual representation of how BrainBytes is deployed — from code commit to production.
+
+## Important Files
+
+These files define and support the core automation and infrastructure setup of the project.
+
+- **[GitHub Actions Workflow file (`automation.yml`)](.github/workflows/automation.yml)**  
+  Main GitHub Actions workflow responsible for CI/CD, including linting, testing, Docker builds, and remote deployment.
+
+- **[Docker Compose File (`docker.prod.compose.yml`)](docker/compose.prod.yml)**  
+  Defines all microservices and supporting containers used in production.
+
+- **[Ansible Playbook File(`playbook.yml`)](ansible/playbooks/playbook.yml)**  
+  Ansible playbook used to provision the production VPS with required packages, security hardening, and initial app setup.
+
+- **[Screenshot of Cloud Dashboard and Testing Results](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**  
+  Contains visual evidence of successful deployment and testing.
+
 
 ## Team Members
 
