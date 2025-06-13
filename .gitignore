@@ -28,6 +28,8 @@ dist/
 **/.env
 **/traefik-logs
 **/letsencrypt
+**/grafana
+**/prometheus/data
 
 # Certs
 **/certs
