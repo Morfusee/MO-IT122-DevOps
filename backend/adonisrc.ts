@@ -33,6 +33,7 @@ export default defineConfig({
     () => import('@foadonis/openapi/openapi_provider'),
     () => import('#providers/mongo_provider'),
     () => import('#providers/app_provider'),
+    () => import('@julr/adonisjs-prometheus/prometheus_provider')
   ],
 
   /*
