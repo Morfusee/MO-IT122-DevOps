@@ -10,3 +10,8 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ['reverse-proxy:8080']
+  
+  - job_name: 'adonisjs-app'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['adonisjs:3333']
