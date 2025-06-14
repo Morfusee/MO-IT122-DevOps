@@ -8,7 +8,7 @@ BrainBytes is an AI-powered tutoring platform designed to provide accessible aca
 
 Explore the documentation to understand how **BrainBytes** is architected, deployed, and developed.
 
-### 🛠️ Technical Guides
+### Technical Guides
 - **[System Design Documentation](docs/system-design-documentation.md)**  
   Learn how the BrainBytes platform is architected—covering backend APIs, data flow, authentication, and overall infrastructure.
 
