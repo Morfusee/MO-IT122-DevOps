@@ -15,7 +15,7 @@ Explore the documentation to understand how **BrainBytes** is architected, deplo
 - **[Deployment Plan Documentation](docs/deployment-plan-documentation.md)**  
   Step-by-step deployment process, from VPS setup to CI/CD integration, using Docker Compose and GitHub Actions.
 
-- **[Cloud Environment Documentation](docs/cloud-env-documentation.md)** _(Coming Soon)_  
+- **[Cloud Environment Documentation](docs/cloud-env-documentation.md)**
   Configuration details for hosting BrainBytes on a secure and scalable cloud environment.
 
 - **[Docker Development Setup](docs/docker-dev-setup.md)**  
