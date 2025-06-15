@@ -63,6 +63,23 @@ services:
     - "traefik.http.middlewares.block-sensitive.redirectregex.replacement=https://www.youtube.com/watch?v=xvFZjo5PgG0"
     - "traefik.http.middlewares.block-sensitive.redirectregex.permanent=true"
 
+  # alertmanager:
+  #   image: prom/alertmanager
+  #   command:
+  #   - --config.file=/etc/alertmanager/alertmanager.yml
+  #   volumes:
+  #     - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+  #   networks:
+  #     - main-network
+
+  # alertmanager-discord-relay:
+  #   image: benjojo/alertmanager-discord
+  #   environment:
+  #     - DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}
+  #   networks:
+  #     - main-network
+
+
 networks:
   main-network:
     external: true
