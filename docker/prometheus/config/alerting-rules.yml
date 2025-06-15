@@ -1,0 +1,76 @@
+groups:
+  - name: node-health-alerts
+    rules:
+      - alert: NodeDown
+        expr: up{job="node_exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node is down ({{ $labels.instance }})"
+          description: "No heartbeat from node_exporter at {{ $labels.instance }} for more than 1 minute."
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage ({{ $labels.instance }})"
+          description: "Memory usage on {{ $labels.instance }} exceeded 80%."
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage ({{ $labels.instance }})"
+          description: "CPU usage on {{ $labels.instance }} exceeded 85%."
+
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) * 100 > 90
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space ({{ $labels.instance }})"
+          description: "Disk usage on {{ $labels.instance }} exceeded 90%."
+
+      - alert: NodeExporterMissing
+        expr: absent(up{job="node_exporter"})
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No node_exporter targets found"
+          description: "Prometheus isn't receiving metrics from any node_exporter targets."
+
+      - alert: HighTraefikErrorRate
+        expr: |
+          (sum(rate(traefik_service_requests_total{code=~"5..",protocol="http"}[2m])) /
+          sum(rate(traefik_service_requests_total{protocol="http"}[2m]))) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High HTTP 5xx error rate in Traefik"
+          description: "More than 5% of HTTP requests through Traefik resulted in 5xx errors."
+
+      - alert: AppEndpointDown
+        expr: up{job="adonisjs-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AdonisJS app is down"
+          description: "No response from AdonisJS app at {{ $labels.instance }}."
+
+      - alert: PrometheusSelfScrapeFailing
+        expr: up{job="prometheus"} == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prometheus is not scraping itself"
+          description: "Prometheus is not reporting its own metrics."
