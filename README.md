@@ -10,7 +10,7 @@ Explore the documentation to understand how **BrainBytes** is architected, deplo
 
 ### Technical Guides
 - **[System Architecture and Design Documentation](docs/system-design-documentation.md)**  
-  Learn how the BrainBytes platform is structured—covering backend APIs, data flow, authentication mechanisms, and overall infrastructure. This document also includes three key items users often look for: **System Architecture Documentation** and **Security Implementation Documentation**.
+  Learn how the BrainBytes platform is structured—covering backend APIs, data flow, authentication mechanisms, and overall infrastructure. This document also includes two key items users often look for: **System Architecture Documentation** and **Security Implementation Documentation**.
 
 - **[Pipeline Configuration/Cloud Environment Documentation](docs/cloud-env-documentation.md)**  
   Configuration details for hosting BrainBytes on a secure cloud environment.
