@@ -66,6 +66,7 @@
     "@adonisjs/lucid": "^21.6.0",
     "@foadonis/openapi": "^0.3.5",
     "@google/genai": "^0.13.0",
+    "@julr/adonisjs-prometheus": "^1.0.2",
     "@vinejs/vine": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",

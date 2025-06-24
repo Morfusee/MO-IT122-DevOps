@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 15s
+
+route:
+  receiver: discord-notifications
+  group_by: ['alertname']
+  group_wait: 1s
+  group_interval: 1s
+  repeat_interval: 3h 
+
+receivers:
+  - name: discord-notifications
+    webhook_configs:
+      - url: http://alertmanager-discord-relay:9094
+        send_resolved: true

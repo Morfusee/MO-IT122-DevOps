@@ -8,28 +8,37 @@ BrainBytes is an AI-powered tutoring platform designed to provide accessible aca
 
 Explore the documentation to understand how **BrainBytes** is architected, deployed, and developed.
 
-### 🛠️ Technical Guides
-- **[System Design Documentation](docs/system-design-documentation.md)**  
-  Learn how the BrainBytes platform is architected—covering backend APIs, data flow, authentication, and overall infrastructure.
+### Technical Guides
+- **[System Architecture and Design Documentation](docs/system-design-documentation.md)**  
+  Learn how the BrainBytes platform is structured—covering backend APIs, data flow, authentication mechanisms, and overall infrastructure. This document also includes two key items users often look for: **System Architecture Documentation** and **Security Implementation Documentation**.
 
-- **[Deployment Plan Documentation](docs/deployment-plan-documentation.md)**  
+- **[Pipeline Configuration/Cloud Environment Documentation](docs/cloud-env-documentation.md)**  
+  Configuration details for hosting BrainBytes on a secure cloud environment.
+
+- **[Deployment Process Documentation](docs/deployment-plan-documentation.md)**  
   Step-by-step deployment process, from VPS setup to CI/CD integration, using Docker Compose and GitHub Actions.
-
-- **[Cloud Environment Documentation](docs/cloud-env-documentation.md)** _(Coming Soon)_  
-  Configuration details for hosting BrainBytes on a secure and scalable cloud environment.
 
 - **[Docker Development Setup](docs/docker-dev-setup.md)**  
   Get started with local development using Docker and Traefik. Includes service structure, workflow tips, and environment management.
 
-- **[CI/CD Pipeline Workflow](docs/workflow-documentation.md)**  
+- **[GitHub Actions Workflow Documentation](docs/workflow-documentation.md)**  
   Documentation of the GitHub Actions pipeline for automated builds and deployments using GHCR.
 
 ### Visual References
 - **[Architecture Diagram](docs/images/architecture.png)**  
   High-level visual of the platform’s microservices, ingress, databases, and CI/CD flow.
 
+- **[Cloud Platform Architecture](docs/images/cloud-platform-architecture.png)**  
+  Overview of the cloud infrastructure used to host BrainBytes, including virtual machines, networking, and security layers.
+
 - **[Deployment Architecture/Process Flow Diagram](docs/images/deployment-process-flow.png)**  
-   A step-by-step visual representation of how BrainBytes is deployed — from code commit to production.
+  A step-by-step visual representation of how BrainBytes is deployed — from code commit to production.
+
+- **[Pipeline Diagram](docs/images/pipeline-diagram.png)**  
+  Illustrates the CI/CD pipeline stages, automation triggers, and artifact flow using GitHub Actions and GHCR.
+
+- **[Rollback Protocol Diagram](docs/images/rollback-protocol.png)**  
+  Visual guide showing the rollback strategy and process in case of deployment failure or critical issues.
 
 ## Important Files
 
@@ -44,7 +53,7 @@ These files define and support the core automation and infrastructure setup of t
 - **[Ansible Playbook File(`playbook.yml`)](ansible/playbooks/playbook.yml)**  
   Ansible playbook used to provision the production VPS with required packages, security hardening, and initial app setup.
 
-- **[Screenshot of Cloud Dashboard and Testing Results](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**  
+- **[Screenshot of Cloud Dashboard and Testing Results (Validation Report)](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**    
   Contains visual evidence of successful deployment and testing.
 
 

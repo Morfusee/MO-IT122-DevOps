@@ -1,0 +1,32 @@
+groups:
+  - name: traefik-http-requests
+    interval: 15s
+    rules:
+      - record: traefik:http_service_requests_topk_1m
+        expr: |
+          topk(15,
+            label_replace(
+              sum by (service, code) (
+                rate(traefik_service_requests_total{
+                  service=~"(adonisjs-docker@docker|grafana-docker@docker|nextjs-docker@docker).*",
+                  protocol="http"
+                }[1m])
+              ) > 0,
+              "service", "$1", "service", "([^-]+-[^-]+).*"
+            )
+          )
+
+      - record: traefik:http_topk_2xx_requests_by_service_method_code_1m
+        expr: |
+          topk(15,
+            label_replace(
+              sum by (service, method, code) (
+                rate(traefik_service_requests_total{
+                  service=~"(adonisjs-docker@docker|grafana-docker@docker|nextjs-docker@docker).*",
+                  code=~"2..",
+                  protocol="http"
+                }[1m])
+              ) > 0,
+              "service", "$1", "service", "([^-]+-[^-]+).*"
+            )
+          )

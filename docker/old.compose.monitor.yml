@@ -1,0 +1,76 @@
+# This is just for documentation purposes.
+
+services:
+
+  # Assume that we have a Traefik instance
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+
+      # This is what's exposing the metrics to Prometheus for real.
+      # Move this to static.yml as that will override this
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+
+    # From here, you can remove these:
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    # Up to here
+
+    # Replace this with an external network. Check the 
+    networks:
+      - traefik
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    pid: "host"
+    volumes:
+      - /:/host:ro
+    command:
+      - "--path.rootfs=/host"
+    restart: unless-stopped
+    networks:
+      - traefik
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/config.yml:/etc/prometheus/config.yml
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/config.yml
+    networks:
+      - traefik
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    volumes:
+      - ./grafana:/var/lib/grafana
+    cpus: "0.25"
+    networks:
+      - traefik
+    # Replace this just for strengthening or based on how you wanna replace it
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+
+
+networks:
+  traefik:
+    driver: bridge
+
+# For production, replace it with this.
+# networks:
+#   main-network:
+#     external: true
