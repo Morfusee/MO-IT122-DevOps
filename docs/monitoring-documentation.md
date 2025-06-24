@@ -1,8 +1,12 @@
 # Monitoring System Documentation
 
+This documentation outlines the setup, configuration, and usage of the Prometheus-Grafana monitoring stack. It includes service metrics collected from custom applications, system exporters, and Traefik, along with alerting rules and visual dashboards. The goal is to ensure observability, performance tracking, and proactive issue detection across the deployed infrastructure.
+
 ---
 
-## 1. System Architecture Documentation
+## 1. Monitoring System Architecture Documentation
+
+![Monitoring System Architecture](./images/cloud-platform-w-monitoring-architecture.png)
 
 ### Components Overview
 
@@ -19,7 +23,7 @@
 
 ### Data Flow
 
-![Monitoring Architecture](./images/monitoring-architecture.png)
+![Monitoring Architecture Data Flow](./images/monitoring-architecture.png)
 
 1. **Exporters (Node Exporter, AdonisJS, Traefik)** expose metrics via HTTP endpoints.
 2. **Prometheus** scrapes each target at defined intervals (e.g., every 15s).
@@ -31,7 +35,7 @@
 
 ---
 
-## Metrics Catalog
+## 2. Metrics Catalog
 
 ### Custom Application Metrics (AdonisJS)
 
@@ -183,3 +187,21 @@ https://<GRAFANA_URL_FQDN>
 ```
 
 ---
+
+## Screenshot Evidence of Working Prometheus & Grafana Installation
+
+### Prometheus Connection on Grafana
+
+![Prometheus Connection on Grafana](./images/prometheus-connection-grafana.png)
+
+---
+
+### Graphs from Metrics Queries
+
+![Graphs from Metrics Queries](./images/graphs-from-metrics.png)
+
+---
+
+### Alert Rules Page
+
+![Alert Rules Page](./images/alert-rules-page.png)
