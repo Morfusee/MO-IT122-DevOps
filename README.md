@@ -9,6 +9,7 @@ BrainBytes is an AI-powered tutoring platform designed to provide accessible aca
 Explore the documentation to understand how **BrainBytes** is architected, deployed, and developed.
 
 ### Technical Guides
+
 - **[System Architecture and Design Documentation](docs/system-design-documentation.md)**  
   Learn how the BrainBytes platform is structured—covering backend APIs, data flow, authentication mechanisms, and overall infrastructure. This document also includes two key items users often look for: **System Architecture Documentation** and **Security Implementation Documentation**.
 
@@ -25,6 +26,7 @@ Explore the documentation to understand how **BrainBytes** is architected, deplo
   Documentation of the GitHub Actions pipeline for automated builds and deployments using GHCR.
 
 ### Visual References
+
 - **[Architecture Diagram](docs/images/architecture.png)**  
   High-level visual of the platform’s microservices, ingress, databases, and CI/CD flow.
 
@@ -53,9 +55,8 @@ These files define and support the core automation and infrastructure setup of t
 - **[Ansible Playbook File(`playbook.yml`)](ansible/playbooks/playbook.yml)**  
   Ansible playbook used to provision the production VPS with required packages, security hardening, and initial app setup.
 
-- **[Screenshot of Cloud Dashboard and Testing Results (Validation Report)](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**    
+- **[Screenshot of Cloud Dashboard and Testing Results (Validation Report)](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**  
   Contains visual evidence of successful deployment and testing.
-
 
 ## Team Members
 
@@ -89,14 +90,14 @@ Get BrainBytes up and running on your local machine with these simple steps.
 
 Before you start, make sure you have the following installed:
 
-* **Git**: For cloning the repository.
-* **Node.js** (LTS version recommended): Includes npm, which is needed to install pnpm.
-* **pnpm**: Our preferred package manager for faster and more efficient dependency management.
-    * If you don't have pnpm, you can install it globally via npm:
-        ```bash
-        npm install -g pnpm
-        ```
-* **Docker Desktop**: Required to run the application using Docker Compose.
+- **Git**: For cloning the repository.
+- **Node.js** (LTS version recommended): Includes npm, which is needed to install pnpm.
+- **pnpm**: Our preferred package manager for faster and more efficient dependency management.
+  - If you don't have pnpm, you can install it globally via npm:
+    ```bash
+    npm install -g pnpm
+    ```
+- **Docker Desktop**: Required to run the application using Docker Compose.
 
 ### Installation
 
@@ -104,26 +105,27 @@ Before you start, make sure you have the following installed:
 
     You can clone the BrainBytes repository using either **GitHub Desktop** or **Git via your terminal**.
 
-    * **Using GitHub Desktop**:
-        1.  Open GitHub Desktop.
-        2.  Go to **File > Clone Repository**.
-        3.  Paste the repository URL:
-            ```
-            [https://github.com/Morfusee/MO-IT122-DevOps](https://github.com/Morfusee/MO-IT122-DevOps)
-            ```
-        4.  Choose your desired local path and click **Clone**.
+    - **Using GitHub Desktop**:
 
-    * **Using Git via terminal**:
-        ```bash
-        git clone [https://github.com/Morfusee/MO-IT122-DevOps.git](https://github.com/Morfusee/MO-IT122-DevOps.git)
-        ```
+      1.  Open GitHub Desktop.
+      2.  Go to **File > Clone Repository**.
+      3.  Paste the repository URL:
+          ```
+          [https://github.com/Morfusee/MO-IT122-DevOps](https://github.com/Morfusee/MO-IT122-DevOps)
+          ```
+      4.  Choose your desired local path and click **Clone**.
+
+    - **Using Git via terminal**:
+      ```bash
+      git clone [https://github.com/Morfusee/MO-IT122-DevOps.git](https://github.com/Morfusee/MO-IT122-DevOps.git)
+      ```
 
 2.  **Configure Environment Variables**
 
     Navigate to the root directory of the cloned repository and set up your environment variables.
 
-    * Duplicate the `.env.example` file and rename the copy to `.env`.
-    * Open the newly created `.env` file and fill in all the required values, such as database connection strings or API keys.
+    - Duplicate the `.env.example` file and rename the copy to `.env`.
+    - Open the newly created `.env` file and fill in all the required values, such as database connection strings or API keys.
 
 3.  **Install Dependencies**
 
@@ -132,6 +134,7 @@ Before you start, make sure you have the following installed:
     ```bash
     pnpm install:all
     ```
+
     This command leverages pnpm workspaces to efficiently install dependencies across your monorepo.
 
 ### Running the Application
@@ -147,8 +150,8 @@ This method is ideal for active development, as it allows for hot-reloading and 
     pnpm dev
     ```
 2.  Once the services are running, access the application at the following URLs:
-    * **Frontend**: `http://localhost:3000`
-    * **Backend API Docs**: `http://localhost:3333/docs`
+    - **Frontend**: `http://localhost:3000`
+    - **Backend API Docs**: `http://localhost:3333/docs`
 
 #### Run with Docker (Containerized)
 
@@ -161,7 +164,11 @@ For a more production-like environment or to ensure consistency across different
     ```
     This will build the Docker images (if not already built) and start the containers for both the frontend and backend.
 3.  Once the containers are up and running, access the application at:
-    * **Frontend**: `http://localhost:3002`
-    * **Backend API Docs**: `http://localhost:3001/docs`
+    - **Frontend**: `http://localhost:3002`
+    - **Backend API Docs**: `http://localhost:3001/docs`
 
 ---
+
+## Easter Egg Section
+
+![egg](https://i.chzbgr.com/full/9201176832/h04CD15A3/egg-meme-face)
