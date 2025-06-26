@@ -202,8 +202,9 @@ In the unlikely event that a deployed version introduces critical issues, a robu
 
 
 ### Monitoring and Observability
-The team is currently planning to implement **Grafana and Prometheus** for comprehensive monitoring.
-For immediate network monitoring, the **Traefik Dashboard** is used to observe networking activity and service status.
+The team is currently using **Grafana and Prometheus** for comprehensive monitoring.
+
+For more information, check this [documentation](./monitoring-documentation.md) out
 
 
 ---
