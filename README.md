@@ -22,7 +22,13 @@ Explore the documentation to understand how **BrainBytes** is architected, deplo
 - **[Monitoring System Documentation](docs/monitoring-documentation.md)**  
   Understand how BrainBytes ensures reliability and visibility through robust monitoring and alerting.
 
-- **[Simulation Documentation](docs/simulation-documentation.md)**  
+  - **[Alerts Documentation](docs/monitoring-documentation.md#4-alert-rules-documentation)**  
+    Clear procedures for each Prometheus alert, including what it means, common causes, how to troubleshoot, and how to resolve it.
+
+  - **[Dashboard Catalog](docs/monitoring-documentation.md#5-dashboard-catalog)**  
+    Overview of key Grafana dashboards, including their purpose, key metrics tracked, and operational use cases.
+
+- **[Simulation/Data Generator Documentation](docs/simulation-documentation.md)**  
   A detailed guide for running the API simulation script used for testing and traffic generation.
 
 - **[Docker Development Setup](docs/docker-dev-setup.md)**  
@@ -63,6 +69,14 @@ These files define and support the core automation and infrastructure setup of t
 
 - **[Screenshot of Cloud Dashboard and Testing Results (Validation Report)](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**  
   Contains visual evidence of successful deployment and testing.
+
+- **[Monitoring System Demonstration Script](./docs/monitoring-demo-script.md)**  
+  A step-by-step guide for delivering a 10–15 minute live demo of BrainBytes’ monitoring capabilities.
+
+- **Dashboard JSON Exports**
+  - [main-dashboard.json](./docker/dashboards/main-dashboard.json)
+  - [resource-dashboard.json](./docker/dashboards/resource-optimization.json)
+  - [error-dashboard.json](./docker/dashboards/error-analysis.json)
 
 ## Team Members
 

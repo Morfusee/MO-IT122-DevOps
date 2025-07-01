@@ -2,15 +2,13 @@
 
 ## Overview
 
-This script simulates realistic user interactions with an API-based chat application for the purpose of testing and generating traffic. It performs the following:
+This script simulates realistic user interactions with an API-based chat application to generate traffic and test endpoint behavior. It is suitable for:
 
-- User registration and login
-- Chat creation
-- Retrieval and update of chat data
-- Sending and retrieving messages
-- Cleanup by deleting the chat
+- Load testing
+- Development environment traffic simulation
+- Integration and stability checks
 
-This script is ideal for load testing, development environment traffic simulation, and basic integration checks.
+The script loops indefinitely and performs varied API operations with randomized timing to mimic organic usage patterns.
 
 ---
 
@@ -24,16 +22,14 @@ simulation/index.js
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) installed
-- [pnpm](https://pnpm.io/) as the package manager
-- `.env` file with the following environment variables:
+- [Node.js](https://nodejs.org/)
+- [pnpm](https://pnpm.io/) (or your preferred Node.js package manager)
+- A `.env` file with the following environment variables:
 
-```
-
+```env
 API_BASE_URL=https://api.brainbytes.mcube.uk
 TEST_EMAIL=test@email.com
 TEST_PASSWORD=yourpassword
-
 ```
 
 ---
@@ -46,7 +42,7 @@ TEST_PASSWORD=yourpassword
    cd simulation
    ```
 
-2. **Install dependencies (if you haven’t already):**
+2. **Install dependencies (if needed):**
 
    ```bash
    pnpm install
@@ -58,50 +54,75 @@ TEST_PASSWORD=yourpassword
    pnpm run dev
    ```
 
----
-
-## Script Breakdown
-
-### 1. `.env` Usage
-
-The script reads these values from your `.env` file:
-
-- `API_BASE_URL`: Base URL of the backend API
-- `TEST_EMAIL` & `TEST_PASSWORD`: Credentials for simulated user
-
-### 2. User Flow
-
-The simulation follows this sequence:
-
-1. **Register** the user (silently fails if already exists)
-2. **Login** and retrieve an `accessToken`
-3. **Create a chat**
-4. Perform the following actions using the `accessToken`:
-   - Fetch `/me`
-   - Get all chats
-   - Get specific chat by ID
-   - Update chat name
-   - Send a message
-   - Retrieve messages
-   - Delete the chat
+   > ⚠️ The script runs indefinitely in a loop. Use `CTRL+C` to stop it manually.
 
 ---
 
-## Output
+## Script Flow
 
-You will see console logs like:
+1. **Register user**
+   Attempts to register using credentials from `.env`. Silent fail if already exists.
+
+2. **Login user**
+   Sends a login request and retrieves an `accessToken`.
+
+3. **Get or create a chat**
+   Checks for existing chats. If none exist, it creates one using a default prompt.
+
+4. **Simulation loop**
+   In each cycle:
+
+   - Randomly shuffles and performs API requests:
+
+     - `GET /me`
+     - `GET /chats`
+     - `GET /chats/:id`
+     - `PATCH /chats/:id` (renames the chat)
+     - `GET /chats/:id/messages`
+
+   - Introduces randomized delays between requests to mimic human usage.
+
+---
+
+## Code Features
+
+### Randomization
+
+- **Delays**: Each API call is followed by a randomized delay (`20ms–100ms`).
+- **Shuffling**: Task execution order is randomized per cycle.
+
+### Error Handling
+
+- Network and logical errors are logged but don't interrupt the loop.
+- Login errors and missing `accessToken`s throw descriptive messages.
+
+---
+
+## Console Output
+
+You will see output like:
 
 ```
-Create chat response: { chat: { id: "abc123", ... } }
-Simulated run finished.
+No chat found. Creating one...
+Bombarding chat ID: abc123
+[2025-06-30T10:45:12.654Z] Cycle complete.
+```
+
+In case of failures:
+
+```
+Error during bombardment: Login failed: 401 - Unauthorized
 ```
 
 ---
 
 ## Troubleshooting
 
-- Ensure `.env` is correctly configured in the `simulation` directory.
-- Make sure the API server is running and accessible at `API_BASE_URL`.
-- If you see `Login failed: 401`, check the credentials in `.env`.
+| Issue                       | Possible Cause                          | Solution                               |
+| --------------------------- | --------------------------------------- | -------------------------------------- |
+| `Login failed: 401`         | Wrong credentials or backend issue      | Double-check `.env` credentials        |
+| `Failed to create chat`     | Invalid request body or API error       | Confirm backend supports POST `/chats` |
+| Script does nothing         | Missing `.env` or wrong path            | Ensure `.env` is in the same folder    |
+| Too many requests / blocked | Server rate-limiting or DDoS protection | Add longer delays or limit iterations  |
 
 ---
