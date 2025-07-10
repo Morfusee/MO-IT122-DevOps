@@ -56,7 +56,7 @@ Explore the documentation to understand how **BrainBytes** is architected, deplo
 
 ## Important Files
 
-These files define and support the core automation and infrastructure setup of the project.
+These files support the core automation, infrastructure setup, and presentation delivery of the BrainBytes platform.
 
 - **[GitHub Actions Workflow file (`automation.yml`)](.github/workflows/automation.yml)**  
   Main GitHub Actions workflow responsible for CI/CD, including linting, testing, Docker builds, and remote deployment.
@@ -72,6 +72,12 @@ These files define and support the core automation and infrastructure setup of t
 
 - **[Monitoring System Demonstration Script](./docs/monitoring-demo-script.md)**  
   A step-by-step guide for delivering a 10–15 minute live demo of BrainBytes’ monitoring capabilities.
+
+- **[Presentation Outline](docs/presentation-outline.md)**  
+  Presentation that outlines BrainBytes’ architecture, DevOps, and monitoring strategy.
+
+- **[Live Demonstration Plan](docs/demo-plan.md)**  
+  A minute-by-minute walkthrough for presenting the platform’s deployment, CI/CD, and monitoring in a live setting.
 
 - **Dashboard JSON Exports**
   - [main-dashboard.json](./docker/dashboards/main-dashboard.json)
