@@ -9,8 +9,20 @@ const userCreds = {
   lastName: "Ngo",
 };
 
-const dummyChat1 = { prompt: "Can you teach me about biology?" };
-const dummyChat2 = { prompt: "How does cells work?" };
+const dummyChat = { prompt: "Can you teach me about biology?" };
+
+function randomDelay(min = 20, max = 100) {
+  return new Promise((res) =>
+    setTimeout(res, Math.floor(Math.random() * (max - min + 1)) + min)
+  );
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
 async function registerUser() {
   try {
@@ -44,20 +56,20 @@ async function login() {
   return data.accessToken;
 }
 
-async function simulate() {
-  await registerUser();
-  const token = await login();
+async function getOrCreateChat(headers) {
+  const getRes = await fetch(`${BASE_URL}/chats`, { headers });
+  const chats = await getRes.json();
 
-  const headers = {
-    "Content-Type": "application/json",
-    cookie: `accessToken=${token}`,
-  };
+  if (Array.isArray(chats) && chats.length > 0) {
+    console.log(`Found existing chat: ${chats[0].id}`);
+    return chats[0].id;
+  }
 
-  // Create chat first
+  console.log("No chat found. Creating one...");
   const createRes = await fetch(`${BASE_URL}/chats`, {
     method: "POST",
     headers,
-    body: JSON.stringify(dummyChat1),
+    body: JSON.stringify(dummyChat),
   });
 
   if (!createRes.ok) {
@@ -68,47 +80,53 @@ async function simulate() {
   }
 
   const data = await createRes.json();
-  console.log("Create chat response:", data);
-
-  const { chat } = data;
-  if (!chat || !chat.id) {
+  if (!data.chat || !data.chat.id) {
     throw new Error("Chat creation failed. No chat object returned.");
   }
 
-  // Proceed only after chat is confirmed
-  // 1. Get /me
-  await fetch(`${BASE_URL}/me`, { headers });
-
-  // 2. Get all chats
-  await fetch(`${BASE_URL}/chats`, { headers });
-
-  // 3. Get chat by ID
-  await fetch(`${BASE_URL}/chats/${chat.id}`, { headers });
-
-  // 4. Update chat name
-  await fetch(`${BASE_URL}/chats/${chat.id}`, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify({ name: "Updated from traffic sim" }),
-  });
-
-  // 5. Send message
-  await fetch(`${BASE_URL}/chats/${chat.id}/messages`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(dummyChat2),
-  });
-
-  // 6. Get messages
-  await fetch(`${BASE_URL}/chats/${chat.id}/messages`, { headers });
-
-  // 7. Delete chat
-  await fetch(`${BASE_URL}/chats/${chat.id}`, {
-    method: "DELETE",
-    headers,
-  });
-
-  console.log(`Simulated run finished.`);
+  return data.chat.id;
 }
 
-simulate();
+async function simulateLoop() {
+  await registerUser();
+  const token = await login();
+
+  const headers = {
+    "Content-Type": "application/json",
+    cookie: `accessToken=${token}`,
+  };
+
+  const chatId = await getOrCreateChat(headers);
+  console.log(`Bombarding chat ID: ${chatId}`);
+
+  const tasks = [
+    async () => await fetch(`${BASE_URL}/me`, { headers }),
+    async () => await fetch(`${BASE_URL}/chats`, { headers }),
+    async () => await fetch(`${BASE_URL}/chats/${chatId}`, { headers }),
+    async () =>
+      await fetch(`${BASE_URL}/chats/${chatId}`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ name: `Updated ${Date.now()}` }),
+      }),
+    async () =>
+      await fetch(`${BASE_URL}/chats/${chatId}/messages`, { headers }),
+  ];
+
+  while (true) {
+    try {
+      shuffleArray(tasks);
+      for (const task of tasks) {
+        await task();
+        await randomDelay(); // Random delay between requests
+      }
+      console.log(`[${new Date().toISOString()}] Cycle complete.`);
+    } catch (err) {
+      console.error("Error during bombardment:", err.message);
+    }
+
+    await randomDelay();
+  }
+}
+
+simulateLoop();
