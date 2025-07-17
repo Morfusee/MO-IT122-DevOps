@@ -36,7 +36,7 @@ _Content here_
 
 ### 📦 Containerization Strategy
 
-![Cloud Platform Architecture Diagram](images/cloud-platform-w-monitoring-architecture.png)
+![Containerization Strategy](images/containerization-strategy.png)
 
 ---
 
