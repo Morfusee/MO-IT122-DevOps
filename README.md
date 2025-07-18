@@ -1,196 +1,333 @@
-# BrainBytes AI Tutoring Platform [![BrainBytes Docker Image Build CI](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml/badge.svg)](https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml)
+<div align="center">
+  <h1>BrainBytes AI Tutoring Platform</h1>
+  <p>
+    <a href="https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml">
+      <img src="https://github.com/Morfusee/MO-IT122-DevOps/actions/workflows/automation.yml/badge.svg" alt="Build Status">
+    </a>
+    <a href="https://github.com/Morfusee/MO-IT122-DevOps/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/License-NONE-red.svg" alt="License">
+    </a>
+    <a href="https://nodejs.org/">
+      <img src="https://img.shields.io/badge/Node.js-18.x+-green.svg" alt="Node.js">
+    </a>
+    <a href="https://pnpm.io/">
+      <img src="https://img.shields.io/badge/pnpm-8.x+-F69220.svg" alt="pnpm">
+    </a>
+  </p>
+</div>
 
-## Project Overview
+## 📝 Project Description
 
-BrainBytes is an AI-powered tutoring platform designed to provide accessible academic assistance to Filipino students. This project implements the platform using modern DevOps practices and containerization.
+BrainBytes is an AI-powered tutoring platform designed to provide accessible academic assistance to Filipino students. This project implements the platform using modern DevOps practices and containerization, ensuring scalability, reliability, and ease of deployment.
 
-## Documentation
+## 📋 Table of Contents
 
-Explore the documentation to understand how **BrainBytes** is architected, deployed, and developed.
+- [✨ Features](#-features)
+- [🎯 Project Goals](#-project-goals)
+- [⚙️ Technology Stack](#-technology-stack)
+- [🚀 Getting Started](#-getting-started)
+  - [Prerequisites](#-prerequisites)
+  - [Installation](#-installation)
+  - [Running the Application](#-running-the-application)
+  - [Running Tests](#-running-tests)
+- [🔧 Key Configuration Files](#-key-configuration-files)
+- [🏗️ Project Structure](#-project-structure)
+- [📊 Architecture](#-architecture)
+- [📚 Documentation](#-documentation)
+- [📊 Monitoring & Observability](#-monitoring--observability)
+- [🐳 Docker Commands Cheatsheet](#-docker-commands-cheatsheet)
+- [👥 Team Members](#-team-members)
+- [📄 License](#-license)
 
-### Technical Guides
+## ✨ Features
 
-- **[System Architecture and Design Documentation](docs/system-design-documentation.md)**  
-  Learn how the BrainBytes platform is structured—covering backend APIs, data flow, authentication mechanisms, and overall infrastructure. This document also includes two key items users often look for: **System Architecture Documentation** and **Security Implementation Documentation**.
+- **AI-Powered Tutoring**: Smart learning assistance powered by advanced AI
+- **Containerized Architecture**: Easy deployment with Docker
+- **CI/CD Pipeline**: Automated testing and deployment
+- **Monitoring**: Built-in observability tools
+- **Scalable**: Microservices-based architecture for easy scaling
 
-- **[Pipeline Configuration/Cloud Environment Documentation](docs/cloud-env-documentation.md)**  
-  Configuration details for hosting BrainBytes on a secure cloud environment.
+## 🎯 Project Goals
 
-- **[Deployment Process Documentation](docs/deployment-plan-documentation.md)**  
-  Step-by-step deployment process, from VPS setup to CI/CD integration, using Docker Compose and GitHub Actions.
+- [x] Implement containerized microservices architecture
+- [x] Set up automated CI/CD pipeline
+- [x] Deploy to production on VPS
+- [x] Configure monitoring and observability
+- [ ] Implement auto-scaling
+- [ ] Add comprehensive test coverage
 
-- **[Monitoring System Documentation](docs/monitoring-documentation.md)**  
-  Understand how BrainBytes ensures reliability and visibility through robust monitoring and alerting.
+## ⚙️ Technology Stack
 
-  - **[Alerts Documentation](docs/monitoring-documentation.md#4-alert-rules-documentation)**  
-    Clear procedures for each Prometheus alert, including what it means, common causes, how to troubleshoot, and how to resolve it.
+| Category              | Technologies                          |
+|-----------------------|---------------------------------------|
+| **Frontend**          | Next.js 15, React 19, TypeScript      |
+| **Backend**           | AdonisJS 6, TypeScript                |
+| **Database**          | MongoDB Atlas                         |
+| **Containerization**  | Docker 20.10+, Docker Compose         |
+| **CI/CD**             | GitHub Actions                        |
+| **Infrastructure**    | Ansible, OVHCloud VPS                 |
+| **Monitoring**        | Prometheus, Grafana                   |
+| **Development**       | pnpm, ESLint, Prettier, Jest, Cypress |
+| **API Documentation** | OpenAPI/Swagger                       |
 
-  - **[Dashboard Catalog](docs/monitoring-documentation.md#5-dashboard-catalog)**  
-    Overview of key Grafana dashboards, including their purpose, key metrics tracked, and operational use cases.
+# 🚀 Getting Started
 
-- **[Simulation/Data Generator Documentation](docs/simulation-documentation.md)**  
-  A detailed guide for running the API simulation script used for testing and traffic generation.
+> **Troubleshooting Tip**: Running into issues? Check out our [Troubleshooting Guide](docs/troubleshooting-guide.md) for common problems and solutions.
 
-- **[Docker Development Setup](docs/docker-dev-setup.md)**  
-  Get started with local development using Docker and Traefik. Includes service structure, workflow tips, and environment management.
+## Prerequisites
 
-- **[GitHub Actions Workflow Documentation](docs/workflow-documentation.md)**  
-  Documentation of the GitHub Actions pipeline for automated builds and deployments using GHCR.
+Before you begin, ensure you have the following installed:
 
-### Visual References
+- **Git** - [Download Git](https://git-scm.com/downloads)
+- **Node.js** (LTS version) - [Download Node.js](https://nodejs.org/)
+- **pnpm** - Install via npm:
+  ```bash
+  npm install -g pnpm
+  ```
+- **Docker Desktop** - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- **Docker Compose** (comes with Docker Desktop)
 
-- **[Architecture Diagram](docs/images/architecture.png)**  
-  High-level visual of the platform’s microservices, ingress, databases, and CI/CD flow.
+## 🛠️ Installation
 
-- **[Cloud Platform Architecture](docs/images/cloud-platform-architecture.png)**  
-  Overview of the cloud infrastructure used to host BrainBytes, including virtual machines, networking, and security layers.
+### 1. Clone the Repository
 
-- **[Deployment Architecture/Process Flow Diagram](docs/images/deployment-process-flow.png)**  
-  A step-by-step visual representation of how BrainBytes is deployed — from code commit to production.
+```bash
+git clone https://github.com/Morfusee/MO-IT122-DevOps.git
+cd MO-IT122-DevOps
+```
 
-- **[Pipeline Diagram](docs/images/pipeline-diagram.png)**  
-  Illustrates the CI/CD pipeline stages, automation triggers, and artifact flow using GitHub Actions and GHCR.
+### 2. Set Up Environment Variables
 
-- **[Rollback Protocol Diagram](docs/images/rollback-protocol.png)**  
-  Visual guide showing the rollback strategy and process in case of deployment failure or critical issues.
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Update the `.env` file with your configuration:
 
-## Important Files
+   ```env
+   # Example .env file
 
-These files support the core automation, infrastructure setup, and presentation delivery of the BrainBytes platform.
+   # Shared
+   APP_KEY=123456789ABCDEF0
 
-- **[GitHub Actions Workflow file (`automation.yml`)](.github/workflows/automation.yml)**  
-  Main GitHub Actions workflow responsible for CI/CD, including linting, testing, Docker builds, and remote deployment.
+   # Backend
+   TZ=UTC
+   PORT=3333
+   HOST=0.0.0.0
+   LOG_LEVEL=info
+   NODE_ENV=development
+   MONGO_ATLAS_URI=
+   MONGO_DOCKER_URI=
+   IS_DOCKERIZED=false
+   GEMINI_KEY=
 
-- **[Docker Compose File (`docker.prod.compose.yml`)](docker/compose.prod.yml)**  
-  Defines all microservices and supporting containers used in production.
+   # Database
+   MONGO_INITDB_ROOT_USERNAME=
+   MONGO_INITDB_ROOT_PASSWORD=
+   MONGO_INITDB_DATABASE=
 
-- **[Ansible Playbook File(`playbook.yml`)](ansible/playbooks/playbook.yml)**  
-  Ansible playbook used to provision the production VPS with required packages, security hardening, and initial app setup.
+   # Frontend
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:3333
+   NEXT_PUBLIC_API_BASE_URL_SERVER=http://localhost:3333
+   ```
 
-- **[Screenshot of Cloud Dashboard and Testing Results (Validation Report)](https://docs.google.com/document/d/1gfU2dtmo8PnKXEZZlr5iMl9UzHSvCOctWRax_l4ybCU/edit?usp=sharing)**  
-  Contains visual evidence of successful deployment and testing.
+> **Note**: If you want to run the monitoring stack with Docker, you must add the following variables inside a `.env` file in the `./docker` directory:
+>
+> ```env
+> # Example .env file (monitoring stack)
+> FRONTEND_URL=https://[URL]
+> BASE_URL_FQDN=URL
+> BASE_URL_FQDN_API=URL
+> GRAFANA_URL_FQDN=URL
+> DOCKER_USER_GROUP=XXX:XXX
+> ```
+### 3. Install Dependencies
 
-- **[Monitoring System Demonstration Script](./docs/monitoring-demo-script.md)**  
-  A step-by-step guide for delivering a 10–15 minute live demo of BrainBytes’ monitoring capabilities.
+```bash
+pnpm install:all
+```
 
-- **[Presentation Outline](docs/presentation-outline.md)**  
-  Presentation that outlines BrainBytes’ architecture, DevOps, and monitoring strategy.
+## 🚀 Running the Application
 
-- **[Live Demonstration Plan](docs/demo-plan.md)**  
-  A minute-by-minute walkthrough for presenting the platform’s deployment, CI/CD, and monitoring in a live setting.
+### Option 1: Development Mode (Recommended for Development)
 
-- **Dashboard JSON Exports**
-  - [main-dashboard.json](./docker/dashboards/main-dashboard.json)
-  - [resource-dashboard.json](./docker/dashboards/resource-optimization.json)
-  - [error-dashboard.json](./docker/dashboards/error-analysis.json)
+```bash
+# Start backend and frontend with hot-reload
+pnpm dev
+```
 
-## Team Members
+Access the application:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3333
+- API Documentation: http://localhost:3333/docs
 
-- Kristopher Santos - Team Lead - lr.ksantos@mmdc.mcl.edu.ph
-- Harvey Dela Flor - Backend Developer - lr.hdflor@mmdc.mcl.edu.ph
-- Ibrahim Desouky Harby - Frontend Developer - lr.idesoukyharby@mmdc.mcl.edu.ph
-- Mark Rolis Valenzuela - DevOps Engineer - lr.mrvalenzuela@mmdc.mcl.edu.ph
+### Option 2: Docker Compose (Production-like Environment)
 
-## Project Goals
+```bash
+# Build and start all services
+docker-compose up --build
+```
 
-- Implement a containerized application with proper networking
-- Create an automated CI/CD pipeline using GitHub Actions
-- Deploy the application to a Virtual Private Server (VPS)
-- Set up monitoring and observability tools
+Access the application:
+- Frontend: http://localhost:3002
+- Backend API: http://localhost:3001
+- API Documentation: http://localhost:3001/docs
 
-## Technology Stack
+### Option 3: Development with Docker
 
-- Frontend: Next.js
-- Backend: Node.js
-- Database: MongoDB Atlas
-- Containerization: Docker
-- CI/CD: GitHub Actions
-- VPS Provider: OVHCloud
-- Monitoring: Prometheus and Grafana
+```bash
+# Start development environment with file watching
+docker-compose -f docker-compose.dev.yml up --build
+```
 
-## Project Setup
+## 🧪 Running Tests
 
-Get BrainBytes up and running on your local machine with these simple steps.
+```bash
+# Run all tests
+pnpm test
 
-### Prerequisites
+# Run backend tests
+cd backend && pnpm test
 
-Before you start, make sure you have the following installed:
+# Run frontend tests
+cd frontend && pnpm test
+```
 
-- **Git**: For cloning the repository.
-- **Node.js** (LTS version recommended): Includes npm, which is needed to install pnpm.
-- **pnpm**: Our preferred package manager for faster and more efficient dependency management.
-  - If you don't have pnpm, you can install it globally via npm:
-    ```bash
-    npm install -g pnpm
-    ```
-- **Docker Desktop**: Required to run the application using Docker Compose.
+### 🔑 Key Configuration Files
 
-### Installation
+| File | Purpose |
+|------|---------|
+| [.github/workflows/automation.yml](.github/workflows/automation.yml) | CI/CD pipeline configuration |
+| [docker-compose.yml](docker-compose.yml) | Development environment setup |
+| [docker-compose.prod.yml](docker-compose.prod.yml) | Production deployment |
+| [ansible/playbooks/playbook.yml](ansible/playbooks/playbook.yml) | Server provisioning |
+| [.env.example](.env.example) | Environment variables template |
 
-1.  **Clone the Repository**
 
-    You can clone the BrainBytes repository using either **GitHub Desktop** or **Git via your terminal**.
+## 🏗️ Project Structure
 
-    - **Using GitHub Desktop**:
+> **Operational Note**: For detailed operational procedures and maintenance tasks, refer to our [Operational Runbook](docs/operational-runbook.md).
 
-      1.  Open GitHub Desktop.
-      2.  Go to **File > Clone Repository**.
-      3.  Paste the repository URL:
-          ```
-          [https://github.com/Morfusee/MO-IT122-DevOps](https://github.com/Morfusee/MO-IT122-DevOps)
-          ```
-      4.  Choose your desired local path and click **Clone**.
+```
+├── .github/              # GitHub Actions workflows
+├── ansible/              # Infrastructure as Code (IaC)
+├── backend/              # Backend API service
+├── docker/               # Docker configuration files
+├── docs/                 # Project documentation
+├── frontend/             # Frontend application
+├── simulation/           # Load testing and simulation
+├── .env.example          # Environment variables template
+├── docker-compose.yml    # Development environment
+└── docker-compose.prod.yml # Production environment
+```
 
-    - **Using Git via terminal**:
-      ```bash
-      git clone [https://github.com/Morfusee/MO-IT122-DevOps.git](https://github.com/Morfusee/MO-IT122-DevOps.git)
-      ```
+### 📊 Architecture
 
-2.  **Configure Environment Variables**
+```mermaid
+graph TD
+    A[Client] -->|HTTPS| B[Traefik]
+    B --> C[Frontend]
+    B --> D[Backend API]
+    D --> E[MongoDB]
+    D --> F[Redis]
+    G[Prometheus] -->|Metrics| D
+    G -->|Metrics| C
+    H[Grafana] -->|Visualization| G
+```
 
-    Navigate to the root directory of the cloned repository and set up your environment variables.
+## 📚 Documentation
 
-    - Duplicate the `.env.example` file and rename the copy to `.env`.
-    - Open the newly created `.env` file and fill in all the required values, such as database connection strings or API keys.
+Explore our comprehensive documentation to understand how **BrainBytes** is built, deployed, and maintained.
 
-3.  **Install Dependencies**
+### System Design
+- [System Design](docs/system-design-documentation.md) - Architecture overview, components, and data flow
+- [Cloud Environment](docs/cloud-env-documentation.md) - Configuration details for hosting on a secure cloud environment
 
-    From the **root directory** of your project, run the following command to install all necessary dependencies for both the frontend and backend:
+### Development
+- [Docker Setup](docs/docker-dev-setup.md) - Local development with Docker
+- [API Documentation](http://localhost:3333/docs) - Interactive API documentation (when running locally)
 
-    ```bash
-    pnpm install:all
-    ```
+### Deployment
+- [Deployment Guide](docs/deployment-plan-documentation.md) - Step-by-step deployment instructions
+- [CI/CD Pipeline](docs/workflow-documentation.md) - Automated testing and deployment workflow
 
-    This command leverages pnpm workspaces to efficiently install dependencies across your monorepo.
+### Operations
+- [Operational Runbook](docs/operational-runbook.md) - Comprehensive guide for day-to-day operations and maintenance
+- [Troubleshooting Guide](docs/troubleshooting-guide.md) - Solutions to common issues and problems
 
-### Running the Application
+### Monitoring
+- [Monitoring System](docs/monitoring-documentation.md) - Reliability and visibility through monitoring
+- [Alerts](docs/monitoring-documentation.md#4-alert-rules-documentation) - Procedures for Prometheus alerts
+- [Dashboards](docs/monitoring-documentation.md#5-dashboard-catalog) - Key Grafana dashboards
 
-You have two options for running the BrainBytes application locally: directly in development mode or using Docker Compose.
+### Testing
+- [Simulation Guide](docs/simulation-documentation.md) - API simulation for testing and traffic generation
 
-#### Run Locally (Development Mode)
 
-This method is ideal for active development, as it allows for hot-reloading and easy debugging.
+## 📊 Monitoring & Observability
 
-1.  From the project's root directory, start both the frontend and backend services:
-    ```bash
-    pnpm dev
-    ```
-2.  Once the services are running, access the application at the following URLs:
-    - **Frontend**: `http://localhost:3000`
-    - **Backend API Docs**: `http://localhost:3333/docs`
+> **Need Help?** Check the [Troubleshooting Guide](docs/troubleshooting-guide.md#-monitoring--logs) for monitoring-specific issues.
 
-#### Run with Docker (Containerized)
+BrainBytes includes a comprehensive monitoring stack:
 
-For a more production-like environment or to ensure consistency across different development setups, you can run BrainBytes using Docker Compose.
+### Components
+- **Prometheus** - Metrics collection and storage
+- **Grafana** - Visualization and dashboards
+- **Loki** - Log aggregation
+- **Promtail** - Log collection
 
-1.  Ensure **Docker Desktop** is running on your machine.
-2.  From the project's root directory, execute the Docker Compose command:
-    ```bash
-    pnpm compose
-    ```
-    This will build the Docker images (if not already built) and start the containers for both the frontend and backend.
-3.  Once the containers are up and running, access the application at:
-    - **Frontend**: `http://localhost:3002`
-    - **Backend API Docs**: `http://localhost:3001/docs`
+### Quick Start
+1. Start monitoring services:
+   ```bash
+   docker-compose -f docker/compose.monitor.yml up -d
+   ```
+2. Access Grafana at `http://localhost:3001`
+   - Default credentials: `admin/admin`
+
+### Key Metrics
+- Application performance
+- Resource utilization
+- Error rates
+- Request/response times
+
+## 🐳 Docker Commands Cheatsheet
+
+> **For more detailed operational procedures**, including container management and deployment, see our [Operational Runbook](docs/operational-runbook.md).
+
+| Command | Description |
+|---------|-------------|
+| `docker-compose up -d` | Start all services in detached mode |
+| `docker-compose down` | Stop and remove all containers |
+| `docker-compose logs -f` | View container logs |
+| `docker-compose ps` | List running containers |
+| `docker-compose exec backend bash` | Access backend container |
+
+## 🔍 Debugging
+
+### Common Issues
+
+1. **Port conflicts**: Ensure ports 3000, 3001, 3002, 3333, 9090, and 9091 are available
+2. **Docker issues**: Try rebuilding containers with `docker-compose build --no-cache`
+3. **Dependency issues**: Delete `node_modules` and `pnpm-lock.yaml`, then run `pnpm install`
+
+### Getting Help
+
+If you encounter any issues, please:
+1. Check the [Issues](https://github.com/Morfusee/MO-IT122-DevOps/issues) page
+2. Create a new issue if your problem isn't listed
+3. Contact the development team for support
+
+## 👥 Team Members
+
+| Role                   | Name              | Contact                    |
+|------------------------|-------------------|----------------------------|
+| **Team Lead**          | Kristopher Santos | lr.ksantos@mmdc.mcl.edu.ph |
+| **DevOps Engineer**    | Mark Rolis Valenzuela | lr.mrvalenzuela@mmdc.mcl.edu.ph |
+| **Frontend Developer** | Ibrahim Desouky Harby | lr.idesoukyharby@mmdc.mcl.edu.ph                          |
+| **Backend Developer**  | Harvey Dela Flor  | lr.hdflor@mmdc.mcl.edu.ph  |
 
 ---
+
+<div align="center">
+  <p>Made with ❤️ by the BrainBytes Team</p>
+</div>
