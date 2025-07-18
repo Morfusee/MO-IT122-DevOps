@@ -40,11 +40,10 @@ Our documentation is organized into four key pillars to ensure clarity and easy 
 
 | 🔄 **Routine Operations**    | 🚨 **Incident Response** |
 |:-----------------------------| :--- |
-| ✅ Service Restarts & Updates | 🔥 High CPU/Memory Alerts |
-| 🔐 SSL Certificate Renewal   | 💾 Database Restoration |
-| 🔧 System Patching        | ❌ Failed Deployment Rollbacks |
-| 📦 Dependency Management     | 🧪 CI Test Failure Analysis |
-
+| [✅ Service Restarts & Updates](../operational-runbook.md#-restart-adonisjs-backend-service) | [🔥 High CPU/Memory Alerts](../operational-runbook.md#-handle-high-cpumemory-usage) |
+| [🔐 SSL Certificate Renewal](../operational-runbook.md#-renew-ssl-certificates) | [💾 Database Restoration](../operational-runbook.md#-restore-from-backup) |
+| [🔧 System Patching](../operational-runbook.md#-system-patching) | [❌ Failed Deployment Rollbacks](../operational-runbook.md#-failed-deployment-rollbacks) |
+| [📦 Dependency Management](../operational-runbook.md#-dependency-management) | [🧪 CI Test Failure Analysis](../operational-runbook.md#-test-failure-analysis) |
 ---
 
 ## **Lessons Learned: Challenges & Solutions**
