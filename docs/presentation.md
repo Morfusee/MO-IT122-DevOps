@@ -153,9 +153,9 @@ Our documentation is organized into four key pillars to ensure clarity and easy 
 
 | 📚 System & Architecture | 🚀 Deployment & CI/CD |
 | :--- | :--- |
-| • [System Design](../system-design-documentation.md)<br>• [Cloud Environment](../cloud-env-documentation.md)<br>• [Simulation Environment](../simulation-documentation.md)<br><br>***Focus:*** *Container setup, hosting, networking, security, and service interactions.* | • [Deployment Plan](../deployment-plan-documentation.md)<br>• [CI/CD Workflow](../workflow-documentation.md)<br>• [Docker Setup](../docker-dev-setup.md)<br><br>***Focus:*** *Automated provisioning, GitHub Actions, and deployment strategies.* |
+| • [System Design](./system-design-documentation.md)<br>• [Cloud Environment](./cloud-env-documentation.md)<br>• [Simulation Environment](./simulation-documentation.md)<br><br>***Focus:*** *Container setup, hosting, networking, security, and service interactions.* | • [Deployment Plan](./deployment-plan-documentation.md)<br>• [CI/CD Workflow](./workflow-documentation.md)<br>• [Docker Setup](./docker-dev-setup.md)<br><br>***Focus:*** *Automated provisioning, GitHub Actions, and deployment strategies.* |
 | **📊 Monitoring & Alerts** | **🔧 Operations & Support** |
-| • [Monitoring Setup](../monitoring-documentation.md)<br>• [Alerting System](../alerts-documentation.md)<br>• [Monitoring Demo](../monitoring-demo-script.md)<br><br>***Focus:*** *Prometheus metrics, Grafana dashboards, alert rules, and operational playbooks.* | • [Operational Runbook](../operational-runbook.md)<br>• [Troubleshooting Guide](../troubleshooting-guide.md)<br>• [Environment Setup](../environment-setup.md)<br><br>***Focus:*** *Step-by-step procedures for operations, incident response, and issue resolution.*|
+| • [Monitoring Setup](./monitoring-documentation.md)<br>• [Alerting System](./alerts-documentation.md)<br>• [Monitoring Demo](./monitoring-demo-script.md)<br><br>***Focus:*** *Prometheus metrics, Grafana dashboards, alert rules, and operational playbooks.* | • [Operational Runbook](./operational-runbook.md)<br>• [Troubleshooting Guide](./troubleshooting-guide.md)<br>• [Environment Setup](./environment-setup.md)<br><br>***Focus:*** *Step-by-step procedures for operations, incident response, and issue resolution.*|
 
 ---
 
@@ -165,10 +165,10 @@ Our documentation is organized into four key pillars to ensure clarity and easy 
 
 | 🔄 **Routine Operations**    | 🚨 **Incident Response** |
 |:-----------------------------| :--- |
-| [✅ Service Restarts & Updates](../operational-runbook.md#-restart-adonisjs-backend-service) | [🔥 High CPU/Memory Alerts](../operational-runbook.md#-handle-high-cpumemory-usage) |
-| [🔐 SSL Certificate Renewal](../operational-runbook.md#-renew-ssl-certificates) | [💾 Database Restoration](../operational-runbook.md#-restore-from-backup) |
-| [🔧 System Patching](../operational-runbook.md#-system-patching) | [❌ Failed Deployment Rollbacks](../operational-runbook.md#-failed-deployment-rollbacks) |
-| [📦 Dependency Management](../operational-runbook.md#-dependency-management) | [🧪 CI Test Failure Analysis](../operational-runbook.md#-test-failure-analysis) |
+| [✅ Service Restarts & Updates](./operational-runbook.md#-restart-adonisjs-backend-service) | [🔥 High CPU/Memory Alerts](./operational-runbook.md#-handle-high-cpumemory-usage) |
+| [🔐 SSL Certificate Renewal](./operational-runbook.md#-renew-ssl-certificates) | [💾 Database Restoration](./operational-runbook.md#-restore-from-backup) |
+| [🔧 System Patching](./operational-runbook.md#-system-patching) | [❌ Failed Deployment Rollbacks](./operational-runbook.md#-failed-deployment-rollbacks) |
+| [📦 Dependency Management](./operational-runbook.md#-dependency-management) | [🧪 CI Test Failure Analysis](./operational-runbook.md#-test-failure-analysis) |
 
 
 ---
