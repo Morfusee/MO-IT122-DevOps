@@ -1,13 +1,9 @@
----
-marp: true
-theme: gaia
----
 
 <!-- _class: lead -->
 # 🚀 **BrainBytes AI Platform**
-## DevOps Project Showcase
+## DevOps Project Documentation Showcase
 
-*Building Robust, Scalable, and Maintainable Infrastructure*
+*Documenting a Robust, Scalable, and Maintainable Infrastructure*
 
 ---
 
