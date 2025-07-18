@@ -1,23 +1,3 @@
-Of course. Here is an updated presentation script that aligns with your visually enhanced deck.
-
-This script is designed to be more dynamic and conversational. It places a strong emphasis on the **Operational Runbooks** and **Troubleshooting** sections, incorporating a "live demo" style walkthrough of the commands you would run, as requested.
-
----
-
-### **Presentation Script with Live Demo Walkthrough**
-
-**(The presenter should have the slide deck visible, and potentially a terminal window ready to show commands if doing a true live demo, or just speak to the commands as if running them).**
-
----
-
-#### **Slide 1: Title Slide**
-
-**(Presenter)**: "Good morning/afternoon, everyone. Welcome to the DevOps project showcase for the BrainBytes AI Platform. My name is [Your Name], and on behalf of the team, we're excited to walk you through how we've built a robust, scalable, and maintainable infrastructure for our application. Let's dive in."
-
----
-
-#### **Slide 2: Documentation Overview**
-
 **(Presenter)**: "To start, I want to talk about the foundation of our entire operational strategy: our documentation. We treat it as **'The Single Source of Truth.'**"
 
 "For us, this means our documentation is:"
