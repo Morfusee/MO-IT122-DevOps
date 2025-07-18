@@ -1,7 +1,3 @@
----
-marp: true
-theme: gaia
----
 
 <!-- _class: lead -->
 # 🚀 **BrainBytes AI Platform**
