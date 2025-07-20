@@ -58,7 +58,7 @@ function LoginForm() {
 
       {type === "login" && (
         <Container size="lg">
-          <Title ta="center">Welcome back!</Title>
+          <Title ta="center">Welcome back tol!</Title>
 
           <Text className="text-center mt-2" c="dimmed" size="sm">
             Do not have an account yet?{" "}
